@@ -1,0 +1,64 @@
+name: Auto Check Ban & Telegram Notify
+
+on:
+  schedule:
+    # Tự động chạy lúc 00:00 UTC (tức đúng 7:00 sáng giờ Việt Nam GMT+7) mỗi ngày
+    - cron: '0 0 * * *'
+  workflow_dispatch: # Cho phép bấm chạy thử thủ công
+
+jobs:
+  check-and-notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Chạy kiểm tra nick mở BAN và gửi Telegram
+        env:
+          TELE_BOT_TOKEN: ${{ secrets.TELE_BOT_TOKEN }}
+          TELE_CHAT_ID: ${{ secrets.TELE_CHAT_ID }}
+        run: |
+          node -e '
+            const fs = require("fs");
+            if (!fs.existsSync("data.json")) { console.log("Chưa có data.json"); process.exit(0); }
+            const accounts = JSON.parse(fs.readFileSync("data.json", "utf8"));
+            const now = new Date();
+            const tomorrowDate = new Date(now.getTime() + 86400000);
+            const pad = n => String(n).padStart(2, "0");
+            const today = `${pad(now.getDate())}/${pad(now.getMonth()+1)}`;
+            const tomorrow = `${pad(tomorrowDate.getDate())}/${pad(tomorrowDate.getMonth()+1)}`;
+
+            const unbannedToday = accounts.filter(a => a.unlockDate && a.unlockDate.trim() === today);
+            const unbannedTomorrow = accounts.filter(a => a.unlockDate && a.unlockDate.trim() === tomorrow);
+
+            const token = process.env.TELE_BOT_TOKEN;
+            const chatId = process.env.TELE_CHAT_ID;
+            if (!token || !chatId) { console.log("Chưa cấu hình Telegram secrets"); process.exit(0); }
+
+            async function send(text) {
+              await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ chat_id: chatId, text, parse_mode: "HTML" })
+              });
+            }
+
+            (async () => {
+              if (unbannedToday.length > 0) {
+                let msg = `✅ <b>THÔNG BÁO: CÓ ${unbannedToday.length} NICK ĐÃ MỞ BAN HÔM NAY (${today})!</b>\n\n`;
+                unbannedToday.forEach((a, i) => msg += `${i+1}. 🟢 <b>${a.username}</b> | Rank: <b>${a.rank || "Chưa rank"}</b>\n   Pass: <code>${a.password}</code>\n`);
+                await send(msg);
+              }
+              if (unbannedTomorrow.length > 0) {
+                let msg = `⏳ <b>NHẮC NHỞ: CÓ ${unbannedTomorrow.length} NICK SẮP MỞ BAN VÀO NGÀY MAI (${tomorrow})!</b>\n\n`;
+                unbannedTomorrow.forEach((a, i) => msg += `${i+1}. 🟡 <b>${a.username}</b> | Rank: <b>${a.rank || "Chưa rank"}</b>\n   Pass: <code>${a.password}</code>\n`);
+                await send(msg);
+              }
+              console.log("Hoàn tất kiểm tra thông báo.");
+            })();
+          '
