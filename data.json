@@ -30,10 +30,9 @@
     "rank": "TA1",
     "date": "13/10",
     "unlockDate": "22/1",
-    "lastUsed": "21:50 - 13/10",
-    "useCount": 1,
-    "inRecent": true,
-    "lastUsedTime": 1791903046847
+    "lastUsed": "",
+    "useCount": 0,
+    "inRecent": false
   },
   {
     "id": "1791889595962djyij",
@@ -42,10 +41,10 @@
     "rank": "TA",
     "date": "13/10",
     "unlockDate": "22/1",
-    "lastUsed": "21:50 - 13/10",
-    "useCount": 1,
-    "lastUsedTime": 1791903047254,
-    "inRecent": true
+    "lastUsed": "",
+    "useCount": 0,
+    "lastUsedTime": 1791902159310,
+    "inRecent": false
   },
   {
     "id": "1791886934343m7bln",
@@ -54,9 +53,9 @@
     "rank": "BK",
     "date": "13/10",
     "unlockDate": "",
-    "lastUsed": "21:50 - 13/10",
-    "useCount": 1,
-    "lastUsedTime": 1791903045878,
-    "inRecent": true
+    "lastUsed": "",
+    "useCount": 0,
+    "lastUsedTime": 1791902154438,
+    "inRecent": false
   }
 ]
