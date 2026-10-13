@@ -7,6 +7,8 @@
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
     />
     <title>devsepa - Quản Lý Tài Khoản Liên Quân Mobile</title>
+    <link rel="icon" type="image/png" href="logo.png" />
+    <link rel="apple-touch-icon" href="logo.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -71,7 +73,7 @@
             transparent 40%
           );
         color: var(--text-main);
-        padding: 14px 16px 80px;
+        padding: 22px 18px 80px;
         min-height: 100vh;
       }
 
@@ -81,25 +83,35 @@
         margin: 0 auto;
       }
 
-      /* TOPBAR HEADER (MODERN SLATE) */
+      /* TOPBAR HEADER (KHÔNG ĐÓNG KHUNG, THOÁNG ĐÃNG TRÊN VÀ DƯỚI) */
       header {
-        display: flex;
-        justify-content: space-between;
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
         align-items: center;
-        gap: 12px;
-        margin-bottom: 14px;
-        padding: 12px 18px;
-        background: var(--bg-surface);
-        border: 1px solid var(--border-color);
-        border-radius: 16px;
-        flex-wrap: wrap;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        gap: 16px;
+        margin-top: 6px;
+        margin-bottom: 28px;
+        padding: 10px 0 22px;
+        background: transparent;
+        border: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 0;
+        box-shadow: none;
+      }
+
+      .header-left {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 8px;
       }
 
       .header-brand {
         display: flex;
         align-items: center;
+        justify-content: center;
         gap: 12px;
+        text-align: left;
       }
 
       .logo-box {
@@ -131,6 +143,24 @@
         font-weight: 800;
         color: #fff;
         line-height: 1.2;
+        display: inline-flex;
+        align-items: center;
+        min-height: 28px;
+        white-space: nowrap;
+      }
+
+      .typewriter-cursor {
+        display: inline-block;
+        margin-left: 2px;
+        color: #38bdf8;
+        font-weight: 300;
+        animation: typewriterBlink 0.9s infinite;
+        user-select: none;
+      }
+
+      @keyframes typewriterBlink {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0; }
       }
 
       .header-sub {
@@ -179,6 +209,7 @@
         display: flex;
         gap: 8px;
         align-items: center;
+        justify-content: flex-end;
       }
 
       /* NÚT THAO TÁC */
@@ -241,25 +272,32 @@
         box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
       }
 
-      /* KHU VỰC NHẬP NICK (MODERN SLATE) */
+      /* KHU VỰC NHẬP NICK (TONE TÍM INDIGO RIÊNG BIỆT DỄ PHÂN BIỆT) */
       .add-box {
-        background: var(--bg-surface);
-        border: 1px solid var(--border-color);
-        border-radius: 16px;
-        margin-bottom: 14px;
+        background: linear-gradient(160deg, rgba(30, 20, 65, 0.65) 0%, rgba(15, 23, 42, 0.75) 100%);
+        border: 1px solid rgba(168, 85, 247, 0.32);
+        border-left: 4px solid #a855f7;
+        border-radius: 14px;
+        margin-bottom: 20px;
         overflow: hidden;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+        box-shadow: 0 4px 20px rgba(168, 85, 247, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      }
+      .add-box:hover {
+        border-color: rgba(168, 85, 247, 0.45);
+        border-left-color: #c084fc;
+        box-shadow: 0 6px 24px rgba(168, 85, 247, 0.12);
       }
 
       .add-box-header {
-        padding: 11px 16px;
-        background: rgba(2, 6, 23, 0.5);
+        padding: 10px 16px;
+        background: linear-gradient(90deg, rgba(168, 85, 247, 0.18) 0%, rgba(15, 23, 42, 0.4) 100%);
         display: flex;
         justify-content: space-between;
         align-items: center;
         cursor: pointer;
         user-select: none;
-        border-bottom: 1px solid var(--border-subtle);
+        border-bottom: 1px solid rgba(168, 85, 247, 0.2);
       }
 
       .add-box-title {
@@ -272,19 +310,21 @@
       .add-box-badge {
         font-size: 0.8rem;
         font-weight: 800;
-        color: #e2e8f0;
+        color: #e9d5ff;
         letter-spacing: 0.5px;
+        text-shadow: 0 0 10px rgba(192, 132, 252, 0.35);
       }
 
       .add-box-hint {
         font-size: 0.72rem;
-        color: var(--text-muted);
+        color: #c4b5fd;
+        opacity: 0.85;
       }
 
       .collapse-arrow {
         white-space: nowrap;
         font-size: 0.76rem;
-        color: var(--text-muted);
+        color: #c4b5fd;
         font-weight: 700;
       }
 
@@ -307,9 +347,133 @@
       .add-form-grid label {
         font-size: 0.76rem;
         font-weight: 700;
-        color: var(--text-sub);
+        color: #ddd6fe;
         display: block;
         margin-bottom: 5px;
+      }
+
+      .add-box input,
+      .add-box textarea {
+        background: rgba(10, 15, 30, 0.75);
+        border: 1px solid rgba(168, 85, 247, 0.25);
+      }
+
+      .add-box input:focus,
+      .add-box textarea:focus {
+        border-color: #a855f7;
+        box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.25);
+        background: rgba(15, 12, 35, 0.95);
+      }
+
+      /* NÚT THÊM TÀI KHOẢN: HIỆU ỨNG BÓNG LOÁNG CAO CẤP (GLOSSY 3D & LIGHT SWEEP) */
+      #btn-add {
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(
+          180deg,
+          #818cf8 0%,
+          #6366f1 48%,
+          #4f46e5 52%,
+          #4338ca 100%
+        ) !important;
+        border: 1px solid rgba(255, 255, 255, 0.45) !important;
+        box-shadow:
+          0 4px 16px rgba(99, 102, 241, 0.45),
+          inset 0 1px 1px rgba(255, 255, 255, 0.8),
+          inset 0 -2px 5px rgba(0, 0, 0, 0.3) !important;
+        font-weight: 800 !important;
+        letter-spacing: 0.5px;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+        cursor: pointer;
+        transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        isolation: isolate;
+      }
+
+      #btn-add .btn-text-glossy {
+        position: relative;
+        z-index: 3;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      /* LỚP PHỦ BÓNG KÍNH NỬA TRÊN (SPECULAR GLOSS HIGHLIGHT) */
+      #btn-add::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 48%;
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.45) 0%,
+          rgba(255, 255, 255, 0.1) 100%
+        );
+        border-radius: 9px 9px 60px 60px / 9px 9px 16px 16px;
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      /* DẢI ÁNH SÁNG BÓNG LOÁNG LƯỚT QUA ĐỊNH KỲ (LIGHT SHIMMER SWEEP - CHẬM RÃI & MƯỢT MÀ) */
+      #btn-add::after {
+        content: "";
+        position: absolute;
+        top: -60%;
+        left: -130%;
+        width: 55%;
+        height: 220%;
+        background: linear-gradient(
+          90deg,
+          transparent 0%,
+          rgba(255, 255, 255, 0.08) 20%,
+          rgba(255, 255, 255, 0.75) 50%,
+          rgba(255, 255, 255, 0.08) 80%,
+          transparent 100%
+        );
+        transform: rotate(25deg);
+        pointer-events: none;
+        z-index: 2;
+        animation: btnGlossySweep 5.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+      }
+
+      @keyframes btnGlossySweep {
+        0% {
+          left: -130%;
+          opacity: 0;
+        }
+        8% {
+          opacity: 1;
+        }
+        38% {
+          left: 230%;
+          opacity: 1;
+        }
+        39%,
+        100% {
+          left: 230%;
+          opacity: 0;
+        }
+      }
+
+      #btn-add:hover {
+        filter: brightness(1.15) !important;
+        box-shadow:
+          0 6px 24px rgba(99, 102, 241, 0.65),
+          inset 0 1px 2px rgba(255, 255, 255, 0.95),
+          inset 0 -2px 5px rgba(0, 0, 0, 0.35) !important;
+        transform: translateY(-2px);
+      }
+
+      #btn-add:hover::after {
+        animation-duration: 3.8s;
+      }
+
+      #btn-add:active {
+        transform: scale(0.97) translateY(0);
+        box-shadow:
+          0 2px 8px rgba(99, 102, 241, 0.4),
+          inset 0 2px 4px rgba(0, 0, 0, 0.35) !important;
       }
 
       @media (max-width: 820px) {
@@ -348,21 +512,19 @@
         background: #020617;
       }
 
-      /* THANH ĐIỀU HƯỚNG RANK CUỘN NGANG (STICKY CỐ ĐỊNH) */
+      /* THANH ĐIỀU HƯỚNG RANK CUỘN NGANG (FRAMELESS & AIRY) */
       .toolbar {
         position: sticky;
         top: 10px;
         z-index: 1000;
         display: flex;
         align-items: center;
-        margin-bottom: 14px;
-        background: rgba(15, 23, 42, 0.88);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        padding: 8px 12px;
-        border-radius: 16px;
-        border: 1px solid rgba(148, 163, 184, 0.15);
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+        margin-top: 14px;
+        margin-bottom: 22px;
+        background: transparent;
+        padding: 6px 0;
+        border: none;
+        box-shadow: none;
       }
 
       /* THANH TAB RANK CUỘN NGANG LƯỚT CHỌN NHANH TRÊN MOBILE & PC */
@@ -381,29 +543,29 @@
 
       .rank-nav-chip {
         flex-shrink: 0;
-        padding: 6px 14px;
-        border-radius: 10px;
+        padding: 6px 13px;
+        border-radius: 20px;
         font-size: 0.78rem;
         font-weight: 700;
-        background: rgba(2, 6, 23, 0.6);
-        border: 1px solid rgba(148, 163, 184, 0.15);
-        color: var(--text-sub);
+        background: rgba(15, 23, 42, 0.65);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        color: #94a3b8;
         cursor: pointer;
-        transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         white-space: nowrap;
         user-select: none;
       }
       .rank-nav-chip:hover {
         background: rgba(30, 41, 59, 0.85);
         color: #fff;
-        border-color: rgba(148, 163, 184, 0.35);
+        border-color: rgba(255, 255, 255, 0.18);
         transform: translateY(-1px);
       }
       .rank-nav-chip.active {
         background: var(--primary-gradient);
         color: #fff;
         border-color: transparent;
-        box-shadow: 0 4px 15px var(--primary-glow);
+        box-shadow: 0 3px 12px var(--primary-glow);
         transform: translateY(-1px);
       }
 
@@ -537,6 +699,61 @@
         opacity: 0.6;
         filter: grayscale(0.8);
       }
+      /* NÚT KHÓA KHẨN CẤP */
+      .btn-emergency {
+        background: rgba(239, 68, 68, 0.15);
+        border: 1px solid rgba(239, 68, 68, 0.45);
+        color: #fca5a5;
+        border-radius: 10px;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .btn-emergency:hover {
+        background: rgba(239, 68, 68, 0.3);
+        border-color: #ef4444;
+        color: #fff;
+        box-shadow: 0 0 12px rgba(239, 68, 68, 0.45);
+      }
+      .btn-emergency.is-locked {
+        background: linear-gradient(135deg, #dc2626, #991b1b) !important;
+        border-color: #f87171 !important;
+        color: #fff !important;
+        box-shadow: 0 0 16px rgba(239, 68, 68, 0.6) !important;
+        animation: emergencyLockPulse 1.8s ease-in-out infinite;
+      }
+      @keyframes emergencyLockPulse {
+        0%, 100% {
+          box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+          filter: brightness(1);
+        }
+        50% {
+          box-shadow: 0 0 20px rgba(239, 68, 68, 0.95), 0 0 35px rgba(239, 68, 68, 0.4);
+          filter: brightness(1.2);
+        }
+      }
+
+      /* BANNER CẢNH BÁO KHÓA KHẨN CẤP */
+      .emergency-banner {
+        background: linear-gradient(90deg, rgba(220, 38, 38, 0.22) 0%, rgba(15, 23, 42, 0.92) 100%);
+        border: 1px solid rgba(239, 68, 68, 0.45);
+        border-left: 4px solid #ef4444;
+        border-radius: 12px;
+        padding: 11px 16px;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        box-shadow: 0 4px 18px rgba(220, 38, 38, 0.22);
+        animation: emergencyGlow 3s ease-in-out infinite;
+      }
+      @keyframes emergencyGlow {
+        0%, 100% {
+          border-color: rgba(239, 68, 68, 0.45);
+        }
+        50% {
+          border-color: rgba(239, 68, 68, 0.85);
+        }
+      }
 
       /* ========================================================
          BẢNG MÁY TÍNH (> 820px) - MẪU 1 VỚI CÁCH DÒNG NHỎ (ROW SPACING)
@@ -554,124 +771,313 @@
       .acc-table {
         width: 100%;
         border-collapse: separate;
-        border-spacing: 0 6px; /* Cách dòng nhỏ 6px tách biệt giữa các nick */
+        border-spacing: 0 7px; /* Cách dòng 7px tạo khoảng hở phân biệt rõ ràng giữa các nick */
         text-align: left;
         font-size: 0.9rem;
       }
 
       .acc-table th {
-        background: rgba(15, 23, 42, 0.9);
-        color: var(--text-sub);
+        background: transparent;
+        color: #94a3b8;
         font-weight: 800;
-        padding: 11px 12px;
-        font-size: 0.76rem;
+        padding: 9px 12px;
+        font-size: 0.74rem;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+        letter-spacing: 0.6px;
         white-space: nowrap;
-        border-top: 1px solid var(--border-color);
-        border-bottom: 1px solid var(--border-color);
-      }
-      .acc-table th:first-child {
-        border-top-left-radius: 10px;
-        border-bottom-left-radius: 10px;
-        border-left: 1px solid var(--border-color);
-      }
-      .acc-table th:last-child {
-        border-top-right-radius: 10px;
-        border-bottom-right-radius: 10px;
-        border-right: 1px solid var(--border-color);
+        border: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        text-align: center;
       }
 
-      /* DÒNG TIÊU ĐỀ NHÓM RANK TRONG BẢNG */
+      /* DÒNG TIÊU ĐỀ NHÓM RANK: PHÁT SÁNG THỞ ĐỒNG BỘ CÙNG MÀU RANK */
       .acc-table tbody tr.acc-group-header-row td {
+        position: relative;
+        overflow: hidden;
         border-radius: 10px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        animation: rankGlowBreath 4.2s ease-in-out infinite;
+        transition:
+          box-shadow 0.3s ease,
+          filter 0.3s ease;
       }
 
-      /* DÒNG TÀI KHOẢN (ROW ITEM TÁCH BIỆT) */
-      .acc-table tbody tr.acc-row-item {
-        background: var(--bg-surface);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+      .rank-group-banner {
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        animation: rankGlowBreath 4.2s ease-in-out infinite;
         transition:
-          transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
-          background 0.2s ease,
-          box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+          box-shadow 0.3s ease,
+          filter 0.3s ease;
+      }
+
+      /* HIỆU ỨNG THỞ NHẤP NHÁY PHÁT SÁNG ĐỒNG BỘ THEO MÀU RANK (4.2s) */
+      @keyframes rankGlowBreath {
+        0%,
+        100% {
+          box-shadow:
+            0 3px 12px rgba(0, 0, 0, 0.35),
+            0 0 0 rgba(255, 255, 255, 0);
+          filter: brightness(0.97);
+        }
+        50% {
+          box-shadow:
+            0 6px 24px rgba(0, 0, 0, 0.45),
+            0 0 16px var(--rank-accent, rgba(56, 189, 248, 0.5));
+          filter: brightness(1.1);
+        }
+      }
+
+      /* Đảm bảo nội dung chữ luôn nổi bật, KHÔNG đè lên track hiệu ứng tuyết rơi */
+      .acc-table tbody tr.acc-group-header-row td > *:not(.rank-weather-track),
+      .rank-group-banner > *:not(.rank-weather-track) {
+        position: relative;
+        z-index: 4;
+      }
+
+      /* CHỮ TIÊU ĐỀ NHÓM RANK: NHẤP NHÁY ĐỒNG BỘ CHUNG VỚI MÀU CỦA DÒNG */
+      .rank-title-text {
+        font-weight: 800;
+        display: inline-block;
+        animation: rankTitleColorSync 4.2s ease-in-out infinite;
+      }
+
+      @keyframes rankTitleColorSync {
+        0%,
+        100% {
+          color: #f8fafc;
+          text-shadow: 0 0 3px rgba(255, 255, 255, 0.25);
+          opacity: 0.92;
+        }
+        50% {
+          color: var(--rank-accent, #38bdf8);
+          text-shadow:
+            0 0 10px var(--rank-accent, #38bdf8),
+            0 0 20px var(--rank-accent, #38bdf8);
+          opacity: 1;
+        }
+      }
+
+      /* HUY HIỆU RANK: NHẤP NHÁY THỞ ĐỒNG BỘ CHUNG VỚI MÀU CỦA DÒNG */
+      .acc-group-header-row .badge,
+      .rank-group-banner .badge {
+        font-size: 0.8rem;
+        padding: 4px 10px;
+        letter-spacing: 0.3px;
+        animation: rankBadgeColorSync 4.2s ease-in-out infinite;
+        transition: all 0.3s ease;
+      }
+
+      @keyframes rankBadgeColorSync {
+        0%,
+        100% {
+          filter: brightness(1) drop-shadow(0 0 2px rgba(255, 255, 255, 0.2));
+          box-shadow: 0 0 0 rgba(255, 255, 255, 0);
+          transform: scale(1);
+        }
+        50% {
+          filter: brightness(1.3)
+            drop-shadow(0 0 8px var(--rank-accent, currentColor));
+          box-shadow: 0 0 14px var(--rank-accent, currentColor);
+          transform: scale(1.03);
+        }
+      }
+
+      /* ========================================================
+         HIỆU ỨNG LÁ RƠI MỜ ẢO NHẸ NHÀNG (GENTLE FALLING LEAVES)
+         ======================================================== */
+      .rank-weather-track {
+        position: absolute !important;
+        inset: 0 !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        pointer-events: none !important;
+        overflow: hidden !important;
+        z-index: 1 !important;
+        display: block !important;
+      }
+
+      /* LÁ RƠI: MỜ MỜ, ÊM Ả, THOANG THOẢNG Ở HẬU CẢNH */
+      .rank-drop {
+        position: absolute;
+        top: -14px;
+        pointer-events: none;
+        user-select: none;
+        font-size: 13px;
+        line-height: 1;
+        opacity: 0.35;
+        filter: opacity(0.38) brightness(1.1) drop-shadow(0 0 3px var(--rank-accent, rgba(255,255,255,0.25)));
+        will-change: transform, opacity;
+      }
+
+      /* PHÂN BỐ THƯA THỚT (CHỈ 7 LÁ ĐỀU KHẮP DẢI) VÀ RƠI CHẬM RÃI 6.5s - 8.5s */
+      .rank-drop.d1 { left: 7%;  font-size: 12px; animation: rankLeafFall1 7.2s ease-in-out -1.5s infinite; }
+      .rank-drop.d2 { left: 22%; font-size: 14px; animation: rankLeafFall2 8.0s ease-in-out -4.0s infinite; }
+      .rank-drop.d3 { left: 37%; font-size: 11px; animation: rankLeafFall1 6.8s ease-in-out -2.2s infinite; }
+      .rank-drop.d4 { left: 51%; font-size: 13px; animation: rankLeafFall2 8.5s ease-in-out -5.5s infinite; }
+      .rank-drop.d5 { left: 66%; font-size: 12px; animation: rankLeafFall1 7.6s ease-in-out -0.8s infinite; }
+      .rank-drop.d6 { left: 81%; font-size: 14px; animation: rankLeafFall2 8.2s ease-in-out -3.3s infinite; }
+      .rank-drop.d7 { left: 93%; font-size: 12px; animation: rankLeafFall1 7.0s ease-in-out -6.1s infinite; }
+
+      /* QUỸ ĐẠO LÁ RƠI 1: LẮC LƯ NHẸ NHÀNG, MỜ MỜ ÊM DỊU */
+      @keyframes rankLeafFall1 {
+        0% {
+          top: -14px;
+          transform: translateX(0) rotate(0deg);
+          opacity: 0;
+        }
+        20% {
+          opacity: 0.30;
+        }
+        50% {
+          transform: translateX(12px) rotate(22deg);
+          opacity: 0.40;
+        }
+        80% {
+          opacity: 0.30;
+        }
+        100% {
+          top: calc(100% + 4px);
+          transform: translateX(-8px) rotate(-15deg);
+          opacity: 0;
+        }
+      }
+
+      /* QUỸ ĐẠO LÁ RƠI 2: ĐU ĐƯA CHẬM RÃI SANG PHẢI RỒI TRÁI */
+      @keyframes rankLeafFall2 {
+        0% {
+          top: -14px;
+          transform: translateX(0) rotate(0deg);
+          opacity: 0;
+        }
+        20% {
+          opacity: 0.28;
+        }
+        50% {
+          transform: translateX(-14px) rotate(-25deg);
+          opacity: 0.38;
+        }
+        80% {
+          opacity: 0.28;
+        }
+        100% {
+          top: calc(100% + 4px);
+          transform: translateX(10px) rotate(18deg);
+          opacity: 0;
+        }
+      }
+
+      /* DÒNG TÀI KHOẢN (CÁCH DÒNG NHỎ, THOÁNG ĐÃNG, PHÂN BIỆT RÕ RÀNG GIỮA CÁC NICK) */
+      .acc-table tbody tr.acc-row-item {
+        background: rgba(15, 23, 42, 0.62);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.28);
+        transition: all 0.18s ease;
       }
 
       .acc-table tbody tr.acc-row-item:hover {
-        background: #151f35;
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+        background: rgba(30, 41, 59, 0.8);
+        transform: none;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
       }
 
       .acc-table td {
-        padding: 9px 12px;
+        padding: 8px 12px;
         vertical-align: middle;
         border-top: 1px solid rgba(255, 255, 255, 0.05);
         border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        border-left: none;
+        border-right: none;
         transition: background 0.15s;
       }
 
       .acc-table tbody tr.acc-row-item td:first-child {
-        border-top-left-radius: 10px;
-        border-bottom-left-radius: 10px;
-        border-left: 4px solid var(--border-color);
+        border-top-left-radius: 9px;
+        border-bottom-left-radius: 9px;
+        border-left: 4px solid var(--rank-accent, rgba(255, 255, 255, 0.15)) !important;
       }
 
       .acc-table tbody tr.acc-row-item td:last-child {
-        border-top-right-radius: 10px;
-        border-bottom-right-radius: 10px;
+        border-top-right-radius: 9px;
+        border-bottom-right-radius: 9px;
         border-right: 1px solid rgba(255, 255, 255, 0.05);
       }
 
-      /* VIỀN NHẬN DIỆN MÀU THEO RANK (MẪU 1 - RANK ACCENT) */
-      .rank-border-bk td:first-child { border-left: 4px solid #38bdf8 !important; }
-      .rank-border-kc td:first-child { border-left: 4px solid #06b6d4 !important; }
-      .rank-border-ta td:first-child { border-left: 4px solid #a855f7 !important; }
-      .rank-border-ct td:first-child { border-left: 4px solid #f97316 !important; }
-      .rank-border-dct td:first-child { border-left: 4px solid #eab308 !important; }
-      .rank-border-khac td:first-child { border-left: 4px solid #64748b !important; }
-      .rank-border-recent td:first-child { border-left: 4px solid #38bdf8 !important; }
+      /* VIỀN NHẬN DIỆN MÀU THEO RANK (MỖI RANK 1 MÀU CHUẨN 4PX RÕ RÀNG) */
+      .rank-border-bk td:first-child {
+        border-left: 4px solid #e2e8f0 !important;
+      }
+      .rank-border-kc td:first-child {
+        border-left: 4px solid #00d2ff !important;
+      }
+      .rank-border-ta td:first-child {
+        border-left: 4px solid #c084fc !important;
+      }
+      .rank-border-ct td:first-child {
+        border-left: 4px solid #f97316 !important;
+      }
+      .rank-border-dct td:first-child {
+        border-left: 4px solid #eab308 !important;
+      }
+      .rank-border-khac td:first-child {
+        border-left: 4px solid #64748b !important;
+      }
+      .rank-border-recent td:first-child {
+        border-left: 4px solid #6366f1 !important;
+      }
 
-      /* ĐỔ MÀU ĐỎ KHI BỊ BAN */
+      /* ĐỔ MÀU DỊU NHẸ KHI BỊ BAN */
       .acc-table tr.is-banned {
-        background: var(--ban-bg) !important;
+        background: rgba(220, 38, 38, 0.08) !important;
       }
       .acc-table tr.is-banned:hover {
-        background: var(--ban-bg-hover) !important;
+        background: rgba(220, 38, 38, 0.15) !important;
       }
       .acc-table tr.is-banned td:first-child {
-        border-left: 4px solid #f43f5e !important;
+        border-left: 3px solid #ef4444 !important;
       }
       .acc-table tr.is-banned td {
-        border-top-color: rgba(244, 63, 94, 0.25);
-        border-bottom-color: rgba(244, 63, 94, 0.25);
-      }
-      .acc-table tr.is-banned td:last-child {
-        border-right-color: rgba(244, 63, 94, 0.25);
+        border-top-color: rgba(244, 63, 94, 0.12);
+        border-bottom-color: rgba(244, 63, 94, 0.12);
       }
       .acc-table tr.is-banned .tbl-input {
-        background: rgba(127, 29, 29, 0.4);
-        border-color: rgba(239, 68, 68, 0.45);
-        color: var(--ban-text);
+        background: transparent !important;
+        border-color: transparent !important;
+        color: #fca5a5 !important;
+      }
+      .acc-table tr.is-banned .tbl-input:hover {
+        background: rgba(239, 68, 68, 0.1) !important;
+        border-color: rgba(239, 68, 68, 0.25) !important;
       }
 
+      /* Ô DỮ LIỆU BẢNG GHOST (KHÔNG ĐÓNG KHUNG, CHỮ TỰ NHIÊN, HIỆN VIỀN KHI DI CHUỘT / EDIT) */
       .tbl-input {
-        padding: 8px 11px;
-        font-size: 0.88rem;
-        background: rgba(11, 15, 25, 0.7);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 8px;
-        color: #fff;
-        font-family: "JetBrains Mono", monospace;
-        width: 100%;
-        transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+        padding: 6px 8px !important;
+        font-size: 0.88rem !important;
+        background: transparent !important;
+        border: 1px solid transparent !important;
+        border-radius: 6px !important;
+        color: #f1f5f9 !important;
+        font-family: "JetBrains Mono", monospace !important;
+        width: 100% !important;
+        outline: none !important;
+        box-shadow: none !important;
+        transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1) !important;
+      }
+
+      .tbl-input:hover {
+        background: rgba(255, 255, 255, 0.06) !important;
+        border-color: rgba(255, 255, 255, 0.15) !important;
       }
 
       .tbl-input:focus {
-        border-color: #38bdf8;
-        background: #020617;
-        box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.25);
+        border-color: #38bdf8 !important;
+        background: rgba(2, 6, 23, 0.9) !important;
+        box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.25) !important;
       }
 
       .badge {
@@ -697,41 +1103,47 @@
         border: 1px solid rgba(16, 185, 129, 0.3);
       }
 
-      /* HUY HIỆU RANK MẪU 1 CHUẨN MÀU */
+      /* HUY HIỆU RANK MẪU 1 CHUẨN MÀU PHÂN BIỆT RÕ RÀNG */
       .badge-rank-bk {
-        background: rgba(56, 189, 248, 0.15);
-        color: #38bdf8;
-        border: 1px solid rgba(56, 189, 248, 0.4);
+        background: rgba(226, 232, 240, 0.15);
+        color: #f1f5f9;
+        border: 1px solid rgba(226, 232, 240, 0.45);
+        box-shadow: 0 0 8px rgba(226, 232, 240, 0.2);
       }
       .badge-rank-kc {
-        background: rgba(6, 182, 212, 0.15);
-        color: #22d3ee;
-        border: 1px solid rgba(6, 182, 212, 0.4);
+        background: rgba(0, 210, 255, 0.15);
+        color: #00d2ff;
+        border: 1px solid rgba(0, 210, 255, 0.45);
+        box-shadow: 0 0 8px rgba(0, 210, 255, 0.25);
       }
       .badge-rank-ta {
-        background: rgba(168, 85, 247, 0.15);
-        color: #c084fc;
-        border: 1px solid rgba(168, 85, 247, 0.4);
+        background: rgba(168, 85, 247, 0.18);
+        color: #d8b4fe;
+        border: 1px solid rgba(168, 85, 247, 0.45);
+        box-shadow: 0 0 8px rgba(168, 85, 247, 0.25);
       }
       .badge-rank-ct {
-        background: rgba(249, 115, 22, 0.15);
-        color: #fb923c;
-        border: 1px solid rgba(249, 115, 22, 0.4);
+        background: rgba(249, 115, 22, 0.18);
+        color: #fdba74;
+        border: 1px solid rgba(249, 115, 22, 0.45);
+        box-shadow: 0 0 8px rgba(249, 115, 22, 0.25);
       }
       .badge-rank-dct {
         background: rgba(234, 179, 8, 0.2);
-        color: #facc15;
-        border: 1px solid rgba(234, 179, 8, 0.5);
-        box-shadow: 0 0 10px rgba(234, 179, 8, 0.25);
+        color: #fef08a;
+        border: 1px solid rgba(234, 179, 8, 0.55);
+        box-shadow: 0 0 10px rgba(234, 179, 8, 0.3);
       }
       .badge-rank-khac {
-        background: rgba(148, 163, 184, 0.15);
+        background: rgba(100, 116, 139, 0.15);
         color: #cbd5e1;
-        border: 1px solid rgba(148, 163, 184, 0.35);
+        border: 1px solid rgba(100, 116, 139, 0.35);
       }
 
       /* KHỐI TIÊU ĐỀ PHÂN NHÓM THEO RANK (MOBILE) */
       .rank-group-banner {
+        position: relative;
+        overflow: hidden;
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -762,51 +1174,61 @@
         font-weight: 700;
       }
 
-      /* NÚT SAO CHÉP MẪU 1 VỚI HIỆU ỨNG MƯỢT MÀ */
+      /* NÚT SAO CHÉP MẪU MỚI: NỔI BẬT, DỄ NHÌN, CHỮ TRẮNG RÕ NÉT */
       .btn-copy-action {
-        background: var(--primary-gradient);
-        color: #fff;
-        border: none;
-        padding: 8px 14px;
+        color: #ffffff !important;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        padding: 6px 14px;
         border-radius: 8px;
         font-size: 0.82rem;
         font-weight: 800;
+        letter-spacing: 0.3px;
         cursor: pointer;
         display: inline-flex;
         align-items: center;
+        justify-content: center;
         gap: 6px;
-        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.35);
         white-space: nowrap;
-        transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
       }
       .btn-copy-action:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
-        filter: brightness(1.12);
+        filter: brightness(1.18);
+        border-color: rgba(255, 255, 255, 0.45);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
       }
       .btn-copy-action:active {
-        transform: scale(0.95) translateY(0);
+        transform: scale(0.96);
+      }
+      .btn-copy-action.btn-copy-locked {
+        color: #fca5a5 !important;
+        text-shadow: none !important;
+        border-color: rgba(239, 68, 68, 0.4) !important;
       }
       .btn-copy-action.copied {
         background: linear-gradient(135deg, #10b981, #059669) !important;
-        box-shadow: 0 0 16px rgba(16, 185, 129, 0.6) !important;
-        transform: scale(1.05);
+        color: #fff !important;
+        border-color: #10b981 !important;
+        box-shadow: 0 0 16px rgba(16, 185, 129, 0.5) !important;
+        transform: scale(1.02);
       }
 
       .btn-del-action {
-        background: rgba(220, 38, 38, 0.15);
-        color: #f87171;
-        border: 1px solid rgba(220, 38, 38, 0.3);
-        border-radius: 8px;
-        padding: 8px 12px;
+        background: transparent;
+        color: #64748b;
+        border: none;
+        border-radius: 6px;
+        padding: 6px 8px;
         font-size: 0.9rem;
         cursor: pointer;
-        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        transition: all 0.18s ease;
       }
       .btn-del-action:hover {
-        background: #dc2626;
-        color: #fff;
-        transform: translateY(-2px);
+        background: rgba(239, 68, 68, 0.15);
+        color: #ef4444;
+        transform: scale(1.1);
       }
       .btn-del-action:active {
         transform: scale(0.95);
@@ -864,35 +1286,35 @@
       }
 
       .m-row-card {
-        background: var(--bg-surface);
-        border: 1px solid var(--border-color);
-        border-radius: 14px;
-        padding: 13px;
+        background: rgba(15, 23, 42, 0.55);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        padding: 12px 13px;
         display: flex;
         flex-direction: column;
         gap: 9px;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-        transition:
-          transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
-          box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: none;
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        transition: background 0.18s ease;
       }
       .m-row-card:active {
-        transform: scale(0.985);
+        transform: scale(0.99);
       }
 
-      /* VIỀN MOBILE THEO RANK */
-      .m-row-card.rank-border-bk { border-left: 4px solid #38bdf8 !important; }
-      .m-row-card.rank-border-kc { border-left: 4px solid #06b6d4 !important; }
-      .m-row-card.rank-border-ta { border-left: 4px solid #a855f7 !important; }
-      .m-row-card.rank-border-ct { border-left: 4px solid #f97316 !important; }
-      .m-row-card.rank-border-dct { border-left: 4px solid #eab308 !important; }
-      .m-row-card.rank-border-khac { border-left: 4px solid #64748b !important; }
-      .m-row-card.rank-border-recent { border-left: 4px solid #38bdf8 !important; }
+      /* VIỀN MOBILE THEO RANK PHÂN BIỆT RÕ RÀNG */
+      .m-row-card.rank-border-bk { border-left: 3px solid #e2e8f0 !important; }
+      .m-row-card.rank-border-kc { border-left: 3px solid #00d2ff !important; }
+      .m-row-card.rank-border-ta { border-left: 3px solid #c084fc !important; }
+      .m-row-card.rank-border-ct { border-left: 3px solid #f97316 !important; }
+      .m-row-card.rank-border-dct { border-left: 3px solid #eab308 !important; }
+      .m-row-card.rank-border-khac { border-left: 3px solid #64748b !important; }
+      .m-row-card.rank-border-recent { border-left: 3px solid #6366f1 !important; }
 
       .m-row-card.is-banned {
-        background: var(--ban-bg) !important;
-        border: 1px solid rgba(239, 68, 68, 0.35) !important;
-        border-left: 4px solid #f43f5e !important;
+        background: rgba(220, 38, 38, 0.08) !important;
+        border: 1px solid rgba(239, 68, 68, 0.2) !important;
+        border-left: 3px solid #ef4444 !important;
       }
 
       .m-card-top-row {
@@ -922,7 +1344,8 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        background: rgba(11, 15, 25, 0.4);
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.04);
         padding: 5px 8px;
         border-radius: 6px;
         font-size: 0.75rem;
@@ -932,6 +1355,16 @@
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 8px;
+      }
+      .m-creds-row .tbl-input,
+      .m-action-row .tbl-input {
+        background: rgba(255, 255, 255, 0.04) !important;
+        border: 1px solid rgba(255, 255, 255, 0.07) !important;
+      }
+      .m-creds-row .tbl-input:focus,
+      .m-action-row .tbl-input:focus {
+        background: rgba(2, 6, 23, 0.95) !important;
+        border-color: #38bdf8 !important;
       }
 
       .m-action-row {
@@ -943,21 +1376,26 @@
 
       .m-btn-copy {
         width: 100%;
-        padding: 10px 12px;
-        font-size: 0.85rem;
+        padding: 8px 12px;
+        font-size: 0.82rem;
         font-weight: 800;
         background: var(--primary-gradient);
-        color: #fff;
-        border: none;
-        border-radius: 8px;
+        color: #fff !important;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 6px;
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
         gap: 6px;
-        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
         white-space: nowrap;
-        transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+        transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .m-btn-copy.btn-copy-locked {
+        color: #fca5a5 !important;
+        text-shadow: none !important;
       }
       .m-btn-copy:active {
         transform: scale(0.95);
@@ -970,17 +1408,21 @@
       .m-btn-del {
         width: 100%;
         height: 100%;
-        min-height: 38px;
-        background: rgba(220, 38, 38, 0.2);
-        color: #f87171;
-        border: 1px solid rgba(220, 38, 38, 0.3);
-        border-radius: 8px;
+        min-height: 34px;
+        background: transparent;
+        color: #64748b;
+        border: none;
+        border-radius: 6px;
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 0.9rem;
         cursor: pointer;
         transition: all 0.18s ease;
+      }
+      .m-btn-del:hover {
+        background: rgba(239, 68, 68, 0.15);
+        color: #ef4444;
       }
       .m-btn-del:active {
         transform: scale(0.95);
@@ -1029,11 +1471,110 @@
         }
 
         header {
-          padding: 10px 12px;
+          display: flex;
+          padding: 10px 0 18px;
+          flex-direction: column;
+          align-items: stretch;
+          gap: 12px;
+          background: transparent;
+          border: none;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+          margin-top: 4px;
+          margin-bottom: 24px;
+          box-shadow: none;
         }
 
-        header h1 {
-          font-size: 1.05rem;
+        .header-left {
+          width: 100%;
+        }
+        .header-left .btn {
+          width: 100%;
+          justify-content: center;
+        }
+
+        .header-action-group {
+          width: 100%;
+          display: flex;
+          gap: 8px;
+        }
+        .header-action-group .btn {
+          flex: 1;
+          justify-content: center;
+        }
+
+        /* KHỐI BRAND HERO TRÊN MOBILE: TO, NỔI BẬT & ĐẲNG CẤP */
+        .header-brand {
+          width: 100%;
+          padding: 12px 14px;
+          background: linear-gradient(135deg, rgba(14, 165, 233, 0.15) 0%, rgba(15, 23, 42, 0.9) 100%);
+          border: 1px solid rgba(56, 189, 248, 0.32);
+          border-radius: 14px;
+          box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4), inset 0 0 16px rgba(56, 189, 248, 0.08);
+          display: flex;
+          align-items: center;
+          gap: 14px;
+        }
+
+        .header-brand .logo-box {
+          width: 56px;
+          height: 56px;
+          border-radius: 50%;
+          border: 2px solid #38bdf8;
+          box-shadow: 0 0 16px rgba(56, 189, 248, 0.5), 0 4px 12px rgba(0, 0, 0, 0.5);
+          flex-shrink: 0;
+        }
+
+        .header-brand h1 {
+          font-size: 1.32rem;
+          font-weight: 900;
+          letter-spacing: 0.3px;
+          display: flex;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: 6px;
+          line-height: 1.25;
+        }
+
+        .header-brand h1 span {
+          font-size: 0.88rem !important;
+          color: #38bdf8 !important;
+          font-weight: 800 !important;
+          text-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+        }
+
+        .header-sub {
+          margin-top: 5px;
+        }
+
+        .header-sub .stats-badge {
+          display: inline-flex !important;
+          align-items: center;
+          gap: 8px !important;
+          font-size: 0.88rem !important;
+          background: rgba(2, 6, 23, 0.7);
+          padding: 4px 10px;
+          border-radius: 12px;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header-sub #stat-count {
+          font-size: 0.92rem;
+          font-weight: 800;
+          color: #fff;
+        }
+
+        .header-sub #stat-active {
+          font-size: 0.88rem;
+          font-weight: 800;
+          color: #34d399;
+          text-shadow: 0 0 8px rgba(16, 185, 129, 0.45);
+        }
+
+        .header-sub #stat-ban {
+          font-size: 0.88rem;
+          font-weight: 800;
+          color: #fb7185;
+          text-shadow: 0 0 8px rgba(244, 63, 94, 0.45);
         }
 
         .header-action-group {
@@ -1041,17 +1582,20 @@
           display: grid;
           grid-template-columns: 1fr 1fr;
           gap: 8px;
-          margin-top: 8px;
+          margin-top: 0;
         }
 
         .header-action-group .btn {
-          padding: 8px 10px;
-          font-size: 0.8rem;
+          padding: 9px 10px;
+          font-size: 0.82rem;
           justify-content: center;
+          border-radius: 10px;
         }
 
         .toolbar {
-          padding: 8px 10px;
+          padding: 8px 0;
+          margin-top: 10px;
+          margin-bottom: 18px;
         }
       }
 
@@ -1190,8 +1734,37 @@
   </head>
   <body>
     <div class="app-layout">
-      <!-- TOPBAR HEADER (MODERN SLATE) -->
+      <!-- TOPBAR HEADER (MODERN SLATE, CHÍNH GIỮA TRANG WEB) -->
       <header>
+        <div class="header-left">
+          <button
+            class="btn btn-tool"
+            id="btn-toggle-admin"
+            onclick="toggleAdmin()"
+            title="Chuyển đổi quyền Quản trị / Khách"
+            style="padding: 8px 14px; font-size: 0.82rem; font-weight: 700; gap: 6px;"
+          >
+            <span id="admin-icon">👑</span>
+            <span id="admin-text">Quản Trị</span>
+          </button>
+          <button
+            class="btn btn-emergency"
+            id="btn-toggle-emergency"
+            onclick="toggleEmergencyLock()"
+            title="Kích hoạt khóa khẩn cấp (chặn toàn bộ quyền sao chép)"
+            style="
+              padding: 8px 13px;
+              font-size: 0.82rem;
+              font-weight: 700;
+              gap: 6px;
+              display: none;
+            "
+          >
+            <span id="emergency-icon">🚨</span>
+            <span id="emergency-text">Khóa Khẩn Cấp</span>
+          </button>
+        </div>
+
         <div class="header-brand">
           <div class="logo-box">
             <img
@@ -1223,11 +1796,8 @@
             >
           </div>
           <div>
-            <h1>
-              devsepa
-              <span style="font-size: 0.82rem; font-weight: 700; color: #38bdf8"
-                >• AOV Manager</span
-              >
+            <h1 id="brand-typewriter-wrap">
+              <span id="brand-typewriter-text">devsepa <span style="font-size: 0.82rem; font-weight: 700; color: #38bdf8">• AOV Manager</span></span><span class="typewriter-cursor">|</span>
             </h1>
             <div class="header-sub">
               <div
@@ -1253,28 +1823,8 @@
           </div>
         </div>
 
-        <!-- BẢNG CHÚ THÍCH 2 TRẠNG THÁI -->
-
+        <!-- BẢNG NÚT THAO TÁC (ĐÁM MÂY & TELEGRAM NẰM BÊN PHẢI) -->
         <div class="header-action-group">
-          <button
-            class="btn btn-tool"
-            id="btn-toggle-sound"
-            onclick="toggleSound()"
-            title="Bật/Tắt âm thanh hiệu ứng"
-            style="padding: 8px 12px; font-size: 0.88rem;"
-          >
-            <span id="sound-icon">🔊</span>
-          </button>
-          <button
-            class="btn btn-tool"
-            id="btn-toggle-admin"
-            onclick="toggleAdmin()"
-            title="Chuyển đổi quyền Quản trị / Khách"
-            style="padding: 8px 12px; font-size: 0.82rem; font-weight: 700; gap: 6px;"
-          >
-            <span id="admin-icon">👑</span>
-            <span id="admin-text">Quản Trị</span>
-          </button>
           <button
             class="btn btn-cloud"
             id="btn-open-cloud"
@@ -1364,7 +1914,7 @@
                 onclick="handleAddAccount()"
                 style="height: 40px; width: 100%; padding: 0 16px"
               >
-                ➕ THÊM TÀI KHOẢN
+                <span class="btn-text-glossy">➕ THÊM TÀI KHOẢN</span>
               </button>
             </div>
           </div>
@@ -1950,13 +2500,58 @@
       // CHẾ ĐỘ QUẢN TRỊ (ADMIN PIN) & KHÁCH (GUEST)
       // ==========================================
       const ADMIN_PIN_DEFAULT = "1234";
-      let isAdmin = localStorage.getItem("lq_is_admin") === "true" || window.location.protocol === "file:";
+      const ADMIN_SESSION_HOURS = 12; // Thời hạn phiên đăng nhập Quản Trị: 12 tiếng
+
+      function getInitialAdminState() {
+        if (window.location.protocol === "file:") return true;
+        const savedAdmin = localStorage.getItem("lq_is_admin") === "true";
+        if (!savedAdmin) return false;
+        const loginTime = parseInt(
+          localStorage.getItem("lq_admin_session_time") || "0",
+          10,
+        );
+        // Tự động hết hạn phiên đăng nhập sau 12 tiếng
+        if (Date.now() - loginTime > ADMIN_SESSION_HOURS * 60 * 60 * 1000) {
+          localStorage.setItem("lq_is_admin", "false");
+          return false;
+        }
+        return true;
+      }
+
+      let isAdmin = getInitialAdminState();
+
+      // Tự động thu hồi quyền Admin nếu mở web liên tục quá 12 tiếng
+      setInterval(() => {
+        if (!isAdmin || window.location.protocol === "file:") return;
+        const loginTime = parseInt(
+          localStorage.getItem("lq_admin_session_time") || "0",
+          10,
+        );
+        if (Date.now() - loginTime > ADMIN_SESSION_HOURS * 60 * 60 * 1000) {
+          isAdmin = false;
+          localStorage.setItem("lq_is_admin", "false");
+          localStorage.removeItem("lq_admin_session_time");
+          isGlobalPasswordMasked = true;
+          singlePasswordVisible = {};
+          updateAdminUI();
+          renderList();
+          showToast("🔒 Phiên Quản Trị 12 tiếng đã hết hạn!");
+        }
+      }, 60000);
+
+      // CHẾ ĐỘ KHÓA KHẨN CẤP (EMERGENCY LOCKDOWN)
+      let isEmergencyLocked =
+        localStorage.getItem("lq_emergency_locked") === "true";
 
       function updateAdminUI() {
         const adminIcon = document.getElementById("admin-icon");
         const adminText = document.getElementById("admin-text");
         const inputContainer = document.getElementById("input-container");
         const btnToggleAdmin = document.getElementById("btn-toggle-admin");
+        const btnEmergency = document.getElementById("btn-toggle-emergency");
+        const emergencyIcon = document.getElementById("emergency-icon");
+        const emergencyText = document.getElementById("emergency-text");
+        const btnTogglePassAll = document.getElementById("btn-toggle-pass-all");
 
         if (adminIcon) adminIcon.textContent = isAdmin ? "👑" : "🔒";
         if (adminText) adminText.textContent = isAdmin ? "Quản Trị" : "Khách";
@@ -1965,9 +2560,85 @@
           btnToggleAdmin.classList.toggle("btn-guest-glow", !isAdmin);
         }
         if (inputContainer) {
-          inputContainer.style.display = isAdmin ? "block" : "none";
+          inputContainer.style.display =
+            isAdmin && !isEmergencyLocked ? "block" : "none";
+        }
+        if (btnTogglePassAll) {
+          btnTogglePassAll.style.display = isAdmin ? "inline-flex" : "none";
+        }
+
+        if (btnEmergency) {
+          if (isEmergencyLocked) {
+            btnEmergency.style.display = "inline-flex";
+            btnEmergency.classList.add("is-locked");
+            if (emergencyIcon)
+              emergencyIcon.textContent = isAdmin ? "🔓" : "🔒";
+            if (emergencyText)
+              emergencyText.textContent = isAdmin ? "Mở Khóa" : "Đã Khóa";
+            btnEmergency.title = isAdmin
+              ? "Hệ thống đang khóa khẩn cấp! Nhấp để mở khóa"
+              : "Hệ thống đang khóa khẩn cấp bởi Admin";
+          } else {
+            btnEmergency.classList.remove("is-locked");
+            if (emergencyIcon) emergencyIcon.textContent = "🚨";
+            if (emergencyText) emergencyText.textContent = "Khóa Khẩn Cấp";
+            btnEmergency.title =
+              "Kích hoạt khóa khẩn cấp (chặn toàn bộ quyền sao chép)";
+            btnEmergency.style.display = isAdmin ? "inline-flex" : "none";
+          }
         }
       }
+
+      window.toggleEmergencyLock = function () {
+        if (!isAdmin) {
+          showNotice({
+            title: "Khóa Khẩn Cấp",
+            message:
+              "Hệ thống đang ở chế độ <b>Khóa Khẩn Cấp</b>!<br><br>Quản trị viên đã tạm dừng toàn bộ quyền sao chép tài khoản để bảo vệ dữ liệu.",
+            icon: "🚨",
+            type: "danger",
+          });
+          return;
+        }
+
+        if (!isEmergencyLocked) {
+          showNotice({
+            title: "Kích Hoạt Khóa Khẩn Cấp",
+            message:
+              "Bạn có chắc muốn <b>KHÓA KHẨN CẤP</b> hệ thống không?<br><br>⚠️ Khi kích hoạt, <b>khách và mọi người sẽ KHÔNG THỂ sao chép tài khoản:mật khẩu</b> cho đến khi bạn mở lại!",
+            icon: "🚨",
+            type: "danger",
+            onConfirm: () => {
+              isEmergencyLocked = true;
+              localStorage.setItem("lq_emergency_locked", "true");
+              saveData();
+              triggerAutoSync();
+              updateAdminUI();
+              renderList();
+              playSound("delete");
+              showToast("🚨 ĐÃ KÍCH HOẠT KHÓA KHẨN CẤP!");
+            },
+          });
+        } else {
+          showNotice({
+            title: "Mở Khóa Khẩn Cấp",
+            message:
+              "Bạn có muốn <b>gỡ bỏ Khóa Khẩn Cấp</b> để người dùng có thể sao chép tài khoản trở lại bình thường?",
+            icon: "🔓",
+            type: "confirm",
+            onConfirm: () => {
+              isEmergencyLocked = false;
+              localStorage.setItem("lq_emergency_locked", "false");
+              saveData();
+              triggerAutoSync();
+              updateAdminUI();
+              renderList();
+              playSound("success");
+              showToast("✅ Đã mở khóa hệ thống thành công!");
+            },
+          });
+        }
+      };
 
       window.toggleAdmin = function () {
         if (isAdmin) {
@@ -1979,6 +2650,9 @@
             onConfirm: () => {
               isAdmin = false;
               localStorage.setItem("lq_is_admin", "false");
+              localStorage.removeItem("lq_admin_session_time");
+              isGlobalPasswordMasked = true;
+              singlePasswordVisible = {};
               updateAdminUI();
               renderList();
               playSound("click");
@@ -1998,11 +2672,12 @@
         if (val === savedPin) {
           isAdmin = true;
           localStorage.setItem("lq_is_admin", "true");
+          localStorage.setItem("lq_admin_session_time", Date.now().toString());
           closePinModal();
           updateAdminUI();
           renderList();
           playSound("success");
-          showToast("👑 Mở khóa Quản Trị thành công!");
+          showToast("👑 Mở khóa Quản Trị thành công (Phiên 12h)!");
         } else {
           playSound("delete");
           showNotice({
@@ -2051,6 +2726,16 @@
       let singlePasswordVisible = {};
 
       window.toggleAllPasswordVisibility = function () {
+        if (!isAdmin) {
+          playSound("delete");
+          showToast("🔒 Chỉ Quản Trị viên mới có quyền xem mật khẩu!");
+          return;
+        }
+        if (isEmergencyLocked) {
+          playSound("delete");
+          showToast("🚨 Hệ thống đang khóa khẩn cấp!");
+          return;
+        }
         isGlobalPasswordMasked = !isGlobalPasswordMasked;
         singlePasswordVisible = {};
         playSound("click");
@@ -2066,6 +2751,16 @@
       }
 
       window.toggleSinglePassword = function (id) {
+        if (!isAdmin) {
+          playSound("delete");
+          showToast("🔒 Chỉ Quản Trị viên mới có quyền xem mật khẩu!");
+          return;
+        }
+        if (isEmergencyLocked) {
+          playSound("delete");
+          showToast("🚨 Hệ thống đang khóa khẩn cấp!");
+          return;
+        }
         playSound("click");
         singlePasswordVisible[id] = !singlePasswordVisible[id];
         renderList();
@@ -2300,7 +2995,7 @@
         );
       }
 
-      // CẤU HÌNH RANK: BK < KC < TA < CT < DCT < KHAC (MẪU 1: RANK ACCENT)
+      // CẤU HÌNH RANK: BK < KC < TA < CT < DCT < KHAC (MỖI RANK 1 TÔNG MÀU HOÀN TOÀN KHÁC BIỆT)
       const RANK_CONFIG = {
         BK: {
           key: "BK",
@@ -2309,10 +3004,10 @@
           icon: "🛡️",
           class: "badge-rank-bk",
           borderClass: "rank-border-bk",
-          color: "#38bdf8",
+          color: "#e2e8f0",
           bgGradient:
-            "linear-gradient(90deg, rgba(56, 189, 248, 0.18) 0%, rgba(15, 23, 42, 0.95) 100%)",
-          btnGrad: "linear-gradient(135deg, #0284c7, #38bdf8)",
+            "linear-gradient(90deg, rgba(226, 232, 240, 0.18) 0%, rgba(15, 23, 42, 0.95) 100%)",
+          btnGrad: "linear-gradient(135deg, #475569, #94a3b8)",
         },
         KC: {
           key: "KC",
@@ -2321,10 +3016,10 @@
           icon: "💠",
           class: "badge-rank-kc",
           borderClass: "rank-border-kc",
-          color: "#06b6d4",
+          color: "#00d2ff",
           bgGradient:
-            "linear-gradient(90deg, rgba(6, 182, 212, 0.18) 0%, rgba(15, 23, 42, 0.95) 100%)",
-          btnGrad: "linear-gradient(135deg, #0891b2, #06b6d4)",
+            "linear-gradient(90deg, rgba(0, 210, 255, 0.2) 0%, rgba(15, 23, 42, 0.95) 100%)",
+          btnGrad: "linear-gradient(135deg, #0284c7, #00d2ff)",
         },
         TA: {
           key: "TA",
@@ -2333,10 +3028,10 @@
           icon: "💎",
           class: "badge-rank-ta",
           borderClass: "rank-border-ta",
-          color: "#a855f7",
+          color: "#c084fc",
           bgGradient:
-            "linear-gradient(90deg, rgba(168, 85, 247, 0.18) 0%, rgba(15, 23, 42, 0.95) 100%)",
-          btnGrad: "linear-gradient(135deg, #a855f7, #6366f1)",
+            "linear-gradient(90deg, rgba(168, 85, 247, 0.2) 0%, rgba(15, 23, 42, 0.95) 100%)",
+          btnGrad: "linear-gradient(135deg, #9333ea, #c084fc)",
         },
         CT: {
           key: "CT",
@@ -2347,8 +3042,8 @@
           borderClass: "rank-border-ct",
           color: "#f97316",
           bgGradient:
-            "linear-gradient(90deg, rgba(249, 115, 22, 0.18) 0%, rgba(15, 23, 42, 0.95) 100%)",
-          btnGrad: "linear-gradient(135deg, #f97316, #ef4444)",
+            "linear-gradient(90deg, rgba(249, 115, 22, 0.22) 0%, rgba(15, 23, 42, 0.95) 100%)",
+          btnGrad: "linear-gradient(135deg, #ea580c, #f97316)",
         },
         DCT: {
           key: "DCT",
@@ -2359,8 +3054,8 @@
           borderClass: "rank-border-dct",
           color: "#eab308",
           bgGradient:
-            "linear-gradient(90deg, rgba(234, 179, 8, 0.2) 0%, rgba(15, 23, 42, 0.95) 100%)",
-          btnGrad: "linear-gradient(135deg, #eab308, #f59e0b)",
+            "linear-gradient(90deg, rgba(234, 179, 8, 0.22) 0%, rgba(15, 23, 42, 0.95) 100%)",
+          btnGrad: "linear-gradient(135deg, #ca8a04, #eab308)",
         },
         KHAC: {
           key: "KHAC",
@@ -2372,7 +3067,7 @@
           color: "#94a3b8",
           bgGradient:
             "linear-gradient(90deg, rgba(148, 163, 184, 0.15) 0%, rgba(15, 23, 42, 0.95) 100%)",
-          btnGrad: "linear-gradient(135deg, #475569, #64748b)",
+          btnGrad: "linear-gradient(135deg, #334155, #64748b)",
         },
       };
 
@@ -2505,6 +3200,10 @@
 
       function saveData() {
         localStorage.setItem("lq_accounts", JSON.stringify(accounts));
+        localStorage.setItem(
+          "lq_emergency_locked",
+          isEmergencyLocked ? "true" : "false",
+        );
         localStorage.setItem("lq_updated_at", Date.now().toString());
         if (accounts && accounts.length > 0) {
           createAutoSnapshot();
@@ -2835,13 +3534,13 @@
             <thead>
               <tr>
                 <th style="width: 45px; text-align: center;">STT</th>
-                <th style="width: 135px;">Trạng Thái</th>
-                <th style="width: 105px;">Rank</th>
+                <th style="width: 135px; text-align: center;">Trạng Thái</th>
+                <th style="width: 105px; text-align: center;">Rank</th>
                 <th style="width: 80px; text-align: center;">Uy Tín</th>
-                <th style="min-width: 200px;">Tài Khoản</th>
-                <th style="min-width: 180px;">Mật Khẩu</th>
-                <th style="width: 120px;">Mở BAN</th>
-                <th style="min-width: 170px;">Lần Dùng Gần Nhất</th>
+                <th style="min-width: 200px; text-align: center;">Tài Khoản</th>
+                <th style="min-width: 180px; text-align: center;">Mật Khẩu</th>
+                <th style="width: 120px; text-align: center;">Mở BAN</th>
+                <th style="min-width: 170px; text-align: center;">Lần Dùng Gần Nhất</th>
                 <th style="width: 135px; text-align: center;">Sao Chép</th>
                 ${isAdmin ? '<th style="width: 65px; text-align: center;">Thao Tác</th>' : ''}
               </tr>
@@ -2869,7 +3568,11 @@
               ? "linear-gradient(135deg, #0ea5e9, #6366f1)"
               : rankGrp.btnGrad || "var(--primary-gradient)";
 
-          const showThisPass = isGlobalPasswordMasked ? !!singlePasswordVisible[item.id] : !singlePasswordVisible[item.id];
+          const showThisPass = isAdmin
+            ? isGlobalPasswordMasked
+              ? !!singlePasswordVisible[item.id]
+              : !singlePasswordVisible[item.id]
+            : false;
           const passType = showThisPass ? "text" : "password";
           const eyeIcon = showThisPass ? "🙈" : "👁️";
 
@@ -2884,21 +3587,24 @@
           return `
             <tr class="acc-row-item ${borderClass} ${isBanned ? "is-banned" : ""}">
               <td style="text-align: center; font-weight: 700; color: ${isBanned ? "#fecaca" : "var(--text-muted)"}; font-size: 0.92rem;">#${globalIndex}</td>
-              <td>
+              <td style="text-align: center;">
                 ${isBanned ? `<span class="badge badge-banned">${banInfo.desc}</span>` : `<span class="badge badge-active">🟢 HOẠT ĐỘNG</span>`}
               </td>
-              <td>
-                <input 
-                  type="text" 
-                  class="tbl-input rank-input-field" 
-                  style="text-transform: uppercase; font-weight: 700; width: 90px; cursor: ${isAdmin ? 'pointer' : 'default'};"
-                  value="${escapeHtml(item.rank || "")}" 
-                  placeholder="Rank..."
-                  title="${isAdmin ? 'Nhấp để chọn nhanh rank' : 'Rank'}"
-                  ${onRankClick}
-                  ${onchangeRank}
-                  ${readOnlyAttr}
-                />
+              <td style="text-align: center;">
+                <div style="display: inline-flex; align-items: center; gap: 5px; background: rgba(0, 0, 0, 0.35); padding: 2px 7px; border-radius: 6px; border: 1px solid ${rankGrp.color || "#94a3b8"}35;">
+                  <span style="font-size: 0.85rem;" title="${rankGrp.name}">${rankGrp.icon}</span>
+                  <input 
+                    type="text" 
+                    class="tbl-input rank-input-field" 
+                    style="text-transform: uppercase; font-weight: 800; width: 68px; color: ${rankGrp.color || "#e2e8f0"} !important; text-shadow: 0 0 6px ${rankGrp.color || "#e2e8f0"}50; padding: 3px 4px !important; cursor: ${isAdmin ? "pointer" : "default"};"
+                    value="${escapeHtml(item.rank || "")}" 
+                    placeholder="Rank..."
+                    title="${isAdmin ? "Nhấp để chọn nhanh rank" : "Rank"}"
+                    ${onRankClick}
+                    ${onchangeRank}
+                    ${readOnlyAttr}
+                  />
+                </div>
               </td>
               <td style="text-align: center;">
                 <input 
@@ -2931,18 +3637,24 @@
                   <input 
                     type="${passType}" 
                     class="tbl-input" 
-                    style="padding-right: 28px; letter-spacing: ${passType === 'password' ? '2px' : 'normal'};"
+                    style="padding-right: ${isAdmin ? "28px" : "10px"}; letter-spacing: ${passType === 'password' ? '2px' : 'normal'};"
                     value="${escapeHtml(item.password)}" 
                     placeholder="Mật khẩu..."
                     ${onchangePass}
                     ${readOnlyAttr}
                   />
-                  <button type="button" class="btn-toggle-row-eye" onclick="toggleSinglePassword('${item.id}')" title="${showThisPass ? 'Ẩn mật khẩu' : 'Xem mật khẩu'}">
-                    ${eyeIcon}
-                  </button>
+                  ${
+                    isAdmin
+                      ? `
+                    <button type="button" class="btn-toggle-row-eye" onclick="toggleSinglePassword('${item.id}')" title="${showThisPass ? 'Ẩn mật khẩu' : 'Xem mật khẩu'}">
+                      ${eyeIcon}
+                    </button>
+                  `
+                      : ""
+                  }
                 </div>
               </td>
-              <td>
+              <td style="text-align: center;">
                 <input 
                   type="text" 
                   class="tbl-input" 
@@ -2951,6 +3663,7 @@
                   value="${escapeHtml(item.unlockDate || "")}" 
                   placeholder="dd/MM"
                   maxlength="5"
+                  style="text-align: center; width: 75px;"
                   oninput="formatDateOnlyNumbers(this)"
                   ${onchangeUnlock}
                   ${readOnlyAttr}
@@ -2971,8 +3684,8 @@
                 </div>
               </td>
               <td style="text-align: center;">
-                <button class="btn-copy-action" id="btn-copy-${item.id}" style="background: ${copyBtnGrad};" onclick="copyCombo('${item.id}', this)">
-                  📋 SAO CHÉP
+                <button class="btn-copy-action ${isEmergencyLocked ? "btn-copy-locked" : ""}" id="btn-copy-${item.id}" style="background: ${isEmergencyLocked ? "rgba(239, 68, 68, 0.2)" : copyBtnGrad}; color: ${isEmergencyLocked ? "#fca5a5" : "#ffffff"} !important; ${isEmergencyLocked ? "border-color: rgba(239, 68, 68, 0.4); cursor: not-allowed;" : ""}" onclick="copyCombo('${item.id}', this)" title="${isEmergencyLocked ? "Hệ thống đang khóa khẩn cấp" : "Sao chép tài khoản"}">
+                  ${isEmergencyLocked ? "🔒 ĐÃ KHÓA" : "📋 SAO CHÉP"}
                 </button>
               </td>
               ${
@@ -3016,7 +3729,11 @@
               ? "linear-gradient(135deg, #0ea5e9, #6366f1)"
               : rankGrp.btnGrad || "var(--primary-gradient)";
 
-          const showThisPass = isGlobalPasswordMasked ? !!singlePasswordVisible[item.id] : !singlePasswordVisible[item.id];
+          const showThisPass = isAdmin
+            ? isGlobalPasswordMasked
+              ? !!singlePasswordVisible[item.id]
+              : !singlePasswordVisible[item.id]
+            : false;
           const passType = showThisPass ? "text" : "password";
           const eyeIcon = showThisPass ? "🙈" : "👁️";
 
@@ -3058,15 +3775,21 @@
                 <input 
                   type="${passType}" 
                   class="tbl-input" 
-                  style="padding-right: 28px; letter-spacing: ${passType === 'password' ? '2px' : 'normal'};"
+                  style="padding-right: ${isAdmin ? "28px" : "10px"}; letter-spacing: ${passType === 'password' ? '2px' : 'normal'};"
                   value="${escapeHtml(item.password)}" 
                   placeholder="Mật khẩu..."
                   ${onchangePass}
                   ${readOnlyAttr}
                 />
-                <button type="button" class="btn-toggle-row-eye" onclick="toggleSinglePassword('${item.id}')" title="${showThisPass ? 'Ẩn mật khẩu' : 'Xem mật khẩu'}">
-                  ${eyeIcon}
-                </button>
+                ${
+                  isAdmin
+                    ? `
+                  <button type="button" class="btn-toggle-row-eye" onclick="toggleSinglePassword('${item.id}')" title="${showThisPass ? 'Ẩn mật khẩu' : 'Xem mật khẩu'}">
+                    ${eyeIcon}
+                  </button>
+                `
+                    : ""
+                }
               </div>
             </div>
 
@@ -3109,8 +3832,8 @@
                 ${onchangeUnlock}
                 ${readOnlyAttr}
               />
-              <button class="m-btn-copy" id="m-btn-copy-${item.id}" style="background: ${copyBtnGrad}; flex: ${isAdmin ? 'unset' : '1'};" onclick="copyCombo('${item.id}', this)">
-                📋 COPY
+              <button class="m-btn-copy ${isEmergencyLocked ? "btn-copy-locked" : ""}" id="m-btn-copy-${item.id}" style="background: ${isEmergencyLocked ? "rgba(239, 68, 68, 0.2)" : copyBtnGrad}; color: ${isEmergencyLocked ? "#fca5a5" : "#ffffff"} !important; ${isEmergencyLocked ? "border: 1px solid rgba(239, 68, 68, 0.4); cursor: not-allowed;" : ""} flex: ${isAdmin ? "unset" : "1"};" onclick="copyCombo('${item.id}', this)" title="${isEmergencyLocked ? "Hệ thống đang khóa khẩn cấp" : "Sao chép"}">
+                ${isEmergencyLocked ? "🔒 KHÓA" : "📋 COPY"}
               </button>
               ${
                 isAdmin
@@ -3132,17 +3855,30 @@
           return card;
         }
 
+        const weatherTrackHtml = `
+          <div class="rank-weather-track">
+            <span class="rank-drop d1">🍃</span>
+            <span class="rank-drop d2">🍂</span>
+            <span class="rank-drop d3">🍃</span>
+            <span class="rank-drop d4">🍂</span>
+            <span class="rank-drop d5">🍃</span>
+            <span class="rank-drop d6">🍂</span>
+            <span class="rank-drop d7">🍃</span>
+          </div>
+        `;
+
         // 1. HIỂN THỊ NHÓM "ĐÃ DÙNG GẦN ĐÂY" (Chỉ hiển thị khi bấm vào tab Đã Dùng)
         if (fRank === "recent" && recentAccounts.length > 0) {
           tableHtml += `
-            <tr class="acc-group-header-row" style="background: linear-gradient(90deg, rgba(14, 165, 233, 0.22), rgba(15, 23, 42, 0.95)); border-left: 4px solid #38bdf8;">
-              <td colspan="10" style="padding: 10px 14px; border-bottom: 2px solid #38bdf8; border-top: 1px solid rgba(56, 189, 248, 0.3); border-radius: 10px;">
-                <div style="display: flex; align-items: center; justify-content: space-between;">
-                  <span style="font-weight: 800; font-size: 0.95rem; color: #38bdf8; display: flex; align-items: center; gap: 8px;">
-                    <span>🕒</span> NHÓM: ĐÃ DÙNG GẦN ĐÂY
+            <tr class="acc-group-header-row" style="background: linear-gradient(90deg, rgba(99, 102, 241, 0.18), rgba(15, 23, 42, 0.95)); border-left: 3px solid #6366f1; --rank-accent: #6366f1;">
+              <td colspan="10" style="padding: 9px 14px; border-bottom: 1px solid rgba(99, 102, 241, 0.25); border-radius: 8px; position: relative; overflow: hidden;">
+                ${weatherTrackHtml}
+                <div style="display: flex; align-items: center; justify-content: space-between; position: relative; z-index: 4;">
+                  <span class="rank-group-title rank-title-recent" style="font-weight: 800; font-size: 0.92rem; display: flex; align-items: center; gap: 8px;">
+                    <span>🕒</span> <span class="rank-title-text">NHÓM: ĐÃ DÙNG GẦN ĐÂY</span>
                   </span>
                   <div style="display: flex; align-items: center; gap: 10px;">
-                    <span style="font-size: 0.8rem; color: #bae6fd; font-weight: 700; background: rgba(0,0,0,0.3); padding: 3px 10px; border-radius: 12px;">${recentAccounts.length} nick</span>
+                    <span style="font-size: 0.8rem; color: #c7d2fe; font-weight: 700; background: rgba(0,0,0,0.3); padding: 3px 10px; border-radius: 12px;">${recentAccounts.length} nick</span>
                     <button class="btn-reset-tag" onclick="clearAllRecent()" style="background: rgba(244, 63, 94, 0.2); border-color: rgba(244, 63, 94, 0.4); color: #fda4af;" title="Làm trống nhóm Đã dùng gần đây (vẫn giữ nguyên nick)">🧹 Dọn sạch nhóm</button>
                   </div>
                 </div>
@@ -3152,16 +3888,18 @@
 
           const recentBanner = document.createElement("div");
           recentBanner.className = "rank-group-banner";
-          recentBanner.style.borderLeftColor = "#38bdf8";
+          recentBanner.style.borderLeftColor = "#6366f1";
+          recentBanner.style.setProperty("--rank-accent", "#6366f1");
           recentBanner.style.background =
-            "linear-gradient(90deg, rgba(14, 165, 233, 0.22), rgba(15, 23, 42, 0.95))";
+            "linear-gradient(90deg, rgba(99, 102, 241, 0.22), rgba(15, 23, 42, 0.95))";
           recentBanner.innerHTML = `
-            <div class="rank-group-title" style="color: #38bdf8;">
+            ${weatherTrackHtml}
+            <div class="rank-group-title rank-title-recent" style="position: relative; z-index: 4;">
               <span>🕒</span>
-              <span>ĐÃ DÙNG GẦN ĐÂY</span>
+              <span class="rank-title-text">ĐÃ DÙNG GẦN ĐÂY</span>
             </div>
-            <div style="display: flex; align-items: center; gap: 8px;">
-              <span class="rank-group-count" style="color: #38bdf8;">${recentAccounts.length} nick</span>
+            <div style="display: flex; align-items: center; gap: 8px; position: relative; z-index: 4;">
+              <span class="rank-group-count" style="color: #a5b4fc;">${recentAccounts.length} nick</span>
               <button class="btn-reset-tag" onclick="clearAllRecent()" style="background: rgba(244, 63, 94, 0.2); border-color: rgba(244, 63, 94, 0.4); color: #fda4af;">🧹 Dọn</button>
             </div>
           `;
@@ -3175,16 +3913,30 @@
 
         // 2. HIỂN THỊ CÁC NHÓM RANK THƯỜNG (Khi fRank !== 'recent')
         if (fRank !== "recent") {
+          let renderedGroupCount = 0;
           sortedGroupKeys.forEach((key) => {
             const grp = groups[key];
             if (grp.items.length === 0) return;
 
+            if (renderedGroupCount > 0) {
+              tableHtml += `
+                <tr class="rank-group-divider-spacer">
+                  <td colspan="10" style="height: 14px; padding: 0; border: none; background: transparent;"></td>
+                </tr>
+              `;
+              const spacer = document.createElement("div");
+              spacer.style.height = "12px";
+              mobileWrapper.appendChild(spacer);
+            }
+            renderedGroupCount++;
+
             tableHtml += `
-              <tr class="acc-group-header-row" style="background: ${grp.config.bgGradient}; border-left: 4px solid ${grp.config.color};">
-                <td colspan="10" style="padding: 10px 14px; border-bottom: 2px solid ${grp.config.color}; border-top: 1px solid rgba(255,255,255,0.1); border-radius: 10px;">
-                  <div style="display: flex; align-items: center; justify-content: space-between;">
-                    <span style="font-weight: 800; font-size: 0.95rem; color: #fff; display: flex; align-items: center; gap: 8px;">
-                      <span>${grp.config.icon}</span> NHÓM RANK: <span class="badge ${grp.config.class}">${grp.config.name}</span>
+              <tr class="acc-group-header-row" style="background: ${grp.config.bgGradient}; border-left: 3px solid ${grp.config.color}; --rank-accent: ${grp.config.color};">
+                <td colspan="10" style="padding: 9px 14px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; position: relative; overflow: hidden;">
+                  ${weatherTrackHtml}
+                  <div style="display: flex; align-items: center; justify-content: space-between; position: relative; z-index: 4;">
+                    <span class="rank-group-title" style="font-weight: 800; font-size: 0.92rem; display: flex; align-items: center; gap: 8px;">
+                      <span>${grp.config.icon}</span> <span class="rank-title-text">NHÓM RANK:</span> <span class="badge ${grp.config.class}">${grp.config.name}</span>
                     </span>
                     <span style="font-size: 0.8rem; color: #cbd5e1; font-weight: 700; background: rgba(0,0,0,0.3); padding: 3px 10px; border-radius: 12px;">${grp.items.length} nick</span>
                   </div>
@@ -3195,13 +3947,15 @@
             const mobileBanner = document.createElement("div");
             mobileBanner.className = "rank-group-banner";
             mobileBanner.style.borderLeftColor = grp.config.color;
+            mobileBanner.style.setProperty("--rank-accent", grp.config.color);
             mobileBanner.style.background = grp.config.bgGradient;
             mobileBanner.innerHTML = `
-              <div class="rank-group-title" style="color: ${grp.config.color};">
+              ${weatherTrackHtml}
+              <div class="rank-group-title" style="position: relative; z-index: 4;">
                 <span>${grp.config.icon}</span>
                 <span class="badge ${grp.config.class}">${grp.config.name}</span>
               </div>
-              <span class="rank-group-count" style="color: #fff; background: rgba(0,0,0,0.3);">${grp.items.length} nick</span>
+              <span class="rank-group-count" style="color: #fff; background: rgba(0,0,0,0.3); position: relative; z-index: 4;">${grp.items.length} nick</span>
             `;
             mobileWrapper.appendChild(mobileBanner);
 
@@ -3215,12 +3969,53 @@
         tableHtml += `</tbody></table>`;
         desktopWrapper.innerHTML = tableHtml;
 
+        if (isEmergencyLocked) {
+          const bannerEl = document.createElement("div");
+          bannerEl.className = "emergency-banner";
+          bannerEl.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span style="font-size: 1.4rem; animation: pulseIcon 1.2s infinite; display: inline-block;">🚨</span>
+              <div>
+                <div style="font-weight: 800; font-size: 0.92rem; color: #fca5a5; letter-spacing: 0.3px;">HỆ THỐNG ĐANG KHÓA KHẨN CẤP</div>
+                <div style="font-size: 0.78rem; color: #cbd5e1; margin-top: 2px;">Toàn bộ chức năng sao chép tài khoản & mật khẩu đã bị tạm khóa để bảo vệ tài khoản.</div>
+              </div>
+            </div>
+            ${
+              isAdmin
+                ? `
+              <button class="btn btn-emergency is-locked" onclick="toggleEmergencyLock()" style="padding: 7px 14px; font-size: 0.78rem; white-space: nowrap;">
+                🔓 Mở Khóa Ngay
+              </button>
+            `
+                : `
+              <span style="font-size: 0.76rem; font-weight: 800; color: #fca5a5; background: rgba(0,0,0,0.4); padding: 4px 10px; border-radius: 12px; border: 1px solid rgba(239,68,68,0.3); white-space: nowrap;">
+                🔒 ĐÃ KHÓA SAO CHÉP
+              </span>
+            `
+            }
+          `;
+          displayArea.appendChild(bannerEl);
+        }
+
         displayArea.appendChild(desktopWrapper);
         displayArea.appendChild(mobileWrapper);
       }
 
       // COPY TK:MK
       window.copyCombo = function (id, btnEl = null) {
+        if (isEmergencyLocked) {
+          playSound("delete");
+          showNotice({
+            title: "Khóa Khẩn Cấp",
+            message:
+              "Hệ thống đang ở chế độ <b>Khóa Khẩn Cấp</b>!<br><br>Quản trị viên đã tạm khóa toàn bộ chức năng sao chép tài khoản và mật khẩu.",
+            icon: "🚨",
+            type: "danger",
+            onConfirm: isAdmin ? () => toggleEmergencyLock() : null,
+          });
+          return;
+        }
+
         const item = accounts.find((a) => a.id === id);
         if (!item) return;
 
@@ -3525,6 +4320,16 @@
             renderList();
           }
 
+          if (raw && typeof raw === "object" && raw.isEmergencyLocked !== undefined) {
+            const cloudLocked = !!raw.isEmergencyLocked;
+            if (cloudLocked !== isEmergencyLocked) {
+              isEmergencyLocked = cloudLocked;
+              localStorage.setItem("lq_emergency_locked", isEmergencyLocked ? "true" : "false");
+              updateAdminUI();
+              renderList();
+            }
+          }
+
           updateCloudUI("🟢", "Đám Mây Tự Động");
           if (!silent)
             showToast(`✅ Đã tải về ${accounts.length} nick từ đám mây!`);
@@ -3556,6 +4361,7 @@
           const payload = {
             accounts: accounts,
             updatedAt: Date.now(),
+            isEmergencyLocked: isEmergencyLocked,
           };
 
           const res = await fetch(FIREBASE_ENDPOINT, {
@@ -3699,7 +4505,60 @@
         );
       }
 
+      // HIỆU ỨNG ĐÁNH MÁY TIÊU ĐỀ THƯƠNG HIỆU (TYPEWRITER EFFECT)
+      function initBrandTypewriter() {
+        const textEl = document.getElementById("brand-typewriter-text");
+        if (!textEl) return;
+
+        const prefixText = "devsepa ";
+        const suffixText = "• AOV Manager";
+        const fullText = prefixText + suffixText;
+        const prefixLen = prefixText.length;
+        const totalLen = fullText.length;
+
+        let currentLen = totalLen;
+        let isDeleting = true;
+
+        function render(len) {
+          if (len === 0) {
+            textEl.innerHTML = "";
+          } else if (len <= prefixLen) {
+            textEl.textContent = fullText.slice(0, len);
+          } else {
+            const pre = fullText.slice(0, prefixLen);
+            const suf = fullText.slice(prefixLen, len);
+            textEl.innerHTML = `${pre}<span style="font-size: 0.82rem; font-weight: 700; color: #38bdf8;">${suf}</span>`;
+          }
+        }
+
+        function step() {
+          if (isDeleting) {
+            currentLen--;
+            render(currentLen);
+            if (currentLen === 0) {
+              isDeleting = false;
+              setTimeout(step, 600);
+              return;
+            }
+            setTimeout(step, 45);
+          } else {
+            currentLen++;
+            render(currentLen);
+            if (currentLen === totalLen) {
+              isDeleting = true;
+              setTimeout(step, 2800);
+              return;
+            }
+            setTimeout(step, 95);
+          }
+        }
+
+        // Chờ 2.5s ban đầu trước khi bắt đầu chu kỳ xóa - gõ lặp lại
+        setTimeout(step, 2500);
+      }
+
       // KHỞI CHẠY
+      initBrandTypewriter();
       updateSoundUI();
       updateAdminUI();
       updatePassToggleUI();
