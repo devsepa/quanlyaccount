@@ -1766,7 +1766,7 @@
             type="password"
             id="admin-pin-input"
             maxlength="10"
-            placeholder="Nhập mã PIN (Mặc định: 1234)..."
+            placeholder="Nhập mã PIN bảo mật..."
             style="
               text-align: center;
               font-size: 1.15rem;
@@ -1776,6 +1776,9 @@
             "
             onkeydown="if(event.key === 'Enter') checkAdminPin()"
           />
+          <div style="margin-top: 8px; text-align: right;">
+            <a href="javascript:void(0)" onclick="closePinModal(); changeAdminPin();" style="font-size: 0.75rem; color: #38bdf8; text-decoration: none;">⚙️ Đổi mã PIN</a>
+          </div>
         </div>
 
         <div style="display: flex; gap: 8px">
@@ -2004,11 +2007,41 @@
           playSound("delete");
           showNotice({
             title: "Sai Mã PIN",
-            message: `Mã PIN không đúng! (Mã mặc định là: <b>${ADMIN_PIN_DEFAULT}</b>)`,
+            message: "Mã PIN không chính xác! Vui lòng thử lại.",
             icon: "❌",
             type: "danger"
           });
         }
+      };
+
+      window.changeAdminPin = function () {
+        const currentPin =
+          localStorage.getItem("lq_admin_pin") || ADMIN_PIN_DEFAULT;
+        const oldInput = prompt("Nhập mã PIN hiện tại của bạn:");
+        if (oldInput === null) return;
+        if (oldInput.trim() !== currentPin) {
+          playSound("delete");
+          showNotice({
+            title: "Sai Mã PIN",
+            message: "Mã PIN hiện tại không chính xác!",
+            icon: "❌",
+            type: "danger",
+          });
+          return;
+        }
+        const newPin = prompt("Nhập mã PIN mới (từ 4 đến 10 số):");
+        if (newPin === null) return;
+        if (!newPin.trim() || newPin.trim().length < 4) {
+          showNotice({
+            title: "Mã PIN Quá Ngắn",
+            message: "Mã PIN mới phải có từ 4 ký tự trở lên!",
+            icon: "⚠️",
+          });
+          return;
+        }
+        localStorage.setItem("lq_admin_pin", newPin.trim());
+        playSound("success");
+        showToast("✅ Đã cập nhật mã PIN Quản Trị mới thành công!");
       };
 
       // ==========================================
