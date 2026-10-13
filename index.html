@@ -12,10 +12,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
     <style>
       :root {
-        --bg-main: #0b0f19;
-        --bg-surface: #121829;
-        --bg-card: rgba(20, 27, 45, 0.85);
-        --border-color: rgba(255, 255, 255, 0.08);
+        --bg-main: #090d16;
+        --bg-surface: #0f172a;
+        --bg-card: #0f172a;
+        --border-color: rgba(148, 163, 184, 0.12);
+        --border-subtle: rgba(255, 255, 255, 0.06);
         --border-focus: #6366f1;
 
         --text-main: #f8fafc;
@@ -23,18 +24,18 @@
         --text-muted: #64748b;
 
         --primary: #4f46e5;
-        --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-        --primary-glow: rgba(99, 102, 241, 0.35);
+        --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+        --primary-glow: rgba(99, 102, 241, 0.28);
 
-        /* 1. MÀU ĐỎ: DÀNH CHO BỊ BAN */
-        --ban-bg: rgba(220, 38, 38, 0.32);
-        --ban-bg-hover: rgba(220, 38, 38, 0.42);
-        --ban-border: #ef4444;
-        --ban-text: #fecaca;
+        /* 1. MÀU ĐỎ: DÀNH CHO BỊ BAN (Đỏ hồng sẫm lì, dịu mắt, không chói) */
+        --ban-bg: rgba(225, 29, 72, 0.15);
+        --ban-bg-hover: rgba(225, 29, 72, 0.24);
+        --ban-border: #f43f5e;
+        --ban-text: #fecdd3;
         
         /* 2. MÀU VÀNG CAM: DÀNH CHO BỊ TRÙNG LẶP */
-        --dup-bg: rgba(217, 119, 6, 0.32);
-        --dup-bg-hover: rgba(217, 119, 6, 0.42);
+        --dup-bg: rgba(217, 119, 6, 0.16);
+        --dup-bg-hover: rgba(217, 119, 6, 0.26);
         --dup-border: #f59e0b;
         --dup-text: #fef3c7;
 
@@ -65,71 +66,100 @@
         margin: 0 auto;
       }
 
-      /* TOPBAR HEADER */
+      /* TOPBAR HEADER (MODERN SLATE) */
       header {
         display: flex;
         justify-content: space-between;
         align-items: center;
         gap: 12px;
         margin-bottom: 14px;
-        padding: 12px 16px;
+        padding: 12px 18px;
         background: var(--bg-surface);
         border: 1px solid var(--border-color);
-        border-radius: 14px;
+        border-radius: 16px;
         flex-wrap: wrap;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
       }
 
       .header-brand {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 12px;
       }
 
-      .logo-icon {
-        font-size: 1.6rem;
+      .logo-box {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background: #020617;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+        font-size: 0.95rem;
+        box-shadow: 0 0 14px rgba(56, 189, 248, 0.35);
+        flex-shrink: 0;
+        overflow: hidden;
+        border: 1.5px solid rgba(56, 189, 248, 0.5);
+      }
+
+      .logo-box img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
       }
 
       header h1 {
-        font-size: 1.25rem;
+        font-size: 1.15rem;
         font-weight: 800;
         color: #fff;
         line-height: 1.2;
+      }
+
+      .header-sub {
+        font-size: 0.76rem;
+        color: var(--text-sub);
+        margin-top: 2px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
       }
 
       /* CHÚ THÍCH MÀU SẮC */
       .color-guide {
         display: flex;
         align-items: center;
-        gap: 10px;
-        font-size: 0.78rem;
-        background: rgba(11, 15, 25, 0.6);
-        padding: 5px 12px;
-        border-radius: 8px;
+        gap: 12px;
+        font-size: 0.76rem;
+        background: rgba(2, 6, 23, 0.6);
+        padding: 6px 14px;
+        border-radius: 10px;
         border: 1px solid var(--border-color);
       }
 
       .guide-item {
         display: inline-flex;
         align-items: center;
-        gap: 5px;
+        gap: 6px;
         font-weight: 700;
       }
 
       .dot {
-        width: 10px;
-        height: 10px;
+        width: 9px;
+        height: 9px;
         border-radius: 50%;
         display: inline-block;
       }
-      .dot-ban { background: #ef4444; box-shadow: 0 0 6px #ef4444; }
+      .dot-ban { background: #f43f5e; box-shadow: 0 0 6px #f43f5e; }
       .dot-dup { background: #f59e0b; box-shadow: 0 0 6px #f59e0b; }
       .dot-ok  { background: #10b981; }
 
-      .header-btns {
+      .header-action-group {
         display: flex;
-        gap: 6px;
-        flex-wrap: nowrap;
+        gap: 8px;
+        align-items: center;
       }
 
       /* NÚT THAO TÁC */
@@ -137,14 +167,14 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        gap: 5px;
+        gap: 6px;
         padding: 8px 14px;
-        border-radius: 8px;
-        border: none;
+        border-radius: 10px;
+        border: 1px solid transparent;
         font-weight: 700;
         font-size: 0.82rem;
         cursor: pointer;
-        transition: all 0.15s;
+        transition: all 0.15s ease;
         white-space: nowrap;
       }
 
@@ -156,51 +186,82 @@
         background: var(--primary-gradient);
         color: #fff;
         box-shadow: 0 4px 14px var(--primary-glow);
+        border: none;
       }
 
       .btn-primary:hover { opacity: 0.95; }
 
-      .btn-tool {
-        background: rgba(30, 41, 59, 0.8);
-        border: 1px solid var(--border-color);
+      .btn-cloud {
+        background: rgba(99, 102, 241, 0.15);
+        border: 1px solid rgba(99, 102, 241, 0.35);
+        color: #c7d2fe;
+      }
+
+      .btn-cloud:hover {
+        background: rgba(99, 102, 241, 0.28);
+        color: #fff;
+      }
+
+      .btn-tele {
+        background: rgba(30, 41, 59, 0.85);
+        border: 1px solid rgba(255, 255, 255, 0.1);
         color: #e2e8f0;
       }
 
-      .btn-tool:hover {
+      .btn-tele:hover {
         background: rgba(51, 65, 85, 0.95);
         color: #fff;
       }
 
-      /* KHU VỰC NHẬP NICK THU GỌN */
+      /* KHU VỰC NHẬP NICK (MODERN SLATE) */
       .add-box {
         background: var(--bg-surface);
         border: 1px solid var(--border-color);
-        border-radius: 12px;
+        border-radius: 16px;
         margin-bottom: 14px;
         overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
       }
 
       .add-box-header {
-        padding: 10px 14px;
-        background: rgba(15, 23, 42, 0.7);
+        padding: 11px 16px;
+        background: rgba(2, 6, 23, 0.5);
         display: flex;
         justify-content: space-between;
         align-items: center;
         cursor: pointer;
         user-select: none;
-        font-size: 0.85rem;
-        font-weight: 700;
-        color: #cbd5e1;
+        border-bottom: 1px solid var(--border-subtle);
+      }
+
+      .add-box-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .add-box-badge {
+        font-size: 0.8rem;
+        font-weight: 800;
+        color: #e2e8f0;
+        letter-spacing: 0.5px;
+      }
+
+      .add-box-hint {
+        font-size: 0.72rem;
+        color: var(--text-muted);
       }
 
       .collapse-arrow {
         white-space: nowrap;
-        font-size: 0.78rem;
+        font-size: 0.76rem;
         color: var(--text-muted);
+        font-weight: 700;
       }
 
       .add-box-content {
-        padding: 14px;
+        padding: 14px 16px;
         display: block;
       }
 
@@ -211,8 +272,16 @@
       .add-form-grid {
         display: grid;
         grid-template-columns: 2.2fr 0.9fr 0.9fr auto;
-        gap: 10px;
-        align-items: start;
+        gap: 12px;
+        align-items: end;
+      }
+
+      .add-form-grid label {
+        font-size: 0.76rem;
+        font-weight: 700;
+        color: var(--text-sub);
+        display: block;
+        margin-bottom: 5px;
       }
 
       @media (max-width: 820px) {
@@ -224,25 +293,26 @@
       textarea, input[type="text"], select {
         width: 100%;
         padding: 9px 12px;
-        background: rgba(11, 15, 25, 0.9);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 8px;
+        background: rgba(2, 6, 23, 0.7);
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        border-radius: 10px;
         color: #fff;
-        font-size: 0.9rem;
+        font-size: 0.88rem;
         outline: none;
-        transition: all 0.15s;
+        transition: all 0.15s ease;
       }
 
       textarea {
         resize: vertical;
-        min-height: 60px;
+        min-height: 64px;
         font-family: 'JetBrains Mono', monospace;
         line-height: 1.45;
       }
 
       textarea:focus, input:focus, select:focus {
         border-color: var(--border-focus);
-        box-shadow: 0 0 0 2px var(--primary-glow);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        background: #020617;
       }
 
       /* THANH TÌM KIẾM & BỘ LỌC (STICKY CỐ ĐỊNH TRÊN CẢ PC VÀ MOBILE) */
@@ -255,13 +325,13 @@
         justify-content: space-between;
         gap: 10px;
         margin-bottom: 14px;
-        background: rgba(18, 24, 41, 0.95);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        padding: 10px 14px;
-        border-radius: 12px;
-        border: 1px solid rgba(255, 255, 255, 0.12);
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        background: rgba(15, 23, 42, 0.88);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        padding: 10px 16px;
+        border-radius: 16px;
+        border: 1px solid rgba(148, 163, 184, 0.15);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
         flex-wrap: wrap;
       }
 
@@ -288,12 +358,12 @@
 
       .rank-nav-chip {
         flex-shrink: 0;
-        padding: 5px 11px;
-        border-radius: 20px;
+        padding: 5px 12px;
+        border-radius: 10px;
         font-size: 0.76rem;
         font-weight: 700;
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(2, 6, 23, 0.6);
+        border: 1px solid rgba(148, 163, 184, 0.15);
         color: var(--text-sub);
         cursor: pointer;
         transition: all 0.15s ease;
@@ -301,14 +371,15 @@
         user-select: none;
       }
       .rank-nav-chip:hover {
-        background: rgba(255, 255, 255, 0.1);
+        background: rgba(30, 41, 59, 0.8);
         color: #fff;
+        border-color: rgba(148, 163, 184, 0.3);
       }
       .rank-nav-chip.active {
         background: var(--primary-gradient);
         color: #fff;
         border-color: transparent;
-        box-shadow: 0 2px 8px var(--primary-glow);
+        box-shadow: 0 2px 10px var(--primary-glow);
       }
 
       /* MENU CHỌN RANK NHANH (DROPDOWN PICKER) KHI CLICK Ô RANK */
@@ -395,9 +466,9 @@
         display: block;
         background: var(--bg-surface);
         border: 1px solid var(--border-color);
-        border-radius: 14px;
+        border-radius: 16px;
         overflow-x: auto;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
       }
 
       .acc-table {
@@ -636,12 +707,12 @@
       .m-row-card {
         background: var(--bg-surface);
         border: 1px solid var(--border-color);
-        border-radius: 12px;
-        padding: 12px;
+        border-radius: 14px;
+        padding: 13px;
         display: flex;
         flex-direction: column;
         gap: 9px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
       }
 
       .m-row-card.is-banned {
@@ -763,18 +834,19 @@
           font-size: 1.05rem;
         }
 
-        /* 3 Nút trên Header ngắn gọn, không bị cắt chữ */
-        .header-btns {
+        /* 2 Nút trên Header cân đối trên mobile */
+        .header-action-group {
           width: 100%;
           display: grid;
-          grid-template-columns: 1.2fr 1fr 1fr;
-          gap: 6px;
-          margin-top: 6px;
+          grid-template-columns: 1fr 1fr;
+          gap: 8px;
+          margin-top: 8px;
         }
 
-        .header-btns .btn {
-          padding: 7px 6px;
-          font-size: 0.78rem;
+        .header-action-group .btn {
+          padding: 8px 10px;
+          font-size: 0.8rem;
+          justify-content: center;
         }
 
         /* Toolbar trên mobile: Tách làm 2 tầng thoáng đãng */
@@ -885,50 +957,60 @@
   </head>
   <body>
     <div class="app-layout">
-      <!-- TOPBAR HEADER -->
+      <!-- TOPBAR HEADER (MODERN SLATE) -->
       <header>
         <div class="header-brand">
-          <span class="logo-icon">⚔️</span>
+          <div class="logo-box">
+            <img src="logo.png" id="header-logo-img" alt="devsepa" onerror="if(this.src.indexOf('logo.jpg')===-1){this.src='logo.jpg';}else{this.style.display='none';document.getElementById('header-logo-fallback').style.display='flex';}" />
+            <span id="header-logo-fallback" style="display: none; width: 100%; height: 100%; align-items: center; justify-content: center; font-size: 1.1rem;">🔔</span>
+          </div>
           <div>
-            <h1>AOV ACCOUNTS</h1>
+            <h1>devsepa <span style="font-size: 0.82rem; font-weight: 700; color: #38bdf8;">• AOV Manager</span></h1>
+            <div class="header-sub">
+              <span id="header-stat-summary">Hệ thống quản lý nick Liên Quân</span>
+            </div>
           </div>
         </div>
 
         <!-- BẢNG CHÚ THÍCH MÀU SẮC (CHỈ HIỆN TRÊN MÁY TÍNH) -->
         <div class="color-guide">
-          <span class="guide-item" style="color: #f87171;"><span class="dot dot-ban"></span> Đỏ: BỊ BAN</span>
-          <span class="guide-item" style="color: #fbbf24;"><span class="dot dot-dup"></span> Cam: BỊ TRÙNG</span>
-          <span class="guide-item" style="color: #34d399;"><span class="dot dot-ok"></span> Tối: Hoạt động</span>
+          <span class="guide-item" style="color: #fca5a5;"><span class="dot dot-ban"></span> Đỏ: BỊ BAN</span>
+          <span class="guide-item" style="color: #fcd34d;"><span class="dot dot-dup"></span> Cam: BỊ TRÙNG</span>
+          <span class="guide-item" style="color: #6ee7b7;"><span class="dot dot-ok"></span> Tối: Hoạt động</span>
         </div>
 
-        <button class="btn btn-tool" id="btn-open-cloud" style="display: inline-flex; align-items: center; gap: 5px; font-weight: 700; background: rgba(99, 102, 241, 0.2); border-color: rgba(99, 102, 241, 0.4); color: #c7d2fe;">
-          ☁️ Đồng Bộ PC & ĐT
-        </button>
-
-        <button class="btn btn-tool" id="btn-open-tele" style="display: inline-flex; align-items: center; gap: 5px; font-weight: 700;">
-          ✈️ Báo Telegram
-        </button>
+        <div class="header-action-group">
+          <button class="btn btn-cloud" id="btn-open-cloud">
+            <span>☁️</span> Đồng Bộ Cloud
+          </button>
+          <button class="btn btn-tele" id="btn-open-tele">
+            <span>✈️</span> Telegram Bot
+          </button>
+        </div>
 
         <input type="file" id="file-import" accept=".json" style="display: none" />
       </header>
 
-      <!-- KHUNG NHẬP LIỆU GỌN GÀNG -->
+      <!-- KHUNG NHẬP LIỆU GỌN GÀNG (MODERN SLATE) -->
       <div class="add-box" id="input-container">
         <div class="add-box-header" id="collapse-toggle">
-          <span>📝 Nhập tài khoản (Bấm để ẩn / hiện)</span>
+          <div class="add-box-title">
+            <span class="add-box-badge">➕ THÊM TÀI KHOẢN MỚI</span>
+            <span class="add-box-hint">(Dán danh sách tk:mk bên dưới)</span>
+          </div>
           <span id="collapse-arrow" class="collapse-arrow">▲ Thu gọn</span>
         </div>
         <div class="add-box-content" id="collapse-content">
           <div class="add-form-grid">
             <div>
-              <label style="font-size: 0.78rem; color: var(--text-sub); display: block; margin-bottom: 5px;">Dán tk:mk hoặc tk|mk hoặc tk/mk (mỗi nick 1 dòng):</label>
+              <label>Dán tk:mk hoặc tk|mk (mỗi dòng 1 nick):</label>
               <textarea
                 id="rawInput"
                 placeholder="a97truong:x1n3mdung&#10;tunglamspr1|Dunghoa1103"
               ></textarea>
             </div>
             <div>
-              <label style="font-size: 0.78rem; color: var(--text-sub); display: block; margin-bottom: 5px;">Mở BAN (dd/MM - chỉ nhập số):</label>
+              <label>Mở BAN (dd/MM - chỉ nhập số):</label>
               <input 
                 type="text" 
                 id="defaultUnlock" 
@@ -940,19 +1022,19 @@
               />
             </div>
             <div>
-              <label style="font-size: 0.78rem; color: var(--text-sub); display: block; margin-bottom: 5px;">Rank (BK, KC, TA, CT, DCT):</label>
+              <label>Rank (chọn nhanh hoặc gõ):</label>
               <input 
                 type="text" 
                 id="defaultRank" 
-                placeholder="Ví dụ: TA3, CT..." 
+                placeholder="BK, KC, TA, CT, DCT..." 
                 maxlength="15"
                 style="text-transform: uppercase;"
               />
             </div>
             <div>
-              <label style="opacity: 0; font-size: 0.78rem; display: block; margin-bottom: 5px;">Thao tác</label>
+              <label style="opacity: 0;">Thao tác</label>
               <button class="btn btn-primary" id="btn-add" style="height: 40px; width: 100%; padding: 0 16px;">
-                ➕ Thêm Ngay
+                ➕ Thêm Nick
               </button>
             </div>
           </div>
@@ -1513,11 +1595,21 @@
           if (cnt > 1) dupCount += cnt;
         });
 
+        let banCount = 0;
+        accounts.forEach(a => {
+          if (checkBanStatus(a.unlockDate).isBanned) banCount++;
+        });
+
         statCount.textContent = `${accounts.length} nick`;
         if (dupCount > 0) {
           statDup.textContent = `(⚠️ ${dupCount} trùng)`;
         } else {
           statDup.textContent = "";
+        }
+
+        const headerStatSummary = document.getElementById("header-stat-summary");
+        if (headerStatSummary) {
+          headerStatSummary.innerHTML = `${accounts.length} nick • <span style="color: #f59e0b; font-weight: 700;">${dupCount} trùng</span> • <span style="color: #f43f5e; font-weight: 700;">${banCount} ban</span>`;
         }
 
         displayArea.innerHTML = "";
