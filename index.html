@@ -2764,7 +2764,7 @@
       // TÍNH NĂNG ĐỒNG BỘ CLOUD FIREBASE (PC & MOBILE DÙNG CHUNG)
       // ==========================================
       const FIREBASE_DB_URL = "https://aopvman-default-rtdb.firebaseio.com";
-      const FIREBASE_ENDPOINT = `${FIREBASE_DB_URL}/accounts.json`;
+      const FIREBASE_ENDPOINT = `${FIREBASE_DB_URL}/app_data.json`;
 
       const cloudModal = document.getElementById("cloud-modal");
       const btnOpenCloud = document.getElementById("btn-open-cloud");
@@ -2795,49 +2795,57 @@
             updateCloudUI("⚠️", "Lỗi Cloud");
             return;
           }
-          const data = await res.json();
-          let cloudAccounts = [];
-          if (Array.isArray(data)) {
-            cloudAccounts = data;
-          } else if (data && typeof data === "object") {
-            cloudAccounts = Object.values(data);
-          }
-
-          if (cloudAccounts.length > 0) {
-            accounts = cloudAccounts
-              .filter((a) => a && typeof a === "object")
-              .map((a) => ({
-                id:
-                  a.id ||
-                  Date.now().toString() +
-                    Math.random().toString(36).substr(2, 5),
-                username: String(a.username || ""),
-                password: String(a.password || ""),
-                rank: String(a.rank || ""),
-                uyTin:
-                  a.uyTin !== undefined && a.uyTin !== null
-                    ? String(a.uyTin)
-                    : "",
-                date: a.date || getTodayFormatted(),
-                unlockDate: String(a.unlockDate || ""),
-                lastUsed: a.lastUsed || "",
-                lastUsedTime: Number(a.lastUsedTime) || 0,
-                useCount: Number(a.useCount) || 0,
-                inRecent: a.inRecent !== undefined ? a.inRecent : undefined,
-              }));
-
-            localStorage.setItem("lq_accounts", JSON.stringify(accounts));
-            localStorage.setItem("lq_updated_at", Date.now().toString());
-            renderList();
-            updateCloudUI("🟢", "Đám Mây Tự Động");
-            if (!silent)
-              showToast(`✅ Đã tải về ${accounts.length} nick từ đám mây!`);
-          } else if (data === null) {
+          const raw = await res.json();
+          if (raw === null) {
+            // Firebase hoàn toàn trống, nếu máy này có sẵn nick thì đẩy lên lần đầu
             if (accounts.length > 0) {
               await pushToCloud(true);
             }
             updateCloudUI("🟢", "Đám Mây Tự Động");
+            return;
           }
+
+          let cloudAccounts = [];
+          if (Array.isArray(raw)) {
+            cloudAccounts = raw;
+          } else if (raw && Array.isArray(raw.accounts)) {
+            cloudAccounts = raw.accounts;
+          } else if (raw && typeof raw.accounts === "object") {
+            cloudAccounts = Object.values(raw.accounts);
+          }
+
+          const normalized = cloudAccounts
+            .filter((a) => a && typeof a === "object")
+            .map((a) => ({
+              id:
+                a.id ||
+                Date.now().toString() +
+                  Math.random().toString(36).substr(2, 5),
+              username: String(a.username || ""),
+              password: String(a.password || ""),
+              rank: String(a.rank || ""),
+              uyTin:
+                a.uyTin !== undefined && a.uyTin !== null
+                  ? String(a.uyTin)
+                  : "",
+              date: a.date || getTodayFormatted(),
+              unlockDate: String(a.unlockDate || ""),
+              lastUsed: a.lastUsed || "",
+              lastUsedTime: Number(a.lastUsedTime) || 0,
+              useCount: Number(a.useCount) || 0,
+              inRecent: a.inRecent !== undefined ? a.inRecent : undefined,
+            }));
+
+          // Đồng bộ nếu danh sách từ Cloud khác danh sách trên máy (áp dụng cả khi Cloud đã xoá hết nick về 0)
+          if (JSON.stringify(normalized) !== JSON.stringify(accounts)) {
+            accounts = normalized;
+            localStorage.setItem("lq_accounts", JSON.stringify(accounts));
+            renderList();
+          }
+
+          updateCloudUI("🟢", "Đám Mây Tự Động");
+          if (!silent)
+            showToast(`✅ Đã tải về ${accounts.length} nick từ đám mây!`);
         } catch (e) {
           console.warn("Lỗi pullFromCloud:", e);
           updateCloudUI("⚠️", "Đám Mây Tự Động");
@@ -2863,10 +2871,15 @@
         updateCloudUI("⏳", "Đang lưu...");
 
         try {
+          const payload = {
+            accounts: accounts,
+            updatedAt: Date.now(),
+          };
+
           const res = await fetch(FIREBASE_ENDPOINT, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(accounts),
+            body: JSON.stringify(payload),
           });
 
           if (res.ok) {
@@ -2919,23 +2932,8 @@
         try {
           if (typeof EventSource !== "undefined") {
             const es = new EventSource(FIREBASE_ENDPOINT);
-            es.addEventListener("put", (e) => {
-              try {
-                const parsed = JSON.parse(e.data);
-                if (parsed && parsed.path === "/" && Array.isArray(parsed.data)) {
-                  const newAccounts = parsed.data.filter(
-                    (a) => a && typeof a === "object",
-                  );
-                  if (JSON.stringify(newAccounts) !== JSON.stringify(accounts)) {
-                    accounts = newAccounts;
-                    localStorage.setItem("lq_accounts", JSON.stringify(accounts));
-                    renderList();
-                    updateCloudUI("🟢", "Đám Mây Tự Động");
-                  }
-                } else if (parsed && parsed.path && parsed.path !== "/") {
-                  pullFromCloud(true);
-                }
-              } catch (err) {}
+            es.addEventListener("put", () => {
+              pullFromCloud(true);
             });
             es.addEventListener("patch", () => {
               pullFromCloud(true);
