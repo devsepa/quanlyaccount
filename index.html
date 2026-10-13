@@ -1563,6 +1563,26 @@
           <b>tự động lưu lên Firebase</b> tức thì.<br />
           • Bất kỳ ai bấm SAO CHÉP nick sẽ hiện giờ dùng công khai cho tất cả mọi người cùng thấy để tránh vào trùng nick!
         </div>
+
+        <!-- KHỐI SAO LƯU NGẦM TỰ ĐỘNG & KHÔI PHỤC -->
+        <div style="margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.08);">
+          <div style="font-size: 0.82rem; font-weight: 800; color: #38bdf8; display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+            <span style="display: flex; align-items: center; gap: 6px;">🛡️ Bản Sao Lưu Ngầm (Tự Động)</span>
+            <span id="auto-backup-badge" style="font-size: 0.72rem; color: #94a3b8; font-weight: 600;">Chưa có</span>
+          </div>
+          <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+            <button class="btn btn-tool" id="btn-restore-auto-backup" onclick="restoreFromAutoBackup()" style="flex: 1; padding: 8px; font-size: 0.78rem;">
+              🔄 Cứu Dữ Liệu Ngầm
+            </button>
+            <button class="btn btn-tool" onclick="exportBackupFile()" style="flex: 1; padding: 8px; font-size: 0.78rem;">
+              💾 Tải File .JSON
+            </button>
+          </div>
+          <button class="btn btn-tool" onclick="document.getElementById('file-import-json').click()" style="width: 100%; padding: 7px 10px; font-size: 0.76rem; color: #94a3b8;">
+            📥 Khôi Phục Từ File .JSON Trên Máy
+          </button>
+          <input type="file" id="file-import-json" accept=".json" style="display: none;" onchange="importBackupFile(this)" />
+        </div>
       </div>
     </div>
 
@@ -1799,6 +1819,7 @@
       // ĐIỀU KHIỂN CÁC MODAL (TOÀN CỤC)
       window.openCloudModal = function () {
         const m = document.getElementById("cloud-modal");
+        updateAutoBackupUI();
         if (m) m.classList.add("show");
       };
       window.closeCloudModal = function () {
@@ -2452,7 +2473,185 @@
       function saveData() {
         localStorage.setItem("lq_accounts", JSON.stringify(accounts));
         localStorage.setItem("lq_updated_at", Date.now().toString());
+        if (accounts && accounts.length > 0) {
+          createAutoSnapshot();
+        }
       }
+
+      // ==========================================
+      // CƠ CHẾ SAO LƯU & CỨU DỮ LIỆU NGẦM (AUTO SNAPSHOT)
+      // ==========================================
+      function createAutoSnapshot() {
+        if (!accounts || accounts.length === 0) return;
+        try {
+          const now = new Date();
+          const hh = String(now.getHours()).padStart(2, "0");
+          const min = String(now.getMinutes()).padStart(2, "0");
+          const dd = String(now.getDate()).padStart(2, "0");
+          const mm = String(now.getMonth() + 1).padStart(2, "0");
+          const timeStr = `${hh}:${min} - ${dd}/${mm}`;
+
+          const snapshot = {
+            time: timeStr,
+            timestamp: Date.now(),
+            count: accounts.length,
+            data: accounts,
+          };
+          localStorage.setItem("lq_auto_backup", JSON.stringify(snapshot));
+          updateAutoBackupUI();
+        } catch (e) {
+          console.warn("Lỗi lưu auto snapshot:", e);
+        }
+      }
+
+      function getAutoSnapshot() {
+        try {
+          const raw = localStorage.getItem("lq_auto_backup");
+          if (!raw) return null;
+          const parsed = JSON.parse(raw);
+          if (parsed && Array.isArray(parsed.data) && parsed.data.length > 0) {
+            return parsed;
+          }
+        } catch (e) {}
+        return null;
+      }
+
+      function updateAutoBackupUI() {
+        const badge = document.getElementById("auto-backup-badge");
+        const btnRestore = document.getElementById("btn-restore-auto-backup");
+        const snap = getAutoSnapshot();
+        if (snap) {
+          if (badge) badge.textContent = `${snap.count} nick (${snap.time})`;
+          if (btnRestore) btnRestore.disabled = false;
+        } else {
+          if (badge) badge.textContent = "Chưa có bản lưu";
+          if (btnRestore) btnRestore.disabled = true;
+        }
+      }
+
+      window.restoreFromAutoBackup = function () {
+        const snap = getAutoSnapshot();
+        if (!snap) {
+          showNotice({
+            title: "Không Có Bản Sao Lưu",
+            message: "Hệ thống chưa tìm thấy bản sao lưu ngầm nào trên máy!",
+            icon: "ℹ️",
+          });
+          return;
+        }
+
+        showNotice({
+          title: "Khôi Phục Dữ Liệu Ngầm",
+          message: `Bạn có muốn khôi phục <b>${snap.count} nick</b> từ bản sao lưu lúc <b>${snap.time}</b> không?<br><small style='color:#94a3b8;'>Sau khi khôi phục, danh sách sẽ tự động đồng bộ lại lên Firebase.</small>`,
+          icon: "🛡️",
+          type: "confirm",
+          onConfirm: () => {
+            accounts = snap.data;
+            saveData();
+            renderList();
+            triggerAutoSync();
+            playSound("success");
+            showToast(`🛡️ Đã khôi phục thành công ${snap.count} nick!`);
+            closeCloudModal();
+          },
+        });
+      };
+
+      window.exportBackupFile = function () {
+        if (!accounts || accounts.length === 0) {
+          showToast("Danh sách đang trống, không có dữ liệu để tải!");
+          return;
+        }
+        try {
+          const now = new Date();
+          const dStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+          const backupData = {
+            exportDate: now.toISOString(),
+            accountsCount: accounts.length,
+            accounts: accounts,
+          };
+          const blob = new Blob([JSON.stringify(backupData, null, 2)], {
+            type: "application/json",
+          });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `backup_nick_lienquan_${dStr}.json`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+          playSound("success");
+          showToast(`💾 Đã tải file sao lưu (${accounts.length} nick)!`);
+        } catch (e) {
+          console.error(e);
+        }
+      };
+
+      window.importBackupFile = function (fileInput) {
+        const file = fileInput.files && fileInput.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          try {
+            const parsed = JSON.parse(e.target.result);
+            let importedList = [];
+            if (Array.isArray(parsed)) {
+              importedList = parsed;
+            } else if (parsed && Array.isArray(parsed.accounts)) {
+              importedList = parsed.accounts;
+            }
+            if (!importedList || importedList.length === 0) {
+              showNotice({
+                title: "File Không Hợp Lệ",
+                message: "Không tìm thấy danh sách tài khoản hợp lệ trong file này!",
+                icon: "❌",
+              });
+              return;
+            }
+            showNotice({
+              title: "Xác Nhận Khôi Phục File",
+              message: `Tìm thấy <b>${importedList.length} nick</b> trong file. Bạn có muốn nạp vào danh sách và đồng bộ lên Firebase không?`,
+              icon: "📥",
+              type: "confirm",
+              onConfirm: () => {
+                accounts = importedList.map((a) => ({
+                  id:
+                    a.id ||
+                    Date.now().toString() +
+                      Math.random().toString(36).substr(2, 5),
+                  username: String(a.username || ""),
+                  password: String(a.password || ""),
+                  rank: String(a.rank || ""),
+                  uyTin:
+                    a.uyTin !== undefined && a.uyTin !== null
+                      ? String(a.uyTin)
+                      : "",
+                  date: a.date || getTodayFormatted(),
+                  unlockDate: String(a.unlockDate || ""),
+                  lastUsed: a.lastUsed || "",
+                  lastUsedTime: Number(a.lastUsedTime) || 0,
+                  useCount: Number(a.useCount) || 0,
+                }));
+                saveData();
+                renderList();
+                triggerAutoSync();
+                playSound("success");
+                showToast(`✅ Đã khôi phục ${accounts.length} nick từ file!`);
+                closeCloudModal();
+              },
+            });
+          } catch (err) {
+            showNotice({
+              title: "Lỗi Đọc File",
+              message: "File JSON bị lỗi cấu trúc, vui lòng kiểm tra lại!",
+              icon: "❌",
+            });
+          }
+          fileInput.value = "";
+        };
+        reader.readAsText(file);
+      };
 
       window.updateField = function (id, field, value) {
         const item = accounts.find((a) => a.id === id);
@@ -2531,6 +2730,36 @@
             `;
             return;
           }
+        }
+
+        // Nếu danh sách hoàn toàn trống
+        if (accounts.length === 0) {
+          const snap = getAutoSnapshot();
+          let restoreHtml = "";
+          if (snap) {
+            restoreHtml = `
+              <div style="margin-top: 18px; padding: 16px; background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.35); border-radius: 12px; max-width: 440px; margin-left: auto; margin-right: auto; text-align: center;">
+                <div style="font-size: 0.92rem; font-weight: 800; color: #38bdf8; margin-bottom: 6px; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                  <span>🛡️</span> Phát Hiện Bản Sao Lưu Ngầm
+                </div>
+                <div style="font-size: 0.8rem; color: #cbd5e1; margin-bottom: 14px; line-height: 1.45;">
+                  Hệ thống đã tự động lưu lại <b>${snap.count} tài khoản</b> (lúc ${snap.time}). Bạn có muốn cứu lại toàn bộ nick không?
+                </div>
+                <button class="btn btn-primary" onclick="restoreFromAutoBackup()" style="width: 100%; padding: 10px 16px; font-size: 0.88rem; font-weight: 800; justify-content: center;">
+                  🔄 Cứu Dữ Liệu Ngay (${snap.count} Nick)
+                </button>
+              </div>
+            `;
+          }
+          displayArea.innerHTML = `
+            <div style="text-align: center; color: var(--text-muted); padding: 50px 20px; background: var(--bg-surface); border-radius: 14px; border: 1px solid var(--border-color);">
+              <div style="font-size: 2.2rem; margin-bottom: 10px;">📦</div>
+              <div style="font-weight: 700; font-size: 1.05rem; color: #fff; margin-bottom: 6px;">Danh sách tài khoản đang trống</div>
+              <div style="font-size: 0.85rem; color: #94a3b8;">Chưa có tài khoản nào được lưu trên hệ thống.</div>
+              ${restoreHtml}
+            </div>
+          `;
+          return;
         }
 
         const filtered = accounts.filter((a) => {
@@ -3257,6 +3486,9 @@
           if (JSON.stringify(normalized) !== JSON.stringify(accounts)) {
             accounts = normalized;
             localStorage.setItem("lq_accounts", JSON.stringify(accounts));
+            if (accounts.length > 0) {
+              createAutoSnapshot();
+            }
             renderList();
           }
 
@@ -3438,6 +3670,10 @@
       updateSoundUI();
       updateAdminUI();
       updatePassToggleUI();
+      if (accounts && accounts.length > 0) {
+        createAutoSnapshot();
+      }
+      updateAutoBackupUI();
       renderList();
       pullFromCloud(true);
       initFirebaseRealtimeListener();
