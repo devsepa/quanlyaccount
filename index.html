@@ -498,6 +498,46 @@
         white-space: nowrap;
       }
 
+      /* NÚT XEM PASS TRONG TỪNG DÒNG */
+      .btn-toggle-row-eye {
+        position: absolute;
+        right: 6px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 0.85rem;
+        padding: 4px;
+        opacity: 0.65;
+        transition: opacity 0.2s, transform 0.15s;
+        user-select: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #94a3b8;
+      }
+      .btn-toggle-row-eye:hover {
+        opacity: 1;
+        transform: scale(1.15);
+        color: #fff;
+      }
+
+      /* NÚT ADMIN & ÂM THANH TRÊN HEADER */
+      .btn-admin-glow {
+        background: linear-gradient(135deg, rgba(234, 179, 8, 0.2), rgba(245, 158, 11, 0.25)) !important;
+        border: 1px solid #eab308 !important;
+        color: #fde047 !important;
+        box-shadow: 0 0 12px rgba(234, 179, 8, 0.25);
+      }
+      .btn-guest-glow {
+        background: rgba(2, 6, 23, 0.6) !important;
+        border: 1px solid rgba(148, 163, 184, 0.2) !important;
+        color: #94a3b8 !important;
+      }
+      .btn-sound-muted {
+        opacity: 0.6;
+        filter: grayscale(0.8);
+      }
+
       /* ========================================================
          BẢNG MÁY TÍNH (> 820px) - MẪU 1 VỚI CÁCH DÒNG NHỎ (ROW SPACING)
          ======================================================== */
@@ -1217,6 +1257,25 @@
 
         <div class="header-action-group">
           <button
+            class="btn btn-tool"
+            id="btn-toggle-sound"
+            onclick="toggleSound()"
+            title="Bật/Tắt âm thanh hiệu ứng"
+            style="padding: 8px 12px; font-size: 0.88rem;"
+          >
+            <span id="sound-icon">🔊</span>
+          </button>
+          <button
+            class="btn btn-tool"
+            id="btn-toggle-admin"
+            onclick="toggleAdmin()"
+            title="Chuyển đổi quyền Quản trị / Khách"
+            style="padding: 8px 12px; font-size: 0.82rem; font-weight: 700; gap: 6px;"
+          >
+            <span id="admin-icon">👑</span>
+            <span id="admin-text">Quản Trị</span>
+          </button>
+          <button
             class="btn btn-cloud"
             id="btn-open-cloud"
             onclick="openCloudModal()"
@@ -1313,9 +1372,9 @@
       </div>
 
       <!-- THANH ĐIỀU HƯỚNG RANK (STICKY CỐ ĐỊNH) -->
-      <div class="toolbar">
+      <div class="toolbar" style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
         <!-- THANH CHUYỂN NHANH ĐẾN TỪNG RANK (CUỘN NGANG TIỆN DỤNG) -->
-        <div class="quick-rank-nav" id="quick-rank-nav">
+        <div class="quick-rank-nav" id="quick-rank-nav" style="flex: 1;">
           <span class="rank-nav-chip active" data-rank="all">Tất Cả</span>
           <span
             class="rank-nav-chip chip-recent"
@@ -1330,6 +1389,15 @@
           <span class="rank-nav-chip" data-rank="DCT">👑 DCT</span>
           <span class="rank-nav-chip" data-rank="KHAC">Khác</span>
         </div>
+        <button
+          class="rank-nav-chip"
+          id="btn-toggle-pass-all"
+          onclick="toggleAllPasswordVisibility()"
+          title="Ẩn hoặc hiện mật khẩu trên toàn bộ danh sách"
+          style="flex-shrink: 0; display: inline-flex; align-items: center; gap: 5px; border-color: rgba(148, 163, 184, 0.35);"
+        >
+          <span id="pass-toggle-icon">👁️</span> <span id="pass-toggle-text">Hiện Pass</span>
+        </button>
       </div>
 
       <!-- VÙNG HIỂN THỊ DANH SÁCH -->
@@ -1624,6 +1692,91 @@
       </div>
     </div>
 
+    <!-- MODAL NHẬP MÃ PIN QUẢN TRỊ -->
+    <div id="pin-modal" class="modal-overlay">
+      <div class="modal-card" style="max-width: 360px; text-align: center">
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+          "
+        >
+          <div
+            style="
+              font-weight: 800;
+              font-size: 1.15rem;
+              color: #fff;
+              display: flex;
+              align-items: center;
+              gap: 8px;
+            "
+          >
+            <span>👑</span> Mở Khóa Quản Trị
+          </div>
+          <button
+            onclick="closePinModal()"
+            style="
+              background: none;
+              border: none;
+              color: #94a3b8;
+              font-size: 1.2rem;
+              cursor: pointer;
+            "
+          >
+            ✕
+          </button>
+        </div>
+
+        <p
+          style="
+            font-size: 0.8rem;
+            color: #94a3b8;
+            margin-bottom: 14px;
+            line-height: 1.45;
+            text-align: left;
+          "
+        >
+          Nhập mã PIN để mở quyền <b>Thêm, Sửa và Xóa nick</b>. Bạn bè không có mã PIN sẽ chỉ được xem và sao chép.
+        </p>
+
+        <div style="margin-bottom: 14px">
+          <input
+            type="password"
+            id="admin-pin-input"
+            maxlength="10"
+            placeholder="Nhập mã PIN (Mặc định: 1234)..."
+            style="
+              text-align: center;
+              font-size: 1.15rem;
+              letter-spacing: 4px;
+              font-weight: 800;
+              padding: 10px;
+            "
+            onkeydown="if(event.key === 'Enter') checkAdminPin()"
+          />
+        </div>
+
+        <div style="display: flex; gap: 8px">
+          <button
+            class="btn btn-tool"
+            onclick="closePinModal()"
+            style="flex: 1; padding: 10px"
+          >
+            Hủy Bỏ
+          </button>
+          <button
+            class="btn btn-primary"
+            onclick="checkAdminPin()"
+            style="flex: 1; padding: 10px"
+          >
+            🔓 Mở Khóa
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- MODAL THÔNG BÁO -->
     <div id="custom-modal" class="modal-overlay">
       <div class="modal-card">
@@ -1660,6 +1813,210 @@
         const m = document.getElementById("tele-modal");
         if (m) m.classList.remove("show");
       };
+      window.openPinModal = function () {
+        const m = document.getElementById("pin-modal");
+        const pinInput = document.getElementById("admin-pin-input");
+        if (pinInput) pinInput.value = "";
+        if (m) m.classList.add("show");
+        setTimeout(() => pinInput && pinInput.focus(), 200);
+      };
+      window.closePinModal = function () {
+        const m = document.getElementById("pin-modal");
+        if (m) m.classList.remove("show");
+      };
+
+      const pinModal = document.getElementById("pin-modal");
+      if (pinModal) {
+        pinModal.addEventListener("click", (e) => {
+          if (e.target === pinModal) closePinModal();
+        });
+      }
+
+      // ==========================================
+      // HỆ THỐNG ÂM THANH ESPORTS (WEB AUDIO API)
+      // ==========================================
+      let soundEnabled = localStorage.getItem("lq_sound_enabled") !== "false";
+      let audioCtx = null;
+
+      function getAudioContext() {
+        if (!audioCtx) {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (AudioContextClass) audioCtx = new AudioContextClass();
+        }
+        if (audioCtx && audioCtx.state === "suspended") {
+          audioCtx.resume();
+        }
+        return audioCtx;
+      }
+
+      function playSound(type) {
+        if (!soundEnabled) return;
+        try {
+          const ctx = getAudioContext();
+          if (!ctx) return;
+          const now = ctx.currentTime;
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+
+          if (type === "copy") {
+            // Tiếng bíp pha lê Esports cyberpunk (880Hz -> 1320Hz)
+            osc.type = "sine";
+            osc.frequency.setValueAtTime(880, now);
+            osc.frequency.exponentialRampToValueAtTime(1320, now + 0.08);
+            gain.gain.setValueAtTime(0.2, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+            osc.start(now);
+            osc.stop(now + 0.12);
+          } else if (type === "success") {
+            // Tiếng thành công hòa âm thăng hoa
+            osc.type = "triangle";
+            osc.frequency.setValueAtTime(523.25, now);
+            osc.frequency.setValueAtTime(659.25, now + 0.07);
+            osc.frequency.setValueAtTime(783.99, now + 0.14);
+            gain.gain.setValueAtTime(0.22, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+            osc.start(now);
+            osc.stop(now + 0.25);
+          } else if (type === "delete") {
+            // Tiếng sub-bass trầm khi xóa
+            osc.type = "sine";
+            osc.frequency.setValueAtTime(320, now);
+            osc.frequency.exponentialRampToValueAtTime(140, now + 0.12);
+            gain.gain.setValueAtTime(0.25, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
+            osc.start(now);
+            osc.stop(now + 0.14);
+          } else if (type === "click") {
+            // Tiếng click nảy nhẹ
+            osc.type = "triangle";
+            osc.frequency.setValueAtTime(600, now);
+            gain.gain.setValueAtTime(0.12, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+            osc.start(now);
+            osc.stop(now + 0.04);
+          }
+        } catch (e) {}
+      }
+
+      function updateSoundUI() {
+        const soundIcon = document.getElementById("sound-icon");
+        const btnToggleSound = document.getElementById("btn-toggle-sound");
+        if (soundIcon) soundIcon.textContent = soundEnabled ? "🔊" : "🔇";
+        if (btnToggleSound) {
+          btnToggleSound.classList.toggle("btn-sound-muted", !soundEnabled);
+          btnToggleSound.title = soundEnabled ? "Đang bật âm thanh (nhấp để tắt)" : "Đang tắt âm thanh (nhấp để bật)";
+        }
+      }
+
+      window.toggleSound = function () {
+        soundEnabled = !soundEnabled;
+        localStorage.setItem("lq_sound_enabled", soundEnabled ? "true" : "false");
+        updateSoundUI();
+        if (soundEnabled) {
+          playSound("copy");
+          showToast("🔊 Đã bật âm thanh hiệu ứng!");
+        } else {
+          showToast("🔇 Đã tắt âm thanh!");
+        }
+      };
+
+      // ==========================================
+      // CHẾ ĐỘ QUẢN TRỊ (ADMIN PIN) & KHÁCH (GUEST)
+      // ==========================================
+      const ADMIN_PIN_DEFAULT = "1234";
+      let isAdmin = localStorage.getItem("lq_is_admin") === "true" || window.location.protocol === "file:";
+
+      function updateAdminUI() {
+        const adminIcon = document.getElementById("admin-icon");
+        const adminText = document.getElementById("admin-text");
+        const inputContainer = document.getElementById("input-container");
+        const btnToggleAdmin = document.getElementById("btn-toggle-admin");
+
+        if (adminIcon) adminIcon.textContent = isAdmin ? "👑" : "🔒";
+        if (adminText) adminText.textContent = isAdmin ? "Quản Trị" : "Khách";
+        if (btnToggleAdmin) {
+          btnToggleAdmin.classList.toggle("btn-admin-glow", isAdmin);
+          btnToggleAdmin.classList.toggle("btn-guest-glow", !isAdmin);
+        }
+        if (inputContainer) {
+          inputContainer.style.display = isAdmin ? "block" : "none";
+        }
+      }
+
+      window.toggleAdmin = function () {
+        if (isAdmin) {
+          showNotice({
+            title: "Khóa Chế Độ Quản Trị",
+            message: "Bạn có muốn chuyển sang <b>Chế độ Khách</b>?<br><small style='color:#94a3b8;'>Ở chế độ Khách, khung thêm nick và nút xoá sẽ được ẩn để tránh bạn bè thao tác nhầm.</small>",
+            icon: "🔒",
+            type: "confirm",
+            onConfirm: () => {
+              isAdmin = false;
+              localStorage.setItem("lq_is_admin", "false");
+              updateAdminUI();
+              renderList();
+              playSound("click");
+              showToast("🔒 Đã chuyển sang Chế độ Khách!");
+            }
+          });
+        } else {
+          openPinModal();
+        }
+      };
+
+      window.checkAdminPin = function () {
+        const pinInput = document.getElementById("admin-pin-input");
+        const val = pinInput ? pinInput.value.trim() : "";
+        const savedPin = localStorage.getItem("lq_admin_pin") || ADMIN_PIN_DEFAULT;
+
+        if (val === savedPin) {
+          isAdmin = true;
+          localStorage.setItem("lq_is_admin", "true");
+          closePinModal();
+          updateAdminUI();
+          renderList();
+          playSound("success");
+          showToast("👑 Mở khóa Quản Trị thành công!");
+        } else {
+          playSound("delete");
+          showNotice({
+            title: "Sai Mã PIN",
+            message: `Mã PIN không đúng! (Mã mặc định là: <b>${ADMIN_PIN_DEFAULT}</b>)`,
+            icon: "❌",
+            type: "danger"
+          });
+        }
+      };
+
+      // ==========================================
+      // TÍNH NĂNG ẨN / HIỆN MẬT KHẨU
+      // ==========================================
+      let isGlobalPasswordMasked = true;
+      let singlePasswordVisible = {};
+
+      window.toggleAllPasswordVisibility = function () {
+        isGlobalPasswordMasked = !isGlobalPasswordMasked;
+        singlePasswordVisible = {};
+        playSound("click");
+        updatePassToggleUI();
+        renderList();
+      };
+
+      function updatePassToggleUI() {
+        const icon = document.getElementById("pass-toggle-icon");
+        const text = document.getElementById("pass-toggle-text");
+        if (icon) icon.textContent = isGlobalPasswordMasked ? "👁️" : "🙈";
+        if (text) text.textContent = isGlobalPasswordMasked ? "Hiện Pass" : "Ẩn Pass";
+      }
+
+      window.toggleSinglePassword = function (id) {
+        playSound("click");
+        singlePasswordVisible[id] = !singlePasswordVisible[id];
+        renderList();
+      };
+
       window.toggleInputBox = function () {
         const collapseContent = document.getElementById("collapse-content");
         const collapseArrow = document.getElementById("collapse-arrow");
@@ -2088,6 +2445,7 @@
         defaultUnlock.value = "";
         defaultRank.value = "";
         if (defaultUyTin) defaultUyTin.value = "";
+        playSound("success");
         showToast(`✅ Đã thêm ${newItems.length} tài khoản!`);
       };
 
@@ -2128,6 +2486,7 @@
             saveData();
             renderList();
             triggerAutoSync();
+            playSound("delete");
             showToast("🔄 Đã reset số lần dùng về 0!");
           },
         });
@@ -2222,7 +2581,7 @@
                 <th style="width: 120px;">Mở BAN</th>
                 <th style="min-width: 170px;">Lần Dùng Gần Nhất</th>
                 <th style="width: 135px; text-align: center;">Sao Chép</th>
-                <th style="width: 65px; text-align: center;">Thao Tác</th>
+                ${isAdmin ? '<th style="width: 65px; text-align: center;">Thao Tác</th>' : ''}
               </tr>
             </thead>
             <tbody>
@@ -2240,13 +2599,25 @@
 
           const borderClass = isRecent
             ? "rank-border-recent"
-            : (rankGrp.borderClass || "rank-border-khac");
+            : rankGrp.borderClass || "rank-border-khac";
 
           const copyBtnGrad = isBanned
             ? "linear-gradient(135deg, #475569, #334155)"
             : isRecent
               ? "linear-gradient(135deg, #0ea5e9, #6366f1)"
-              : (rankGrp.btnGrad || "var(--primary-gradient)");
+              : rankGrp.btnGrad || "var(--primary-gradient)";
+
+          const showThisPass = isGlobalPasswordMasked ? !!singlePasswordVisible[item.id] : !singlePasswordVisible[item.id];
+          const passType = showThisPass ? "text" : "password";
+          const eyeIcon = showThisPass ? "🙈" : "👁️";
+
+          const readOnlyAttr = isAdmin ? "" : "readonly style='cursor: default;'";
+          const onchangeUser = isAdmin ? `onchange="updateField('${item.id}', 'username', this.value)"` : "";
+          const onchangePass = isAdmin ? `onchange="updateField('${item.id}', 'password', this.value)"` : "";
+          const onchangeRank = isAdmin ? `onchange="updateField('${item.id}', 'rank', this.value)"` : "";
+          const onchangeUyTin = isAdmin ? `onchange="updateField('${item.id}', 'uyTin', this.value)"` : "";
+          const onchangeUnlock = isAdmin ? `onchange="updateField('${item.id}', 'unlockDate', this.value)"` : "";
+          const onRankClick = isAdmin ? `onclick="openRankPicker(this, event)"` : "";
 
           return `
             <tr class="acc-row-item ${borderClass} ${isBanned ? "is-banned" : ""}">
@@ -2258,12 +2629,13 @@
                 <input 
                   type="text" 
                   class="tbl-input rank-input-field" 
-                  style="text-transform: uppercase; font-weight: 700; width: 90px; cursor: pointer;"
+                  style="text-transform: uppercase; font-weight: 700; width: 90px; cursor: ${isAdmin ? 'pointer' : 'default'};"
                   value="${escapeHtml(item.rank || "")}" 
                   placeholder="Rank..."
-                  title="Nhấp để chọn nhanh rank"
-                  onclick="openRankPicker(this, event)"
-                  onchange="updateField('${item.id}', 'rank', this.value)"
+                  title="${isAdmin ? 'Nhấp để chọn nhanh rank' : 'Rank'}"
+                  ${onRankClick}
+                  ${onchangeRank}
+                  ${readOnlyAttr}
                 />
               </td>
               <td style="text-align: center;">
@@ -2278,7 +2650,8 @@
                   placeholder="100"
                   title="Điểm uy tín (chỉ nhập số)"
                   oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                  onchange="updateField('${item.id}', 'uyTin', this.value)"
+                  ${onchangeUyTin}
+                  ${readOnlyAttr}
                 />
               </td>
               <td>
@@ -2287,17 +2660,25 @@
                   class="tbl-input" 
                   value="${escapeHtml(item.username)}" 
                   placeholder="Tài khoản..."
-                  onchange="updateField('${item.id}', 'username', this.value)"
+                  ${onchangeUser}
+                  ${readOnlyAttr}
                 />
               </td>
               <td>
-                <input 
-                  type="text" 
-                  class="tbl-input" 
-                  value="${escapeHtml(item.password)}" 
-                  placeholder="Mật khẩu..."
-                  onchange="updateField('${item.id}', 'password', this.value)"
-                />
+                <div style="position: relative; display: flex; align-items: center;">
+                  <input 
+                    type="${passType}" 
+                    class="tbl-input" 
+                    style="padding-right: 28px; letter-spacing: ${passType === 'password' ? '2px' : 'normal'};"
+                    value="${escapeHtml(item.password)}" 
+                    placeholder="Mật khẩu..."
+                    ${onchangePass}
+                    ${readOnlyAttr}
+                  />
+                  <button type="button" class="btn-toggle-row-eye" onclick="toggleSinglePassword('${item.id}')" title="${showThisPass ? 'Ẩn mật khẩu' : 'Xem mật khẩu'}">
+                    ${eyeIcon}
+                  </button>
+                </div>
               </td>
               <td>
                 <input 
@@ -2309,7 +2690,8 @@
                   placeholder="dd/MM"
                   maxlength="5"
                   oninput="formatDateOnlyNumbers(this)"
-                  onchange="updateField('${item.id}', 'unlockDate', this.value)"
+                  ${onchangeUnlock}
+                  ${readOnlyAttr}
                 />
               </td>
               <td>
@@ -2318,7 +2700,7 @@
                     ${item.lastUsed ? `${item.lastUsed} (${item.useCount || 1} lần)` : '<span style="color: var(--text-muted); font-weight: normal;">Chưa dùng</span>'}
                   </span>
                   ${
-                    item.useCount > 0
+                    isAdmin && item.useCount > 0
                       ? `
                     <button class="btn-reset-tag" onclick="resetHistory('${item.id}')" title="Reset về 0">🔄 0</button>
                   `
@@ -2331,21 +2713,27 @@
                   📋 SAO CHÉP
                 </button>
               </td>
-              <td style="text-align: center;">
-                ${
-                  isRecent
-                    ? `
-                  <button class="btn-remove-recent" onclick="removeFromRecent('${item.id}')" title="Gỡ khỏi nhóm Đã dùng gần đây (vẫn giữ nick trong danh sách quản lý)">
-                    ✕ Bỏ
-                  </button>
-                `
-                    : `
-                  <button class="btn-del-action" onclick="deleteAccount('${item.id}')" title="Xóa tài khoản này">
-                    🗑️
-                  </button>
-                `
-                }
-              </td>
+              ${
+                isAdmin
+                  ? `
+                <td style="text-align: center;">
+                  ${
+                    isRecent
+                      ? `
+                    <button class="btn-remove-recent" onclick="removeFromRecent('${item.id}')" title="Gỡ khỏi nhóm Đã dùng gần đây (vẫn giữ nick trong danh sách quản lý)">
+                      ✕ Bỏ
+                    </button>
+                  `
+                      : `
+                    <button class="btn-del-action" onclick="deleteAccount('${item.id}')" title="Xóa tài khoản này">
+                      🗑️
+                    </button>
+                  `
+                  }
+                </td>
+              `
+                  : ""
+              }
             </tr>
           `;
         }
@@ -2358,13 +2746,25 @@
 
           const borderClass = isRecent
             ? "rank-border-recent"
-            : (rankGrp.borderClass || "rank-border-khac");
+            : rankGrp.borderClass || "rank-border-khac";
 
           const copyBtnGrad = isBanned
             ? "linear-gradient(135deg, #475569, #334155)"
             : isRecent
               ? "linear-gradient(135deg, #0ea5e9, #6366f1)"
-              : (rankGrp.btnGrad || "var(--primary-gradient)");
+              : rankGrp.btnGrad || "var(--primary-gradient)";
+
+          const showThisPass = isGlobalPasswordMasked ? !!singlePasswordVisible[item.id] : !singlePasswordVisible[item.id];
+          const passType = showThisPass ? "text" : "password";
+          const eyeIcon = showThisPass ? "🙈" : "👁️";
+
+          const readOnlyAttr = isAdmin ? "" : "readonly style='cursor: default;'";
+          const onchangeUser = isAdmin ? `onchange="updateField('${item.id}', 'username', this.value)"` : "";
+          const onchangePass = isAdmin ? `onchange="updateField('${item.id}', 'password', this.value)"` : "";
+          const onchangeRank = isAdmin ? `onchange="updateField('${item.id}', 'rank', this.value)"` : "";
+          const onchangeUyTin = isAdmin ? `onchange="updateField('${item.id}', 'uyTin', this.value)"` : "";
+          const onchangeUnlock = isAdmin ? `onchange="updateField('${item.id}', 'unlockDate', this.value)"` : "";
+          const onRankClick = isAdmin ? `onclick="openRankPicker(this, event)"` : "";
 
           const card = document.createElement("div");
           card.className = `m-row-card ${borderClass} ${isBanned ? "is-banned" : ""}`;
@@ -2380,7 +2780,7 @@
 
             <div class="m-history-row">
               <span style="color: ${isBanned ? "#fca5a5" : "#38bdf8"};">🕒 ${item.lastUsed ? `${item.lastUsed} (${item.useCount || 1} lần)` : "Chưa sử dụng"}</span>
-              ${item.useCount > 0 ? `<button class="btn-reset-tag" onclick="resetHistory('${item.id}')" title="Reset về 0">🔄 Reset</button>` : ""}
+              ${isAdmin && item.useCount > 0 ? `<button class="btn-reset-tag" onclick="resetHistory('${item.id}')" title="Reset về 0">🔄 Reset</button>` : ""}
             </div>
 
             <div class="m-creds-row">
@@ -2389,27 +2789,36 @@
                 class="tbl-input" 
                 value="${escapeHtml(item.username)}" 
                 placeholder="Tài khoản..."
-                onchange="updateField('${item.id}', 'username', this.value)"
+                ${onchangeUser}
+                ${readOnlyAttr}
               />
-              <input 
-                type="text" 
-                class="tbl-input" 
-                value="${escapeHtml(item.password)}" 
-                placeholder="Mật khẩu..."
-                onchange="updateField('${item.id}', 'password', this.value)"
-              />
+              <div style="position: relative; flex: 1; display: flex; align-items: center;">
+                <input 
+                  type="${passType}" 
+                  class="tbl-input" 
+                  style="padding-right: 28px; letter-spacing: ${passType === 'password' ? '2px' : 'normal'};"
+                  value="${escapeHtml(item.password)}" 
+                  placeholder="Mật khẩu..."
+                  ${onchangePass}
+                  ${readOnlyAttr}
+                />
+                <button type="button" class="btn-toggle-row-eye" onclick="toggleSinglePassword('${item.id}')" title="${showThisPass ? 'Ẩn mật khẩu' : 'Xem mật khẩu'}">
+                  ${eyeIcon}
+                </button>
+              </div>
             </div>
 
             <div class="m-action-row">
               <input 
                 type="text" 
                 class="tbl-input rank-input-field" 
-                style="text-transform: uppercase; font-weight: 700; cursor: pointer;"
+                style="text-transform: uppercase; font-weight: 700; cursor: ${isAdmin ? 'pointer' : 'default'};"
                 value="${escapeHtml(item.rank || "")}" 
                 placeholder="Rank"
-                title="Nhấp để chọn nhanh Rank"
-                onclick="openRankPicker(this, event)"
-                onchange="updateField('${item.id}', 'rank', this.value)"
+                title="${isAdmin ? 'Nhấp để chọn nhanh Rank' : 'Rank'}"
+                ${onRankClick}
+                ${onchangeRank}
+                ${readOnlyAttr}
               />
               <input 
                 type="text" 
@@ -2422,7 +2831,8 @@
                 placeholder="Uy tín"
                 title="Điểm uy tín (chỉ nhập số)"
                 oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                onchange="updateField('${item.id}', 'uyTin', this.value)"
+                ${onchangeUyTin}
+                ${readOnlyAttr}
               />
               <input 
                 type="text" 
@@ -2434,23 +2844,26 @@
                 maxlength="5"
                 title="Ngày mở BAN (dd/MM)"
                 oninput="formatDateOnlyNumbers(this)"
-                onchange="updateField('${item.id}', 'unlockDate', this.value)"
+                ${onchangeUnlock}
+                ${readOnlyAttr}
               />
-              <button class="m-btn-copy" id="m-btn-copy-${item.id}" style="background: ${copyBtnGrad};" onclick="copyCombo('${item.id}', this)">
+              <button class="m-btn-copy" id="m-btn-copy-${item.id}" style="background: ${copyBtnGrad}; flex: ${isAdmin ? 'unset' : '1'};" onclick="copyCombo('${item.id}', this)">
                 📋 COPY
               </button>
               ${
-                isRecent
-                  ? `
-                <button class="m-btn-remove-recent" onclick="removeFromRecent('${item.id}')" title="Gỡ khỏi nhóm Đã dùng gần đây (vẫn giữ nick)">
-                  ✕
-                </button>
-              `
-                  : `
-                <button class="m-btn-del" onclick="deleteAccount('${item.id}')" title="Xóa">
-                  🗑️
-                </button>
-              `
+                isAdmin
+                  ? isRecent
+                    ? `
+                  <button class="m-btn-remove-recent" onclick="removeFromRecent('${item.id}')" title="Gỡ khỏi nhóm Đã dùng gần đây (vẫn giữ nick)">
+                    ✕
+                  </button>
+                `
+                    : `
+                  <button class="m-btn-del" onclick="deleteAccount('${item.id}')" title="Xóa">
+                    🗑️
+                  </button>
+                `
+                  : ""
               }
             </div>
           `;
@@ -2564,6 +2977,7 @@
         item.inRecent = true;
         saveData();
         triggerAutoSync();
+        playSound("copy");
 
         // Hiệu ứng mượt mà đổi text nút sang 'ĐÃ COPY' tức thì
         if (btnEl) {
@@ -2603,6 +3017,7 @@
         saveData();
         renderList();
         triggerAutoSync();
+        playSound("delete");
         showToast(`✅ Đã bỏ khỏi tab Đã dùng (vẫn lưu lịch sử dùng)`);
       };
 
@@ -2621,6 +3036,7 @@
             saveData();
             renderList();
             triggerAutoSync();
+            playSound("delete");
             showToast("🧹 Đã dọn sạch tab Đã dùng gần đây!");
           },
         });
@@ -2641,6 +3057,7 @@
             saveData();
             renderList();
             triggerAutoSync();
+            playSound("delete");
             showToast("Đã xóa tài khoản!");
           },
         });
@@ -3018,6 +3435,9 @@
       }
 
       // KHỞI CHẠY
+      updateSoundUI();
+      updateAdminUI();
+      updatePassToggleUI();
       renderList();
       pullFromCloud(true);
       initFirebaseRealtimeListener();
