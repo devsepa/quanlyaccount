@@ -1291,6 +1291,32 @@
         </p>
 
         <div style="margin-bottom: 12px">
+          <a
+            href="https://github.com/settings/tokens/new?description=AOV-Manager&scopes=repo"
+            target="_blank"
+            style="
+              display: inline-flex;
+              align-items: center;
+              justify-content: center;
+              gap: 8px;
+              width: 100%;
+              padding: 10px 14px;
+              background: rgba(56, 189, 248, 0.15);
+              color: #38bdf8;
+              border: 1px solid rgba(56, 189, 248, 0.4);
+              border-radius: 8px;
+              font-size: 0.82rem;
+              font-weight: 700;
+              text-decoration: none;
+              text-align: center;
+              box-sizing: border-box;
+            "
+          >
+            🔑 Bấm Đây Để Tạo Token Nhanh (Đã chọn sẵn quyền) ➔
+          </a>
+        </div>
+
+        <div style="margin-bottom: 12px">
           <label
             style="
               font-size: 0.78rem;
@@ -1299,13 +1325,13 @@
               display: block;
               margin-bottom: 4px;
             "
-            >GitHub Personal Access Token:</label
+            >Dán mã GitHub Personal Access Token mới vào đây:</label
           >
           <input
             type="text"
             id="gh-token"
-            placeholder="ghp_xxxxxxxxxxxxxxxxxxxx..."
-            value="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"
+            placeholder="Dán mã Token mới (ghp_...) vào đây..."
+            value=""
             style="font-size: 0.85rem; font-family: monospace"
           />
         </div>
@@ -1337,14 +1363,33 @@
             font-size: 0.75rem;
             color: #94a3b8;
             line-height: 1.45;
+            margin-bottom: 10px;
           "
         >
           💡 <b>Cơ chế Tự Động Đồng Bộ (Auto-Sync):</b><br />
-          • Token của bạn đã được cài sẵn.<br />
           • Mọi thao tác thêm, sửa, xóa, copy nick đều
-          <b>tự động đẩy ngầm lên GitHub</b> sau 1 giây!<br />
-          • Khi mở web trên điện thoại, dữ liệu mới nhất sẽ
-          <b>tự động được tải về</b> ngay lập tức.
+          <b>tự động đẩy ngầm lên GitHub</b> sau 1.5 giây!<br />
+          • Dữ liệu lưu an toàn trong kho GitHub của bạn.
+        </div>
+
+        <div
+          style="
+            background: rgba(244, 63, 94, 0.1);
+            border: 1px solid rgba(244, 63, 94, 0.3);
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 0.75rem;
+            color: #fca5a5;
+            line-height: 1.45;
+          "
+        >
+          🔑 <b>Cách xử lý lỗi "Bad credentials" / "Lỗi lưu Cloud":</b><br />
+          Token cũ <code>ghp_JAPy...</code> đã bị GitHub quét và vô hiệu hóa.<br />
+          1. Bấm nút xanh dương bên trên để mở trang tạo Token mới.<br />
+          2. Chọn <b>Expiration: No expiration</b> rồi bấm nút xanh lá
+          <b>Generate token</b> ở cuối trang.<br />
+          3. Copy mã token mới (dạng <code>ghp_...</code>) dán vào ô bên trên
+          rồi bấm <b>Đẩy Lên Mây</b>.
         </div>
       </div>
     </div>
@@ -1967,9 +2012,12 @@
         if (statActive) statActive.innerHTML = `• 🟢 ${activeCount} hoạt động`;
         if (statBan) statBan.innerHTML = `• 🚫 ${banCount} ban`;
 
-        // Lấy danh sách tài khoản đã dùng gần đây
+        // Lấy danh sách tài khoản trong nhóm Đã Dùng Gần Đây
         const recentAccounts = accounts
-          .filter((a) => !!a.lastUsed)
+          .filter(
+            (a) =>
+              a.inRecent === true || (a.inRecent !== false && !!a.lastUsed),
+          )
           .sort((a, b) => (b.lastUsedTime || 0) - (a.lastUsedTime || 0));
 
         const recentTabCount = document.getElementById("recent-tab-count");
@@ -2253,11 +2301,8 @@
           return card;
         }
 
-        // 1. HIỂN THỊ NHÓM "ĐÃ DÙNG GẦN ĐÂY" (Khi fRank === 'recent' hoặc khi fRank === 'all' và có nick đã dùng)
-        if (
-          (fRank === "recent" || fRank === "all") &&
-          recentAccounts.length > 0
-        ) {
+        // 1. HIỂN THỊ NHÓM "ĐÃ DÙNG GẦN ĐÂY" (Chỉ hiển thị khi bấm vào tab Đã Dùng)
+        if (fRank === "recent" && recentAccounts.length > 0) {
           tableHtml += `
             <tr style="background: linear-gradient(90deg, rgba(14, 165, 233, 0.22), rgba(15, 23, 42, 0.95)); border-left: 4px solid #38bdf8;">
               <td colspan="10" style="padding: 10px 14px; border-bottom: 2px solid #38bdf8; border-top: 1px solid rgba(56, 189, 248, 0.3);">
@@ -2358,6 +2403,7 @@
         item.lastUsed = timeStr;
         item.lastUsedTime = Date.now();
         item.useCount = (item.useCount || 0) + 1;
+        item.inRecent = true;
         saveData();
         renderList();
         triggerAutoSync();
@@ -2377,36 +2423,34 @@
         }
       };
 
-      // GỠ KHỎI NHÓM ĐÃ DÙNG GẦN ĐÂY (VẪN GIỮ NICK TRONG DANH SÁCH GỐC)
+      // GỠ KHỎI NHÓM ĐÃ DÙNG (GIỮ NGUYÊN NICK & LỊCH SỬ DÙNG TRONG DANH SÁCH GỐC)
       window.removeFromRecent = function (id) {
         const item = accounts.find((a) => a.id === id);
         if (!item) return;
 
-        item.lastUsed = "";
-        delete item.lastUsedTime;
+        item.inRecent = false; // Chỉ bỏ khỏi nhóm Đã dùng, giữ nguyên lastUsed và useCount
         saveData();
         renderList();
         triggerAutoSync();
-        showToast(`✅ Đã gỡ "${item.username}" khỏi nhóm gần đây`);
+        showToast(`✅ Đã bỏ khỏi tab Đã dùng (vẫn lưu lịch sử dùng)`);
       };
 
-      // DỌN SẠCH TẤT CẢ KHỎI NHÓM GẦN ĐÂY
+      // DỌN SẠCH TẤT CẢ KHỎI NHÓM ĐÃ DÙNG (GIỮ NGUYÊN NICK & LỊCH SỬ DÙNG TRONG DANH SÁCH GỐC)
       window.clearAllRecent = function () {
         showNotice({
-          title: "Dọn Sạch Nhóm Gần Đây",
+          title: "Dọn Sạch Tab Đã Dùng",
           message:
-            "Làm trống nhóm Đã dùng gần đây? Tất cả tài khoản vẫn được giữ nguyên vẹn trong danh sách quản lý.",
+            "Làm trống nhóm Đã dùng gần đây? Tất cả tài khoản và lịch sử thời gian dùng gần nhất vẫn được giữ nguyên vẹn 100% trong danh sách gốc.",
           icon: "🕒",
           type: "confirm",
           onConfirm: () => {
             accounts.forEach((a) => {
-              a.lastUsed = "";
-              delete a.lastUsedTime;
+              a.inRecent = false; // Chỉ bỏ khỏi nhóm Đã dùng, giữ nguyên lastUsed và useCount
             });
             saveData();
             renderList();
             triggerAutoSync();
-            showToast("🧹 Đã dọn sạch nhóm Đã dùng gần đây!");
+            showToast("🧹 Đã dọn sạch tab Đã dùng gần đây!");
           },
         });
       };
@@ -2560,11 +2604,19 @@
       const GH_REPO = "devsepa/quanlyaccount";
       const GH_FILE = "data.json";
 
-      // Lưu sẵn token người dùng cung cấp
-      const defaultToken = "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";
-      let savedGhToken = localStorage.getItem("lq_gh_token") || defaultToken;
-      localStorage.setItem("lq_gh_token", savedGhToken);
-      if (ghTokenInput) ghTokenInput.value = savedGhToken;
+      // Đọc token đã lưu (tự động loại bỏ token cũ đã bị thu hồi)
+      let savedGhToken = localStorage.getItem("lq_gh_token") || "";
+      if (savedGhToken === "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") {
+        savedGhToken = "";
+        localStorage.removeItem("lq_gh_token");
+      }
+      if (ghTokenInput) {
+        ghTokenInput.value = savedGhToken;
+        ghTokenInput.addEventListener("input", () => {
+          const val = ghTokenInput.value.trim();
+          localStorage.setItem("lq_gh_token", val);
+        });
+      }
 
       if (cloudModal) {
         cloudModal.addEventListener("click", (e) => {
@@ -2590,7 +2642,7 @@
             localStorage.setItem("lq_accounts", JSON.stringify(accounts));
             renderList();
             if (cloudStatusIcon) cloudStatusIcon.textContent = "☁️";
-            if (cloudBtnText) cloudBtnText.textContent = "Đồng Bộ PC & ĐT";
+            if (cloudBtnText) cloudBtnText.textContent = "Đã tải Cloud";
             if (!silent)
               showToast(`✅ Đã tải về ${accounts.length} nick từ đám mây!`);
           } else {
@@ -2615,16 +2667,20 @@
         const token =
           (ghTokenInput ? ghTokenInput.value.trim() : "") ||
           localStorage.getItem("lq_gh_token") ||
-          defaultToken;
+          "";
+
         if (!token) {
           if (!silent) {
             showNotice({
               title: "Cần GitHub Token",
               message:
-                "Vui lòng nhập Personal Access Token để có quyền lưu lên GitHub!",
+                "Vui lòng dán mã Personal Access Token mới vào ô cài đặt để đồng bộ lên GitHub!",
               icon: "🔑",
+              type: "danger",
             });
           }
+          if (cloudStatusIcon) cloudStatusIcon.textContent = "🔑";
+          if (cloudBtnText) cloudBtnText.textContent = "Cần Token";
           return;
         }
 
@@ -2642,9 +2698,17 @@
           const getRes = await fetch(
             `https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE}`,
             {
-              headers: { Authorization: `token ${token}` },
+              headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: "application/vnd.github+json",
+              },
             },
           );
+
+          if (getRes.status === 401) {
+            throw new Error("BAD_CREDENTIALS");
+          }
+
           if (getRes.ok) {
             const fileInfo = await getRes.json();
             sha = fileInfo.sha;
@@ -2658,7 +2722,8 @@
             {
               method: "PUT",
               headers: {
-                Authorization: `token ${token}`,
+                Authorization: `Bearer ${token}`,
+                Accept: "application/vnd.github+json",
                 "Content-Type": "application/json",
               },
               body: JSON.stringify({
@@ -2668,6 +2733,10 @@
               }),
             },
           );
+
+          if (putRes.status === 401) {
+            throw new Error("BAD_CREDENTIALS");
+          }
 
           if (putRes.ok) {
             if (cloudStatusIcon) cloudStatusIcon.textContent = "☁️";
@@ -2683,19 +2752,32 @@
             if (!silent)
               showNotice({
                 title: "Lỗi Đồng Bộ",
-                message: `GitHub báo lỗi: ${err.message}`,
+                message: `GitHub báo lỗi: ${err.message || "Không thể lưu"}`,
                 icon: "❌",
               });
           }
         } catch (err) {
-          if (cloudStatusIcon) cloudStatusIcon.textContent = "❌";
-          if (cloudBtnText) cloudBtnText.textContent = "Lỗi mạng";
-          if (!silent)
-            showNotice({
-              title: "Lỗi Kết Nối",
-              message: "Không thể kết nối đến GitHub API!",
-              icon: "❌",
-            });
+          if (err.message === "BAD_CREDENTIALS") {
+            if (cloudStatusIcon) cloudStatusIcon.textContent = "⚠️";
+            if (cloudBtnText) cloudBtnText.textContent = "Token hết hạn";
+            if (!silent)
+              showNotice({
+                title: "Token Không Hợp Lệ (Bad credentials)",
+                message:
+                  "Mã Token GitHub đã bị thu hồi hoặc hết hạn!<br><br><b>Cách xử lý:</b> Hãy tạo 1 mã Token mới trên GitHub (chọn quyền <b>repo</b> và <b>No expiration</b>) rồi dán vào ô Token bên trên nhé.",
+                icon: "🔑",
+                type: "danger",
+              });
+          } else {
+            if (cloudStatusIcon) cloudStatusIcon.textContent = "❌";
+            if (cloudBtnText) cloudBtnText.textContent = "Lỗi mạng";
+            if (!silent)
+              showNotice({
+                title: "Lỗi Kết Nối",
+                message: "Không thể kết nối đến GitHub API!",
+                icon: "❌",
+              });
+          }
         } finally {
           if (btnPushCloud) {
             btnPushCloud.textContent = "☁️ Đẩy Lên Mây";
@@ -2708,6 +2790,8 @@
       let autoSyncTimer = null;
       function triggerAutoSync() {
         clearTimeout(autoSyncTimer);
+        const token = localStorage.getItem("lq_gh_token");
+        if (!token) return; // Không có token thì không tự động gửi lỗi
         if (cloudStatusIcon) cloudStatusIcon.textContent = "⏳";
         if (cloudBtnText) cloudBtnText.textContent = "Đang lưu...";
         autoSyncTimer = setTimeout(() => {
