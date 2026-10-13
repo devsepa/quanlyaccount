@@ -365,28 +365,28 @@
         background: rgba(15, 12, 35, 0.95);
       }
 
-      /* NÚT THÊM TÀI KHOẢN: HIỆU ỨNG BÓNG LOÁNG CAO CẤP (GLOSSY 3D & LIGHT SWEEP) */
+      /* NÚT THÊM TÀI KHOẢN: THIẾT KẾ XỊN XÒ - NGỌC LỤC BẢO HEXTECH (CRYSTAL EMERALD) */
       #btn-add {
         position: relative;
         overflow: hidden;
         background: linear-gradient(
-          180deg,
-          #818cf8 0%,
-          #6366f1 48%,
-          #4f46e5 52%,
-          #4338ca 100%
+          135deg,
+          #047857 0%,
+          #10b981 40%,
+          #06b6d4 100%
         ) !important;
-        border: 1px solid rgba(255, 255, 255, 0.45) !important;
+        border: 1px solid rgba(110, 231, 183, 0.6) !important;
         box-shadow:
-          0 4px 16px rgba(99, 102, 241, 0.45),
-          inset 0 1px 1px rgba(255, 255, 255, 0.8),
-          inset 0 -2px 5px rgba(0, 0, 0, 0.3) !important;
-        font-weight: 800 !important;
-        letter-spacing: 0.5px;
-        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+          0 4px 18px rgba(16, 185, 129, 0.4),
+          0 0 24px rgba(6, 182, 212, 0.25),
+          inset 0 1px 1px rgba(255, 255, 255, 0.65),
+          inset 0 -2px 4px rgba(0, 0, 0, 0.3) !important;
+        font-weight: 900 !important;
+        letter-spacing: 0.8px;
         cursor: pointer;
         transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         isolation: isolate;
+        border-radius: 10px;
       }
 
       #btn-add .btn-text-glossy {
@@ -394,47 +394,65 @@
         z-index: 3;
         display: inline-flex;
         align-items: center;
+        justify-content: center;
         gap: 6px;
+        font-weight: 900;
+        font-size: 0.84rem;
+        letter-spacing: 0.8px;
+        color: #ffffff !important;
+        text-shadow:
+          0 1px 3px rgba(0, 0, 0, 0.8),
+          0 0 12px rgba(255, 255, 255, 0.5);
+        transition: all 0.2s ease;
       }
 
-      /* LỚP PHỦ BÓNG KÍNH NỬA TRÊN (SPECULAR GLOSS HIGHLIGHT) */
+      #btn-add .btn-add-icon {
+        font-size: 1.15rem;
+        font-weight: 900;
+        line-height: 1;
+        display: inline-block;
+        color: #ffffff !important;
+        filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8));
+      }
+
+      /* LỚP TRÁNG GƯƠNG TINH TẾ NỬA TRÊN (BÓNG KÍNH KHÔNG CHE MỜ CHỮ) */
       #btn-add::before {
         content: "";
         position: absolute;
         top: 0;
         left: 0;
         right: 0;
-        height: 48%;
+        height: 44%;
         background: linear-gradient(
           180deg,
-          rgba(255, 255, 255, 0.45) 0%,
-          rgba(255, 255, 255, 0.1) 100%
+          rgba(255, 255, 255, 0.25) 0%,
+          rgba(255, 255, 255, 0.02) 100%
         );
-        border-radius: 9px 9px 60px 60px / 9px 9px 16px 16px;
+        border-radius: 9px 9px 60px 60px / 9px 9px 12px 12px;
         pointer-events: none;
         z-index: 1;
       }
 
-      /* DẢI ÁNH SÁNG BÓNG LOÁNG LƯỚT QUA ĐỊNH KỲ (LIGHT SHIMMER SWEEP - CHẬM RÃI & MƯỢT MÀ) */
+      /* DẢI ÁNH SÁNG BÓNG LOÁNG LƯỚT QUA ĐỊNH KỲ (LIGHT SHIMMER SWEEP MƯỢT MÀ) */
       #btn-add::after {
         content: "";
         position: absolute;
         top: -60%;
         left: -130%;
-        width: 55%;
+        width: 50%;
         height: 220%;
         background: linear-gradient(
           90deg,
           transparent 0%,
-          rgba(255, 255, 255, 0.08) 20%,
-          rgba(255, 255, 255, 0.75) 50%,
-          rgba(255, 255, 255, 0.08) 80%,
+          rgba(255, 255, 255, 0.05) 20%,
+          rgba(255, 255, 255, 0.5) 50%,
+          rgba(255, 255, 255, 0.05) 80%,
           transparent 100%
         );
         transform: rotate(25deg);
         pointer-events: none;
         z-index: 2;
-        animation: btnGlossySweep 5.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        animation: btnGlossySweep 5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
       }
 
       @keyframes btnGlossySweep {
@@ -457,22 +475,30 @@
       }
 
       #btn-add:hover {
-        filter: brightness(1.15) !important;
+        filter: brightness(1.12) !important;
         box-shadow:
-          0 6px 24px rgba(99, 102, 241, 0.65),
-          inset 0 1px 2px rgba(255, 255, 255, 0.95),
-          inset 0 -2px 5px rgba(0, 0, 0, 0.35) !important;
+          0 6px 24px rgba(16, 185, 129, 0.6),
+          0 0 28px rgba(6, 182, 212, 0.4),
+          inset 0 1px 2px rgba(255, 255, 255, 0.8),
+          inset 0 -2px 4px rgba(0, 0, 0, 0.35) !important;
         transform: translateY(-2px);
       }
 
+      #btn-add:hover .btn-text-glossy {
+        text-shadow:
+          0 1px 3px rgba(0, 0, 0, 0.8),
+          0 0 16px rgba(255, 255, 255, 0.8),
+          0 0 24px rgba(110, 231, 183, 0.8);
+      }
+
       #btn-add:hover::after {
-        animation-duration: 3.8s;
+        animation-duration: 3.2s;
       }
 
       #btn-add:active {
         transform: scale(0.97) translateY(0);
         box-shadow:
-          0 2px 8px rgba(99, 102, 241, 0.4),
+          0 2px 8px rgba(16, 185, 129, 0.4),
           inset 0 2px 4px rgba(0, 0, 0, 0.35) !important;
       }
 
@@ -1914,7 +1940,9 @@
                 onclick="handleAddAccount()"
                 style="height: 40px; width: 100%; padding: 0 16px"
               >
-                <span class="btn-text-glossy">➕ THÊM TÀI KHOẢN</span>
+                <span class="btn-text-glossy">
+                  <span class="btn-add-icon">+</span> THÊM TÀI KHOẢN
+                </span>
               </button>
             </div>
           </div>
@@ -3622,22 +3650,23 @@
                   ${readOnlyAttr}
                 />
               </td>
-              <td>
+              <td style="text-align: center;">
                 <input 
                   type="text" 
                   class="tbl-input" 
+                  style="text-align: center;"
                   value="${escapeHtml(item.username)}" 
                   placeholder="Tài khoản..."
                   ${onchangeUser}
                   ${readOnlyAttr}
                 />
               </td>
-              <td>
-                <div style="position: relative; display: flex; align-items: center;">
+              <td style="text-align: center;">
+                <div style="position: relative; display: flex; align-items: center; justify-content: center;">
                   <input 
                     type="${passType}" 
                     class="tbl-input" 
-                    style="padding-right: ${isAdmin ? "28px" : "10px"}; letter-spacing: ${passType === 'password' ? '2px' : 'normal'};"
+                    style="text-align: center; padding-right: ${isAdmin ? "28px" : "10px"}; padding-left: ${isAdmin ? "28px" : "10px"}; letter-spacing: ${passType === 'password' ? '2px' : 'normal'};"
                     value="${escapeHtml(item.password)}" 
                     placeholder="Mật khẩu..."
                     ${onchangePass}
@@ -3646,7 +3675,7 @@
                   ${
                     isAdmin
                       ? `
-                    <button type="button" class="btn-toggle-row-eye" onclick="toggleSinglePassword('${item.id}')" title="${showThisPass ? 'Ẩn mật khẩu' : 'Xem mật khẩu'}">
+                    <button type="button" class="btn-toggle-row-eye" style="position: absolute; right: 6px;" onclick="toggleSinglePassword('${item.id}')" title="${showThisPass ? 'Ẩn mật khẩu' : 'Xem mật khẩu'}">
                       ${eyeIcon}
                     </button>
                   `
@@ -3669,8 +3698,8 @@
                   ${readOnlyAttr}
                 />
               </td>
-              <td>
-                <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+              <td style="text-align: center;">
+                <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
                   <span style="font-size: 0.85rem; color: ${isBanned ? "#fca5a5" : "#38bdf8"}; font-weight: 600;">
                     ${item.lastUsed ? `${item.lastUsed} (${item.useCount || 1} lần)` : '<span style="color: var(--text-muted); font-weight: normal;">Chưa dùng</span>'}
                   </span>
