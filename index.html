@@ -6,10 +6,13 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
     />
-    <title>Quản Lý Tài Khoản Liên Quân Mobile</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+    <title>devsepa - Quản Lý Tài Khoản Liên Quân Mobile</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <style>
       :root {
         --bg-main: #090d16;
@@ -27,17 +30,11 @@
         --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
         --primary-glow: rgba(99, 102, 241, 0.28);
 
-        /* 1. MÀU ĐỎ: DÀNH CHO BỊ BAN (Đỏ hồng sẫm lì, dịu mắt, không chói) */
+        /* 1. MÀU ĐỎ: DÀNH CHO BỊ BAN (Đỏ hồng lì, dịu mắt, không chói) */
         --ban-bg: rgba(225, 29, 72, 0.15);
         --ban-bg-hover: rgba(225, 29, 72, 0.24);
         --ban-border: #f43f5e;
         --ban-text: #fecdd3;
-        
-        /* 2. MÀU VÀNG CAM: DÀNH CHO BỊ TRÙNG LẶP */
-        --dup-bg: rgba(217, 119, 6, 0.16);
-        --dup-bg-hover: rgba(217, 119, 6, 0.26);
-        --dup-border: #f59e0b;
-        --dup-text: #fef3c7;
 
         --success-base: #10b981;
       }
@@ -46,15 +43,29 @@
         box-sizing: border-box;
         margin: 0;
         padding: 0;
-        font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        font-family:
+          "Plus Jakarta Sans",
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
         -webkit-tap-highlight-color: transparent;
       }
 
       body {
         background-color: var(--bg-main);
-        background-image: 
-          radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.12) 0%, transparent 50%),
-          radial-gradient(circle at 90% 100%, rgba(124, 58, 237, 0.08) 0%, transparent 40%);
+        background-image:
+          radial-gradient(
+            circle at 50% 0%,
+            rgba(99, 102, 241, 0.12) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            circle at 90% 100%,
+            rgba(124, 58, 237, 0.08) 0%,
+            transparent 40%
+          );
         color: var(--text-main);
         padding: 14px 16px 80px;
         min-height: 100vh;
@@ -88,8 +99,8 @@
       }
 
       .logo-box {
-        width: 42px;
-        height: 42px;
+        width: 44px;
+        height: 44px;
         border-radius: 50%;
         background: #020617;
         color: #fff;
@@ -127,7 +138,7 @@
         gap: 6px;
       }
 
-      /* CHÚ THÍCH MÀU SẮC */
+      /* CHÚ THÍCH MÀU SẮC (CHỈ HIỆN TRÊN MÁY TÍNH) */
       .color-guide {
         display: flex;
         align-items: center;
@@ -152,9 +163,13 @@
         border-radius: 50%;
         display: inline-block;
       }
-      .dot-ban { background: #f43f5e; box-shadow: 0 0 6px #f43f5e; }
-      .dot-dup { background: #f59e0b; box-shadow: 0 0 6px #f59e0b; }
-      .dot-ok  { background: #10b981; }
+      .dot-ban {
+        background: #f43f5e;
+        box-shadow: 0 0 6px #f43f5e;
+      }
+      .dot-ok {
+        background: #10b981;
+      }
 
       .header-action-group {
         display: flex;
@@ -189,7 +204,9 @@
         border: none;
       }
 
-      .btn-primary:hover { opacity: 0.95; }
+      .btn-primary:hover {
+        opacity: 0.95;
+      }
 
       .btn-cloud {
         background: rgba(99, 102, 241, 0.15);
@@ -271,7 +288,7 @@
 
       .add-form-grid {
         display: grid;
-        grid-template-columns: 2.2fr 0.9fr 0.9fr auto;
+        grid-template-columns: 2fr 0.85fr 0.85fr 0.65fr auto;
         gap: 12px;
         align-items: end;
       }
@@ -290,7 +307,10 @@
         }
       }
 
-      textarea, input[type="text"], select {
+      textarea,
+      input[type="text"],
+      input[type="password"],
+      select {
         width: 100%;
         padding: 9px 12px;
         background: rgba(2, 6, 23, 0.7);
@@ -305,52 +325,44 @@
       textarea {
         resize: vertical;
         min-height: 64px;
-        font-family: 'JetBrains Mono', monospace;
+        font-family: "JetBrains Mono", monospace;
         line-height: 1.45;
       }
 
-      textarea:focus, input:focus, select:focus {
+      textarea:focus,
+      input:focus,
+      select:focus {
         border-color: var(--border-focus);
         box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
         background: #020617;
       }
 
-      /* THANH TÌM KIẾM & BỘ LỌC (STICKY CỐ ĐỊNH TRÊN CẢ PC VÀ MOBILE) */
+      /* THANH ĐIỀU HƯỚNG RANK CUỘN NGANG (STICKY CỐ ĐỊNH) */
       .toolbar {
         position: sticky;
         top: 10px;
         z-index: 1000;
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        gap: 10px;
         margin-bottom: 14px;
         background: rgba(15, 23, 42, 0.88);
         backdrop-filter: blur(16px);
         -webkit-backdrop-filter: blur(16px);
-        padding: 10px 16px;
+        padding: 8px 12px;
         border-radius: 16px;
         border: 1px solid rgba(148, 163, 184, 0.15);
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
-        flex-wrap: wrap;
-      }
-
-      .search-group {
-        display: flex;
-        gap: 8px;
-        flex: 1;
-        min-width: 200px;
       }
 
       /* THANH TAB RANK CUỘN NGANG LƯỚT CHỌN NHANH TRÊN MOBILE & PC */
       .quick-rank-nav {
-        width: 100%;
         display: flex;
         gap: 6px;
         overflow-x: auto;
-        padding-bottom: 3px;
+        padding-bottom: 2px;
         scrollbar-width: none;
         -ms-overflow-style: none;
+        width: 100%;
       }
       .quick-rank-nav::-webkit-scrollbar {
         display: none;
@@ -439,7 +451,9 @@
         cursor: pointer;
         opacity: 0;
         pointer-events: none;
-        transition: opacity 0.25s, transform 0.2s;
+        transition:
+          opacity 0.25s,
+          transform 0.2s;
         z-index: 9999;
       }
       #btn-back-top.show {
@@ -517,33 +531,6 @@
         color: var(--ban-text);
       }
 
-      /* ĐỔ MÀU VÀNG CAM KHI BỊ TRÙNG LẶP */
-      .acc-table tr.is-duplicate {
-        background: var(--dup-bg) !important;
-      }
-      .acc-table tr.is-duplicate:hover {
-        background: var(--dup-bg-hover) !important;
-      }
-      .acc-table tr.is-duplicate td {
-        border-bottom: 1px solid rgba(245, 158, 11, 0.35);
-      }
-      .acc-table tr.is-duplicate .tbl-input {
-        background: rgba(146, 64, 14, 0.4);
-        border-color: rgba(245, 158, 11, 0.5);
-        color: var(--dup-text);
-      }
-      .acc-table tr.is-duplicate .tbl-input.is-dup-input {
-        border-color: #f59e0b;
-        color: #fff;
-        font-weight: 700;
-        box-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
-      }
-
-      .acc-table tr.is-banned.is-duplicate {
-        background: rgba(185, 28, 28, 0.45) !important;
-        border-left: 5px solid #f59e0b;
-      }
-
       .tbl-input {
         padding: 8px 12px;
         font-size: 0.9rem;
@@ -551,7 +538,7 @@
         border: 1px solid rgba(255, 255, 255, 0.1);
         border-radius: 8px;
         color: #fff;
-        font-family: 'JetBrains Mono', monospace;
+        font-family: "JetBrains Mono", monospace;
         width: 100%;
         transition: all 0.15s;
       }
@@ -569,13 +556,6 @@
         text-transform: uppercase;
         display: inline-block;
         white-space: nowrap;
-      }
-
-      .badge-dup {
-        background: #d97706;
-        color: #ffffff;
-        box-shadow: 0 0 8px rgba(217, 119, 6, 0.5);
-        border: 1px solid #f59e0b;
       }
 
       .badge-banned {
@@ -604,12 +584,37 @@
         text-transform: uppercase;
         white-space: nowrap;
       }
-      .badge-rank-bk  { background: rgba(56, 189, 248, 0.18); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4); }
-      .badge-rank-kc  { background: rgba(99, 102, 241, 0.22); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.45); }
-      .badge-rank-ta  { background: rgba(168, 85, 247, 0.22); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.45); }
-      .badge-rank-ct  { background: rgba(239, 68, 68, 0.22); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.45); }
-      .badge-rank-dct { background: rgba(234, 179, 8, 0.25); color: #fde047; border: 1px solid rgba(234, 179, 8, 0.55); box-shadow: 0 0 10px rgba(234, 179, 8, 0.25); }
-      .badge-rank-khac{ background: rgba(100, 116, 139, 0.2); color: #94a3b8; border: 1px solid rgba(100, 116, 139, 0.35); }
+      .badge-rank-bk {
+        background: rgba(56, 189, 248, 0.18);
+        color: #38bdf8;
+        border: 1px solid rgba(56, 189, 248, 0.4);
+      }
+      .badge-rank-kc {
+        background: rgba(99, 102, 241, 0.22);
+        color: #818cf8;
+        border: 1px solid rgba(99, 102, 241, 0.45);
+      }
+      .badge-rank-ta {
+        background: rgba(168, 85, 247, 0.22);
+        color: #c084fc;
+        border: 1px solid rgba(168, 85, 247, 0.45);
+      }
+      .badge-rank-ct {
+        background: rgba(239, 68, 68, 0.22);
+        color: #f87171;
+        border: 1px solid rgba(239, 68, 68, 0.45);
+      }
+      .badge-rank-dct {
+        background: rgba(234, 179, 8, 0.25);
+        color: #fde047;
+        border: 1px solid rgba(234, 179, 8, 0.55);
+        box-shadow: 0 0 10px rgba(234, 179, 8, 0.25);
+      }
+      .badge-rank-khac {
+        background: rgba(100, 116, 139, 0.2);
+        color: #94a3b8;
+        border: 1px solid rgba(100, 116, 139, 0.35);
+      }
 
       /* KHỐI TIÊU ĐỀ PHÂN NHÓM THEO RANK */
       .rank-group-banner {
@@ -618,7 +623,11 @@
         justify-content: space-between;
         padding: 9px 14px;
         margin: 18px 0 10px;
-        background: linear-gradient(90deg, rgba(30, 41, 69, 0.85) 0%, rgba(15, 23, 42, 0.6) 100%);
+        background: linear-gradient(
+          90deg,
+          rgba(30, 41, 69, 0.85) 0%,
+          rgba(15, 23, 42, 0.6) 100%
+        );
         border-left: 4px solid var(--primary);
         border-radius: 8px;
         border-top: 1px solid var(--border-color);
@@ -661,7 +670,9 @@
         transition: all 0.15s;
       }
 
-      .btn-copy-action:active { transform: scale(0.97); }
+      .btn-copy-action:active {
+        transform: scale(0.97);
+      }
 
       .btn-del-action {
         background: rgba(220, 38, 38, 0.15);
@@ -694,9 +705,29 @@
         color: #fff;
       }
 
+      .btn-remove-recent {
+        background: rgba(244, 63, 94, 0.12);
+        color: #fb7185;
+        border: 1px solid rgba(244, 63, 94, 0.25);
+        border-radius: 8px;
+        padding: 7px 11px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        white-space: nowrap;
+        transition: all 0.15s ease;
+      }
+      .btn-remove-recent:hover {
+        background: rgba(244, 63, 94, 0.28);
+        color: #fff;
+        border-color: #f43f5e;
+      }
+
       /* ========================================================
-         GIAO DIỆN MOBILE ĐƯỢC THIẾT KẾ LẠI HOÀN HẢO (<= 820px)
-         KHÔNG BỊ ÉP CHỮ, KHÔNG BỊ TRÀN MÉP, BỐ CỤC CÂN ĐỐI 100%
+         GIAO DIỆN MOBILE
          ======================================================== */
       .mobile-card-list {
         display: none;
@@ -720,12 +751,6 @@
         border: 1px solid var(--ban-border) !important;
       }
 
-      .m-row-card.is-duplicate {
-        background: var(--dup-bg) !important;
-        border: 1.5px solid var(--dup-border) !important;
-      }
-
-      /* Hàng 1 trên mobile: STT + Huy hiệu */
       .m-card-top-row {
         display: flex;
         justify-content: space-between;
@@ -749,7 +774,6 @@
         border-radius: 5px;
       }
 
-      /* Hàng lịch sử dùng trên mobile: Gọn gàng và độc lập */
       .m-history-row {
         display: flex;
         justify-content: space-between;
@@ -760,17 +784,15 @@
         font-size: 0.75rem;
       }
 
-      /* Hàng 2 trên mobile: Tài khoản (50%) | Mật khẩu (50%) */
       .m-creds-row {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 8px;
       }
 
-      /* Hàng 3 trên mobile: Ô Rank (65px) + Ô Mở BAN (75px) + Nút Copy to (1fr) + Nút Xóa (38px) */
       .m-action-row {
         display: grid;
-        grid-template-columns: 70px 80px 1fr 38px;
+        grid-template-columns: 65px 65px 75px 1fr 38px;
         gap: 6px;
         align-items: center;
       }
@@ -808,7 +830,28 @@
         cursor: pointer;
       }
 
-      /* RESPONSIVE MOBILE TỐI ƯU CỰC KỲ CHI TIẾT */
+      .m-btn-remove-recent {
+        width: 100%;
+        height: 100%;
+        min-height: 38px;
+        background: rgba(244, 63, 94, 0.18);
+        color: #fb7185;
+        border: 1px solid rgba(244, 63, 94, 0.35);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.95rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .m-btn-remove-recent:hover {
+        background: #f43f5e;
+        color: #fff;
+      }
+
+      /* RESPONSIVE MOBILE */
       @media (max-width: 820px) {
         body {
           padding: 10px 8px 80px;
@@ -834,7 +877,6 @@
           font-size: 1.05rem;
         }
 
-        /* 2 Nút trên Header cân đối trên mobile */
         .header-action-group {
           width: 100%;
           display: grid;
@@ -849,30 +891,8 @@
           justify-content: center;
         }
 
-        /* Toolbar trên mobile: Tách làm 2 tầng thoáng đãng */
         .toolbar {
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
-          padding: 10px;
-        }
-
-        .search-group {
-          width: 100%;
-          min-width: 0;
-          display: flex;
-          gap: 6px;
-        }
-
-        .search-group input {
-          flex: 1;
-        }
-
-        .toolbar-bottom-row {
-          width: 100%;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
+          padding: 8px 10px;
         }
       }
 
@@ -881,20 +901,17 @@
         position: fixed;
         inset: 0;
         background: rgba(0, 0, 0, 0.75);
-        backdrop-filter: blur(5px);
-        display: flex;
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+        display: none;
         align-items: center;
         justify-content: center;
         padding: 16px;
         z-index: 99999;
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.2s ease;
       }
 
       .modal-overlay.show {
-        opacity: 1;
-        pointer-events: auto;
+        display: flex !important;
       }
 
       .modal-card {
@@ -914,10 +931,26 @@
         transform: scale(1);
       }
 
-      .modal-icon { font-size: 2.4rem; margin-bottom: 8px; }
-      .modal-title { font-size: 1.1rem; font-weight: 800; color: #fff; margin-bottom: 6px; }
-      .modal-msg { font-size: 0.88rem; color: #cbd5e1; line-height: 1.45; margin-bottom: 20px; }
-      .modal-btns { display: flex; gap: 8px; }
+      .modal-icon {
+        font-size: 2.4rem;
+        margin-bottom: 8px;
+      }
+      .modal-title {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: #fff;
+        margin-bottom: 6px;
+      }
+      .modal-msg {
+        font-size: 0.88rem;
+        color: #cbd5e1;
+        line-height: 1.45;
+        margin-bottom: 20px;
+      }
+      .modal-btns {
+        display: flex;
+        gap: 8px;
+      }
 
       .modal-btn-act {
         flex: 1;
@@ -929,9 +962,18 @@
         cursor: pointer;
       }
 
-      .btn-m-confirm { background: var(--primary-gradient); color: #fff; }
-      .btn-m-danger { background: #dc2626; color: #fff; }
-      .btn-m-cancel { background: #334155; color: #e2e8f0; }
+      .btn-m-confirm {
+        background: var(--primary-gradient);
+        color: #fff;
+      }
+      .btn-m-danger {
+        background: #dc2626;
+        color: #fff;
+      }
+      .btn-m-cancel {
+        background: #334155;
+        color: #e2e8f0;
+      }
 
       /* TOAST */
       #toast {
@@ -952,7 +994,9 @@
         z-index: 999999;
       }
 
-      #toast.show { opacity: 1; }
+      #toast.show {
+        opacity: 1;
+      }
     </style>
   </head>
   <body>
@@ -961,39 +1005,100 @@
       <header>
         <div class="header-brand">
           <div class="logo-box">
-            <img src="logo.png" id="header-logo-img" alt="devsepa" onerror="if(this.src.indexOf('logo.jpg')===-1){this.src='logo.jpg';}else{this.style.display='none';document.getElementById('header-logo-fallback').style.display='flex';}" />
-            <span id="header-logo-fallback" style="display: none; width: 100%; height: 100%; align-items: center; justify-content: center; font-size: 1.1rem;">🔔</span>
+            <img
+              src="logo.png"
+              id="header-logo-img"
+              alt="devsepa"
+              onerror="
+                if (this.src.indexOf('logo.jpg') === -1) {
+                  this.src = 'logo.jpg';
+                } else {
+                  this.style.display = 'none';
+                  document.getElementById(
+                    'header-logo-fallback',
+                  ).style.display = 'flex';
+                }
+              "
+            />
+            <span
+              id="header-logo-fallback"
+              style="
+                display: none;
+                width: 100%;
+                height: 100%;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.1rem;
+              "
+              >🔔</span
+            >
           </div>
           <div>
-            <h1>devsepa <span style="font-size: 0.82rem; font-weight: 700; color: #38bdf8;">• AOV Manager</span></h1>
+            <h1>
+              devsepa
+              <span style="font-size: 0.82rem; font-weight: 700; color: #38bdf8"
+                >• AOV Manager</span
+              >
+            </h1>
             <div class="header-sub">
-              <span id="header-stat-summary">Hệ thống quản lý nick Liên Quân</span>
+              <div
+                class="stats-badge"
+                style="
+                  display: inline-flex;
+                  align-items: center;
+                  gap: 7px;
+                  font-size: 0.82rem;
+                "
+              >
+                <span id="stat-count" style="font-weight: 800; color: #fff"
+                  >0 nick</span
+                >
+                <span id="stat-active" style="color: #10b981; font-weight: 700"
+                  >• 🟢 0 hoạt động</span
+                >
+                <span id="stat-ban" style="color: #f43f5e; font-weight: 700"
+                  >• 🚫 0 ban</span
+                >
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- BẢNG CHÚ THÍCH MÀU SẮC (CHỈ HIỆN TRÊN MÁY TÍNH) -->
-        <div class="color-guide">
-          <span class="guide-item" style="color: #fca5a5;"><span class="dot dot-ban"></span> Đỏ: BỊ BAN</span>
-          <span class="guide-item" style="color: #fcd34d;"><span class="dot dot-dup"></span> Cam: BỊ TRÙNG</span>
-          <span class="guide-item" style="color: #6ee7b7;"><span class="dot dot-ok"></span> Tối: Hoạt động</span>
-        </div>
+        <!-- BẢNG CHÚ THÍCH 2 TRẠNG THÁI -->
 
         <div class="header-action-group">
-          <button class="btn btn-cloud" id="btn-open-cloud">
-            <span>☁️</span> Đồng Bộ Cloud
+          <button
+            class="btn btn-cloud"
+            id="btn-open-cloud"
+            onclick="openCloudModal()"
+          >
+            <span id="cloud-status-icon">☁️</span>
+            <span id="cloud-btn-text">Đồng Bộ PC & ĐT</span>
           </button>
-          <button class="btn btn-tele" id="btn-open-tele">
+          <button
+            class="btn btn-tele"
+            id="btn-open-tele"
+            onclick="openTeleModal()"
+          >
             <span>✈️</span> Telegram Bot
           </button>
         </div>
 
-        <input type="file" id="file-import" accept=".json" style="display: none" />
+        <input
+          type="file"
+          id="file-import"
+          accept=".json"
+          style="display: none"
+        />
       </header>
 
       <!-- KHUNG NHẬP LIỆU GỌN GÀNG (MODERN SLATE) -->
       <div class="add-box" id="input-container">
-        <div class="add-box-header" id="collapse-toggle">
+        <div
+          class="add-box-header"
+          id="collapse-toggle"
+          onclick="toggleInputBox()"
+        >
           <div class="add-box-title">
             <span class="add-box-badge">➕ THÊM TÀI KHOẢN MỚI</span>
             <span class="add-box-hint">(Dán danh sách tk:mk bên dưới)</span>
@@ -1010,68 +1115,71 @@
               ></textarea>
             </div>
             <div>
-              <label>Mở BAN (dd/MM - chỉ nhập số):</label>
-              <input 
-                type="text" 
-                id="defaultUnlock" 
+              <label>Ngày mở BAN (dd/MM):</label>
+              <input
+                type="text"
+                id="defaultUnlock"
                 inputmode="numeric"
                 pattern="[0-9/]*"
-                placeholder="Ví dụ: 25/10" 
+                placeholder="Ví dụ: 25/10"
                 maxlength="5"
                 oninput="formatDateOnlyNumbers(this)"
               />
             </div>
             <div>
               <label>Rank (chọn nhanh hoặc gõ):</label>
-              <input 
-                type="text" 
-                id="defaultRank" 
-                placeholder="BK, KC, TA, CT, DCT..." 
+              <input
+                type="text"
+                id="defaultRank"
+                placeholder="BK, KC, TA, CT, DCT..."
                 maxlength="15"
-                style="text-transform: uppercase;"
+                style="text-transform: uppercase"
               />
             </div>
             <div>
-              <label style="opacity: 0;">Thao tác</label>
-              <button class="btn btn-primary" id="btn-add" style="height: 40px; width: 100%; padding: 0 16px;">
-                ➕ Thêm Nick
+              <label>Uy Tín:</label>
+              <input
+                type="text"
+                id="defaultUyTin"
+                inputmode="numeric"
+                pattern="[0-9]*"
+                placeholder="100 (tùy chọn)"
+                maxlength="3"
+                oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+              />
+            </div>
+            <div>
+              <label style="opacity: 0">Thao tác</label>
+              <button
+                class="btn btn-primary"
+                id="btn-add"
+                onclick="handleAddAccount()"
+                style="height: 40px; width: 100%; padding: 0 16px"
+              >
+                ➕ THÊM TÀI KHOẢN
               </button>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- THANH TÌM KIẾM & BỘ LỌC (STICKY CỐ ĐỊNH) -->
+      <!-- THANH ĐIỀU HƯỚNG RANK (STICKY CỐ ĐỊNH) -->
       <div class="toolbar">
-        <div class="search-group">
-          <input
-            type="text"
-            id="search"
-            placeholder="🔍 Tìm tài khoản, mật khẩu, rank, ngày..."
-          />
-          <select id="filterStatus" style="width: auto; min-width: 105px;">
-            <option value="all">Tất cả TT</option>
-            <option value="dup">⚠️ Trùng</option>
-            <option value="banned">🚫 BAN</option>
-            <option value="active">🟢 Hoạt động</option>
-          </select>
-        </div>
-
-        <div class="toolbar-bottom-row">
-          <!-- THANH CHUYỂN NHANH ĐẾN TỪNG RANK (CUỘN NGANG TIỆN DỤNG TRÊN MOBILE) -->
-          <div class="quick-rank-nav" id="quick-rank-nav">
-            <span class="rank-nav-chip active" data-rank="all">Tất Cả</span>
-            <span class="rank-nav-chip" data-rank="BK">🛡️ BK</span>
-            <span class="rank-nav-chip" data-rank="KC">💠 KC</span>
-            <span class="rank-nav-chip" data-rank="TA">💎 TA</span>
-            <span class="rank-nav-chip" data-rank="CT">🔥 CT</span>
-            <span class="rank-nav-chip" data-rank="DCT">👑 DCT</span>
-            <span class="rank-nav-chip" data-rank="KHAC">Khác</span>
-          </div>
-          <div class="stats-badge">
-            <span id="stat-count" style="font-weight: 700; color: #fff; font-size: 0.88rem;">0 nick</span>
-            <span id="stat-dup" style="color: #f59e0b; font-weight: 700; font-size: 0.88rem;"></span>
-          </div>
+        <!-- THANH CHUYỂN NHANH ĐẾN TỪNG RANK (CUỘN NGANG TIỆN DỤNG) -->
+        <div class="quick-rank-nav" id="quick-rank-nav">
+          <span class="rank-nav-chip active" data-rank="all">Tất Cả</span>
+          <span
+            class="rank-nav-chip chip-recent"
+            data-rank="recent"
+            style="border-color: rgba(56, 189, 248, 0.4); color: #38bdf8"
+            >🕒 Đã Dùng (<span id="recent-tab-count">0</span>)</span
+          >
+          <span class="rank-nav-chip" data-rank="BK">🛡️ BK</span>
+          <span class="rank-nav-chip" data-rank="KC">💠 KC</span>
+          <span class="rank-nav-chip" data-rank="TA">💎 TA</span>
+          <span class="rank-nav-chip" data-rank="CT">🔥 CT</span>
+          <span class="rank-nav-chip" data-rank="DCT">👑 DCT</span>
+          <span class="rank-nav-chip" data-rank="KHAC">Khác</span>
         </div>
       </div>
 
@@ -1081,95 +1189,288 @@
 
     <!-- POPOVER MENU CHỌN RANK NHANH -->
     <div id="rank-popover" class="rank-popover">
-      <div style="font-size: 0.7rem; color: #94a3b8; padding: 4px 8px; text-transform: uppercase; font-weight: 800;">Chọn nhanh Rank:</div>
-      <button type="button" class="rank-opt-btn" onclick="selectQuickRank('BK')">🛡️ Bạch Kim (BK)</button>
-      <button type="button" class="rank-opt-btn" onclick="selectQuickRank('KC')">💠 Kim Cương (KC)</button>
-      <button type="button" class="rank-opt-btn" onclick="selectQuickRank('TA')">💎 Tinh Anh (TA)</button>
-      <button type="button" class="rank-opt-btn" onclick="selectQuickRank('CT')">🔥 Cao Thủ (CT)</button>
-      <button type="button" class="rank-opt-btn" onclick="selectQuickRank('DCT')">👑 Đại Cao Thủ (DCT)</button>
+      <div
+        style="
+          font-size: 0.7rem;
+          color: #94a3b8;
+          padding: 4px 8px;
+          text-transform: uppercase;
+          font-weight: 800;
+        "
+      >
+        Chọn nhanh Rank:
+      </div>
+      <button
+        type="button"
+        class="rank-opt-btn"
+        onclick="selectQuickRank('BK')"
+      >
+        🛡️ Bạch Kim (BK)
+      </button>
+      <button
+        type="button"
+        class="rank-opt-btn"
+        onclick="selectQuickRank('KC')"
+      >
+        💠 Kim Cương (KC)
+      </button>
+      <button
+        type="button"
+        class="rank-opt-btn"
+        onclick="selectQuickRank('TA')"
+      >
+        💎 Tinh Anh (TA)
+      </button>
+      <button
+        type="button"
+        class="rank-opt-btn"
+        onclick="selectQuickRank('CT')"
+      >
+        🔥 Cao Thủ (CT)
+      </button>
+      <button
+        type="button"
+        class="rank-opt-btn"
+        onclick="selectQuickRank('DCT')"
+      >
+        👑 Đại Cao Thủ (DCT)
+      </button>
     </div>
+
+    <!-- NÚT CUỘN LÊN ĐẦU TRANG -->
+    <button id="btn-back-top" title="Cuộn lên đầu trang">▲</button>
 
     <!-- MODAL ĐỒNG BỘ CLOUD GITHUB (ĐỒNG BỘ PC VÀ ĐIỆN THOẠI) -->
     <div id="cloud-modal" class="modal-overlay">
-      <div class="modal-card" style="max-width: 440px; text-align: left;">
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-          <div style="font-weight: 800; font-size: 1.15rem; color: #fff; display: flex; align-items: center; gap: 8px;">
+      <div class="modal-card" style="max-width: 440px; text-align: left">
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+          "
+        >
+          <div
+            style="
+              font-weight: 800;
+              font-size: 1.15rem;
+              color: #fff;
+              display: flex;
+              align-items: center;
+              gap: 8px;
+            "
+          >
             <span>☁️</span> Đồng Bộ PC & Điện Thoại
           </div>
-          <button id="btn-close-cloud" style="background: none; border: none; color: #94a3b8; font-size: 1.2rem; cursor: pointer;">✕</button>
+          <button
+            id="btn-close-cloud"
+            onclick="closeCloudModal()"
+            style="
+              background: none;
+              border: none;
+              color: #94a3b8;
+              font-size: 1.2rem;
+              cursor: pointer;
+            "
+          >
+            ✕
+          </button>
         </div>
 
-        <p style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 14px; line-height: 1.45;">
-          Dữ liệu nick sẽ được lưu trực tiếp vào kho <b>devsepa/quanlyaccount</b>. Dù mở trên PC hay Điện thoại đều tự động tải và cập nhật chung 1 danh sách!
+        <p
+          style="
+            font-size: 0.8rem;
+            color: #94a3b8;
+            margin-bottom: 14px;
+            line-height: 1.45;
+          "
+        >
+          Dữ liệu nick được lưu trực tiếp vào kho <b>devsepa/quanlyaccount</b>.
+          Dù mở trên PC hay Điện thoại đều tự động cập nhật chung 1 danh sách!
         </p>
 
-        <div style="margin-bottom: 12px;">
-          <label style="font-size: 0.78rem; font-weight: 700; color: #cbd5e1; display: block; margin-bottom: 4px;">GitHub Personal Access Token (classic):</label>
-          <input 
-            type="password" 
-            id="gh-token" 
-            placeholder="ghp_xxxxxxxxxxxxxxxxxxxx..." 
-            style="font-size: 0.85rem; font-family: monospace;"
+        <div style="margin-bottom: 12px">
+          <label
+            style="
+              font-size: 0.78rem;
+              font-weight: 700;
+              color: #cbd5e1;
+              display: block;
+              margin-bottom: 4px;
+            "
+            >GitHub Personal Access Token:</label
+          >
+          <input
+            type="text"
+            id="gh-token"
+            placeholder="ghp_xxxxxxxxxxxxxxxxxxxx..."
+            value="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"
+            style="font-size: 0.85rem; font-family: monospace"
           />
         </div>
 
-        <div style="display: flex; gap: 8px; margin-bottom: 12px;">
-          <button class="btn btn-tool" id="btn-pull-cloud" style="flex: 1; padding: 10px;">📥 Tải Về Máy</button>
-          <button class="btn btn-primary" id="btn-push-cloud" style="flex: 1; padding: 10px;">☁️ Đẩy Lên Mây</button>
+        <div style="display: flex; gap: 8px; margin-bottom: 12px">
+          <button
+            class="btn btn-tool"
+            id="btn-pull-cloud"
+            onclick="pullFromCloud(false)"
+            style="flex: 1; padding: 10px"
+          >
+            📥 Tải Về Máy
+          </button>
+          <button
+            class="btn btn-primary"
+            id="btn-push-cloud"
+            onclick="pushToCloud(false)"
+            style="flex: 1; padding: 10px"
+          >
+            ☁️ Đẩy Lên Mây
+          </button>
         </div>
 
-        <div style="background: rgba(0,0,0,0.3); border-radius: 8px; padding: 10px; font-size: 0.75rem; color: #94a3b8; line-height: 1.45;">
-          💡 <b>Cách tạo GitHub Token (1 lần duy nhất):</b><br>
-          1. Vào GitHub $\rightarrow$ <b>Settings</b> $\rightarrow$ <b>Developer settings</b> $\rightarrow$ <b>Personal access tokens (tokens classic)</b>.<br>
-          2. Bấm <b>Generate new token (classic)</b> $\rightarrow$ Tích chọn ô <b>repo</b> $\rightarrow$ Bấm Generate.<br>
-          3. Dán mã token đó vào đây (cả PC và ĐT dùng chung mã này).
+        <div
+          style="
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 0.75rem;
+            color: #94a3b8;
+            line-height: 1.45;
+          "
+        >
+          💡 <b>Cơ chế Tự Động Đồng Bộ (Auto-Sync):</b><br />
+          • Token của bạn đã được cài sẵn.<br />
+          • Mọi thao tác thêm, sửa, xóa, copy nick đều
+          <b>tự động đẩy ngầm lên GitHub</b> sau 1 giây!<br />
+          • Khi mở web trên điện thoại, dữ liệu mới nhất sẽ
+          <b>tự động được tải về</b> ngay lập tức.
         </div>
       </div>
     </div>
 
     <!-- MODAL CẤU HÌNH BÁO TELEGRAM -->
     <div id="tele-modal" class="modal-overlay">
-      <div class="modal-card" style="max-width: 420px; text-align: left;">
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-          <div style="font-weight: 800; font-size: 1.15rem; color: #fff; display: flex; align-items: center; gap: 8px;">
+      <div class="modal-card" style="max-width: 420px; text-align: left">
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+          "
+        >
+          <div
+            style="
+              font-weight: 800;
+              font-size: 1.15rem;
+              color: #fff;
+              display: flex;
+              align-items: center;
+              gap: 8px;
+            "
+          >
             <span>✈️</span> Cấu Hình Telegram Bot
           </div>
-          <button id="btn-close-tele" style="background: none; border: none; color: #94a3b8; font-size: 1.2rem; cursor: pointer;">✕</button>
+          <button
+            id="btn-close-tele"
+            onclick="closeTeleModal()"
+            style="
+              background: none;
+              border: none;
+              color: #94a3b8;
+              font-size: 1.2rem;
+              cursor: pointer;
+            "
+          >
+            ✕
+          </button>
         </div>
 
-        <p style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 14px; line-height: 1.4;">
-          Nhận tin nhắn báo chuông điện thoại ngay khi tài khoản hết hạn BAN. Miễn phí 100%.
+        <p
+          style="
+            font-size: 0.8rem;
+            color: #94a3b8;
+            margin-bottom: 14px;
+            line-height: 1.4;
+          "
+        >
+          Nhận tin nhắn báo chuông điện thoại trước 1 ngày và đúng ngày tài
+          khoản hết hạn BAN. Miễn phí 100%.
         </p>
 
-        <div style="margin-bottom: 12px;">
-          <label style="font-size: 0.78rem; font-weight: 700; color: #cbd5e1; display: block; margin-bottom: 4px;">Bot Token (từ @BotFather):</label>
-          <input 
-            type="text" 
-            id="tele-bot-token" 
-            placeholder="Ví dụ: 123456789:ABCdefGhIjkLmNoPQR..." 
-            style="font-size: 0.85rem; font-family: monospace;"
+        <div style="margin-bottom: 12px">
+          <label
+            style="
+              font-size: 0.78rem;
+              font-weight: 700;
+              color: #cbd5e1;
+              display: block;
+              margin-bottom: 4px;
+            "
+            >Bot Token (từ @BotFather):</label
+          >
+          <input
+            type="text"
+            id="tele-bot-token"
+            placeholder="Ví dụ: 123456789:ABCdefGhIjkLmNoPQR..."
+            style="font-size: 0.85rem; font-family: monospace"
           />
         </div>
 
-        <div style="margin-bottom: 16px;">
-          <label style="font-size: 0.78rem; font-weight: 700; color: #cbd5e1; display: block; margin-bottom: 4px;">Chat ID của bạn (từ @userinfobot):</label>
-          <input 
-            type="text" 
-            id="tele-chat-id" 
-            placeholder="Ví dụ: 987654321" 
-            style="font-size: 0.85rem; font-family: monospace;"
+        <div style="margin-bottom: 16px">
+          <label
+            style="
+              font-size: 0.78rem;
+              font-weight: 700;
+              color: #cbd5e1;
+              display: block;
+              margin-bottom: 4px;
+            "
+            >Chat ID của bạn (từ @userinfobot):</label
+          >
+          <input
+            type="text"
+            id="tele-chat-id"
+            placeholder="Ví dụ: 987654321"
+            style="font-size: 0.85rem; font-family: monospace"
           />
         </div>
 
-        <div style="display: flex; gap: 8px; margin-bottom: 12px;">
-          <button class="btn btn-tool" id="btn-test-tele" style="flex: 1; padding: 10px;">🔔 Bắn Thử 1 Tin</button>
-          <button class="btn btn-primary" id="btn-save-tele" style="flex: 1; padding: 10px;">💾 Lưu Cấu Hình</button>
+        <div style="display: flex; gap: 8px; margin-bottom: 12px">
+          <button
+            class="btn btn-tool"
+            id="btn-test-tele"
+            onclick="handleTestTele()"
+            style="flex: 1; padding: 10px"
+          >
+            🔔 Bắn Thử 1 Tin
+          </button>
+          <button
+            class="btn btn-primary"
+            id="btn-save-tele"
+            onclick="handleSaveTele()"
+            style="flex: 1; padding: 10px"
+          >
+            💾 Lưu Cấu Hình
+          </button>
         </div>
 
-        <div style="background: rgba(0,0,0,0.3); border-radius: 8px; padding: 10px; font-size: 0.75rem; color: #94a3b8; line-height: 1.45;">
-          💡 <b>Cách lấy Token & Chat ID nhanh (1 phút):</b><br>
-          1. Vào Telegram tìm <b>@BotFather</b> $\rightarrow$ gõ <code>/newbot</code> lấy Token.<br>
-          2. Tìm <b>@userinfobot</b> $\rightarrow$ bấm Start lấy Chat ID của bạn.
+        <div
+          style="
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 0.75rem;
+            color: #94a3b8;
+            line-height: 1.45;
+          "
+        >
+          💡 <b>Cách lấy Token & Chat ID nhanh (1 phút):</b><br />
+          1. Vào Telegram tìm <b>@BotFather</b> $\rightarrow$ gõ
+          <code>/newbot</code> lấy Token.<br />
+          2. Tìm <b>@userinfobot</b> $\rightarrow$ bấm Start lấy Chat ID của
+          bạn.
         </div>
       </div>
     </div>
@@ -1185,11 +1486,47 @@
     </div>
 
     <!-- TOAST -->
-    <div id="toast">📋 Đã copy tk:mk!</div>
+    <div id="toast">📋 ĐÃ SAO CHÉP!</div>
 
     <script>
+      // BẮT MỌI LỖI RUNTIME NẾU CÓ ĐỂ KHÔNG BAO GIỜ BỊ ĐƠ WEB
+      window.addEventListener("error", function (e) {
+        console.warn("Lỗi runtime đã được xử lý:", e.message);
+      });
+
+      // ĐIỀU KHIỂN CÁC MODAL (TOÀN CỤC)
+      window.openCloudModal = function () {
+        const m = document.getElementById("cloud-modal");
+        if (m) m.classList.add("show");
+      };
+      window.closeCloudModal = function () {
+        const m = document.getElementById("cloud-modal");
+        if (m) m.classList.remove("show");
+      };
+      window.openTeleModal = function () {
+        const m = document.getElementById("tele-modal");
+        if (m) m.classList.add("show");
+      };
+      window.closeTeleModal = function () {
+        const m = document.getElementById("tele-modal");
+        if (m) m.classList.remove("show");
+      };
+      window.toggleInputBox = function () {
+        const collapseContent = document.getElementById("collapse-content");
+        const collapseArrow = document.getElementById("collapse-arrow");
+        if (!collapseContent) return;
+        collapseContent.classList.toggle("hidden");
+        if (collapseArrow) {
+          collapseArrow.textContent = collapseContent.classList.contains(
+            "hidden",
+          )
+            ? "▼ Mở rộng"
+            : "▲ Thu gọn";
+        }
+      };
+
       // CHỈ CHO PHÉP NHẬP SỐ VÀ TỰ ĐỘNG THÊM DẤU /
-      window.formatDateOnlyNumbers = function(el) {
+      window.formatDateOnlyNumbers = function (el) {
         let val = el.value.replace(/[^0-9]/g, "");
         if (val.length > 4) val = val.substring(0, 4);
         if (val.length >= 3) {
@@ -1199,108 +1536,131 @@
         }
       };
 
-      const collapseToggle = document.getElementById("collapse-toggle");
-      const collapseContent = document.getElementById("collapse-content");
-      const collapseArrow = document.getElementById("collapse-arrow");
+      // MODAL THÔNG BÁO (NOTICE)
+      window.closeNotice = function () {
+        const customModal = document.getElementById("custom-modal");
+        if (customModal) customModal.classList.remove("show");
+      };
 
-      function toggleInputBox() {
-        collapseContent.classList.toggle("hidden");
-        if (collapseContent.classList.contains("hidden")) {
-          collapseArrow.textContent = "▼ Mở rộng";
-        } else {
-          collapseArrow.textContent = "▲ Thu gọn";
-        }
-      }
+      window.showNotice = function ({
+        title = "Thông Báo",
+        message = "",
+        icon = "⚠️",
+        type = "info",
+        onConfirm = null,
+      }) {
+        const customModal = document.getElementById("custom-modal");
+        const modalIcon = document.getElementById("modal-icon");
+        const modalTitle = document.getElementById("modal-title");
+        const modalMsg = document.getElementById("modal-msg");
+        const modalBtns = document.getElementById("modal-btns");
+        if (!customModal) return;
 
-      collapseToggle.addEventListener("click", toggleInputBox);
+        if (modalTitle) modalTitle.textContent = title;
+        if (modalMsg) modalMsg.innerHTML = message;
+        if (modalIcon) modalIcon.textContent = icon;
+        if (modalBtns) {
+          modalBtns.innerHTML = "";
+          if (onConfirm) {
+            const btnCancel = document.createElement("button");
+            btnCancel.className = "modal-btn-act btn-m-cancel";
+            btnCancel.textContent = "Hủy Bỏ";
+            btnCancel.onclick = window.closeNotice;
 
-      // MODAL THÔNG BÁO
-      const customModal = document.getElementById("custom-modal");
-      const modalIcon = document.getElementById("modal-icon");
-      const modalTitle = document.getElementById("modal-title");
-      const modalMsg = document.getElementById("modal-msg");
-      const modalBtns = document.getElementById("modal-btns");
+            const btnOk = document.createElement("button");
+            btnOk.className = `modal-btn-act ${type === "danger" ? "btn-m-danger" : "btn-m-confirm"}`;
+            btnOk.textContent = "Đồng Ý";
+            btnOk.onclick = () => {
+              window.closeNotice();
+              onConfirm();
+            };
 
-      function showNotice({ title = "Thông Báo", message = "", icon = "⚠️", type = "info", onConfirm = null }) {
-        modalTitle.textContent = title;
-        modalMsg.textContent = message;
-        modalIcon.textContent = icon;
-        modalBtns.innerHTML = "";
-
-        if (onConfirm) {
-          const btnCancel = document.createElement("button");
-          btnCancel.className = "modal-btn-act btn-m-cancel";
-          btnCancel.textContent = "Hủy Bỏ";
-          btnCancel.onclick = closeNotice;
-
-          const btnOk = document.createElement("button");
-          btnOk.className = `modal-btn-act ${type === 'danger' ? 'btn-m-danger' : 'btn-m-confirm'}`;
-          btnOk.textContent = "Đồng Ý";
-          btnOk.onclick = () => {
-            closeNotice();
-            onConfirm();
-          };
-
-          modalBtns.appendChild(btnCancel);
-          modalBtns.appendChild(btnOk);
-        } else {
-          const btnOk = document.createElement("button");
-          btnOk.className = "modal-btn-act btn-m-confirm";
-          btnOk.textContent = "Đã Hiểu";
-          btnOk.onclick = closeNotice;
-          modalBtns.appendChild(btnOk);
-        }
-
-        customModal.classList.add("show");
-      }
-
-      function closeNotice() {
-        customModal.classList.remove("show");
-      }
-
-      customModal.addEventListener("click", (e) => {
-        if (e.target === customModal) closeNotice();
-      });
-
-      // LOAD VÀ CHUẨN HÓA DỮ LIỆU
-      let accounts = JSON.parse(localStorage.getItem("lq_accounts") || "[]");
-
-      accounts = accounts.map((a) => {
-        let u = a.username || "";
-        let p = a.password || "";
-        let unlock = a.unlockDate || "";
-        let r = a.rank || "";
-
-        if (unlock && !unlock.match(/^(\d{1,2})[\/\-](\d{1,2})$/)) {
-          let numOnly = unlock.replace(/[^0-9]/g, "");
-          if (numOnly.length >= 3) {
-            unlock = numOnly.substring(0, 2) + "/" + numOnly.substring(2, 4);
+            modalBtns.appendChild(btnCancel);
+            modalBtns.appendChild(btnOk);
           } else {
-            unlock = "";
+            const btnOk = document.createElement("button");
+            btnOk.className = "modal-btn-act btn-m-confirm";
+            btnOk.textContent = "Đã Hiểu";
+            btnOk.onclick = window.closeNotice;
+            modalBtns.appendChild(btnOk);
           }
         }
 
-        return {
-          id: a.id || Date.now().toString() + Math.random().toString(36).substr(2, 5),
-          username: u,
-          password: p,
-          rank: r,
-          date: a.date || getTodayFormatted(),
-          unlockDate: unlock,
-          lastUsed: a.lastUsed || "",
-          useCount: a.useCount || 0
-        };
-      });
+        customModal.classList.add("show");
+      };
+
+      // TIỆN ÍCH NGÀY THÁNG
+      function getTodayFormatted() {
+        const d = new Date();
+        const dd = String(d.getDate()).padStart(2, "0");
+        const mm = String(d.getMonth() + 1).padStart(2, "0");
+        return `${dd}/${mm}`;
+      }
+
+      // LOAD AN TOÀN TUYỆT ĐỐI KHÔNG BAO GIỜ CRASH TRÌNH DUYỆT
+      let accounts = [];
+      try {
+        const raw = localStorage.getItem("lq_accounts");
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) {
+            accounts = parsed
+              .filter((a) => a && typeof a === "object")
+              .map((a) => {
+                let u = a.username || "";
+                let p = a.password || "";
+                let unlock = a.unlockDate || "";
+                let r = a.rank || "";
+
+                if (
+                  unlock &&
+                  typeof unlock === "string" &&
+                  !unlock.match(/^(\d{1,2})[\/\-](\d{1,2})$/)
+                ) {
+                  let numOnly = unlock.replace(/[^0-9]/g, "");
+                  if (numOnly.length >= 3) {
+                    unlock =
+                      numOnly.substring(0, 2) + "/" + numOnly.substring(2, 4);
+                  } else {
+                    unlock = "";
+                  }
+                }
+
+                return {
+                  id:
+                    a.id ||
+                    Date.now().toString() +
+                      Math.random().toString(36).substr(2, 5),
+                  username: String(u),
+                  password: String(p),
+                  rank: String(r),
+                  uyTin:
+                    a.uyTin !== undefined && a.uyTin !== null
+                      ? String(a.uyTin)
+                      : "",
+                  date: a.date || getTodayFormatted(),
+                  unlockDate: String(unlock),
+                  lastUsed: a.lastUsed || "",
+                  lastUsedTime: Number(a.lastUsedTime) || 0,
+                  useCount: Number(a.useCount) || 0,
+                };
+              });
+          }
+        }
+      } catch (err) {
+        console.error("Lỗi đọc lq_accounts:", err);
+        accounts = [];
+      }
 
       const rawInput = document.getElementById("rawInput");
       const defaultUnlock = document.getElementById("defaultUnlock");
       const defaultRank = document.getElementById("defaultRank");
+      const defaultUyTin = document.getElementById("defaultUyTin");
       const btnAdd = document.getElementById("btn-add");
       const displayArea = document.getElementById("display-area");
-      const searchInput = document.getElementById("search");
-      const filterStatus = document.getElementById("filterStatus");
       const statCount = document.getElementById("stat-count");
-      const statDup = document.getElementById("stat-dup");
+      const statActive = document.getElementById("stat-active");
+      const statBan = document.getElementById("stat-ban");
       const toast = document.getElementById("toast");
       const rankPopover = document.getElementById("rank-popover");
       const btnBackTop = document.getElementById("btn-back-top");
@@ -1309,12 +1669,14 @@
       let activeRankFilter = "all";
       let currentActiveRankInput = null;
 
-      // XỬ LÝ CHỌN CHIP RANK NHANH (KHÔNG CẦN LƯỚT TÌM VẤT VẢ)
+      // XỬ LÝ CHỌN CHIP RANK NHANH
       if (quickRankNav) {
         quickRankNav.addEventListener("click", (e) => {
           const chip = e.target.closest(".rank-nav-chip");
           if (!chip) return;
-          document.querySelectorAll(".rank-nav-chip").forEach(c => c.classList.remove("active"));
+          document
+            .querySelectorAll(".rank-nav-chip")
+            .forEach((c) => c.classList.remove("active"));
           chip.classList.add("active");
           activeRankFilter = chip.getAttribute("data-rank") || "all";
           renderList();
@@ -1333,12 +1695,12 @@
         window.scrollTo({ top: 0, behavior: "smooth" });
       });
 
-      // POPOVER CHỌN RANK NHANH (KHI NHẤP VÀO Ô RANK)
-      window.openRankPicker = function(inputEl, event) {
+      // POPOVER CHỌN RANK NHANH
+      window.openRankPicker = function (inputEl, event) {
         if (event) event.stopPropagation();
         currentActiveRankInput = inputEl;
         const rect = inputEl.getBoundingClientRect();
-        
+
         let top = rect.bottom + 6;
         let left = rect.left;
 
@@ -1354,55 +1716,91 @@
         rankPopover.classList.add("show");
       };
 
-      window.selectQuickRank = function(rankCode) {
+      window.selectQuickRank = function (rankCode) {
         if (currentActiveRankInput) {
           currentActiveRankInput.value = rankCode;
-          // Gọi trigger onchange
-          currentActiveRankInput.dispatchEvent(new Event('change'));
+          currentActiveRankInput.dispatchEvent(new Event("change"));
         }
         rankPopover.classList.remove("show");
       };
 
-      // Đóng popover khi bấm ra ngoài
       document.addEventListener("click", (e) => {
-        if (!e.target.closest("#rank-popover") && !e.target.closest(".rank-input-field")) {
+        if (
+          !e.target.closest("#rank-popover") &&
+          !e.target.closest(".rank-input-field")
+        ) {
           rankPopover.classList.remove("show");
         }
       });
 
-      // Gán sự kiện click cho ô defaultRank ở form thêm
       if (defaultRank) {
         defaultRank.classList.add("rank-input-field");
-        defaultRank.addEventListener("click", (e) => openRankPicker(defaultRank, e));
+        defaultRank.addEventListener("click", (e) =>
+          openRankPicker(defaultRank, e),
+        );
       }
 
-      // CẤU HÌNH ĐỘ ƯU TIÊN VÀ PHÂN LOẠI RANK THEO YÊU CẦU:
-      // Thứ tự: BK < KC < TA < CT < DCT (và KHÁC / CHƯA RANK ở cuối)
+      // CẤU HÌNH RANK: BK < KC < TA < CT < DCT < KHAC
       const RANK_CONFIG = {
-        BK:  { key: 'BK',  order: 1, name: 'Bạch Kim (BK)',    icon: '🛡️', class: 'badge-rank-bk' },
-        KC:  { key: 'KC',  order: 2, name: 'Kim Cương (KC)',    icon: '💠', class: 'badge-rank-kc' },
-        TA:  { key: 'TA',  order: 3, name: 'Tinh Anh (TA)',     icon: '💎', class: 'badge-rank-ta' },
-        CT:  { key: 'CT',  order: 4, name: 'Cao Thủ (CT)',      icon: '🔥', class: 'badge-rank-ct' },
-        DCT: { key: 'DCT', order: 5, name: 'Đại Cao Thủ (DCT)', icon: '👑', class: 'badge-rank-dct' },
-        KHAC:{ key: 'KHAC',order: 6, name: 'Khác / Chưa Rank',  icon: '⚔️', class: 'badge-rank-khac' }
+        BK: {
+          key: "BK",
+          order: 1,
+          name: "Bạch Kim (BK)",
+          icon: "🛡️",
+          class: "badge-rank-bk",
+        },
+        KC: {
+          key: "KC",
+          order: 2,
+          name: "Kim Cương (KC)",
+          icon: "💠",
+          class: "badge-rank-kc",
+        },
+        TA: {
+          key: "TA",
+          order: 3,
+          name: "Tinh Anh (TA)",
+          icon: "💎",
+          class: "badge-rank-ta",
+        },
+        CT: {
+          key: "CT",
+          order: 4,
+          name: "Cao Thủ (CT)",
+          icon: "🔥",
+          class: "badge-rank-ct",
+        },
+        DCT: {
+          key: "DCT",
+          order: 5,
+          name: "Đại Cao Thủ (DCT)",
+          icon: "👑",
+          class: "badge-rank-dct",
+        },
+        KHAC: {
+          key: "KHAC",
+          order: 6,
+          name: "Khác / Chưa Rank",
+          icon: "⚔️",
+          class: "badge-rank-khac",
+        },
       };
 
-      // HÀM NHẬN DIỆN MỨC RANK THEO TỪ KHÓA ĐẦU (ví dụ: TA3 -> TA, CT 25* -> CT, DCT 50 -> DCT)
       function parseRankGroup(rankStr) {
-        if (!rankStr || typeof rankStr !== 'string') return RANK_CONFIG.KHAC;
+        if (!rankStr || typeof rankStr !== "string") return RANK_CONFIG.KHAC;
         const s = rankStr.trim().toUpperCase();
-        if (s.startsWith('DCT')) return RANK_CONFIG.DCT;
-        if (s.startsWith('CT'))  return RANK_CONFIG.CT;
-        if (s.startsWith('TA'))  return RANK_CONFIG.TA;
-        if (s.startsWith('KC'))  return RANK_CONFIG.KC;
-        if (s.startsWith('BK'))  return RANK_CONFIG.BK;
+        if (s.startsWith("DCT")) return RANK_CONFIG.DCT;
+        if (s.startsWith("CT")) return RANK_CONFIG.CT;
+        if (s.startsWith("TA")) return RANK_CONFIG.TA;
+        if (s.startsWith("KC")) return RANK_CONFIG.KC;
+        if (s.startsWith("BK")) return RANK_CONFIG.BK;
         return RANK_CONFIG.KHAC;
       }
 
       function getTodayFormatted() {
         const d = new Date();
-        const dd = String(d.getDate()).padStart(2, '0');
-        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const dd = String(d.getDate()).padStart(2, "0");
+        const mm = String(d.getMonth() + 1).padStart(2, "0");
         return `${dd}/${mm}`;
       }
 
@@ -1434,30 +1832,21 @@
         if (now.getTime() <= targetDate.getTime()) {
           return {
             isBanned: true,
-            desc: `🚫 BAN (${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')})`
+            desc: `🚫 BAN (${String(day).padStart(2, "0")}/${String(month).padStart(2, "0")})`,
           };
         } else {
           return { isBanned: false, desc: "🟢 HOẠT ĐỘNG" };
         }
       }
 
-      function getDuplicateMap() {
-        const counts = {};
-        accounts.forEach((a) => {
-          const clean = (a.username || "").trim().toLowerCase();
-          if (clean) counts[clean] = (counts[clean] || 0) + 1;
-        });
-        return counts;
-      }
-
-      // THÊM TÀI KHOẢN (CÓ KIỂM TRA TRÙNG VÀ BÁO "TÀI KHOẢN ĐÃ TỒN TẠI")
-      btnAdd.addEventListener("click", () => {
+      // THÊM TÀI KHOẢN (TOÀN CỤC)
+      window.handleAddAccount = function () {
         const text = rawInput.value.trim();
         if (!text) {
           showNotice({
             title: "Thiếu Thông Tin",
             message: "Vui lòng nhập tài khoản dạng tk:mk, tk|mk hoặc tk/mk!",
-            icon: "📝"
+            icon: "📝",
           });
           rawInput.focus();
           return;
@@ -1468,6 +1857,9 @@
         const todayStr = getTodayFormatted();
         const unlockVal = defaultUnlock.value.trim();
         const rankVal = defaultRank.value.trim().toUpperCase();
+        const uyTinVal = defaultUyTin
+          ? defaultUyTin.value.trim().replace(/[^0-9]/g, "")
+          : "";
 
         lines.forEach((line) => {
           let trimmed = line.trim();
@@ -1492,79 +1884,56 @@
 
           if (user) {
             newItems.push({
-              id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
+              id:
+                Date.now().toString() + Math.random().toString(36).substr(2, 5),
               username: user,
               password: pass,
               rank: rankVal,
+              uyTin: uyTinVal,
               date: todayStr,
               unlockDate: unlockVal,
               lastUsed: "",
-              useCount: 0
+              useCount: 0,
             });
           }
         });
 
-        if (newItems.length === 0) {
-          showNotice({
-            title: "Không Hợp Lệ",
-            message: "Không tìm thấy dòng tài khoản hợp lệ nào!",
-            icon: "⚠️"
-          });
-          return;
-        }
-
-        // KIỂM TRA TRÙNG VỚI DANH SÁCH ĐÃ CÓ
-        const existingUsers = new Set(accounts.map(a => (a.username || '').trim().toLowerCase()));
-        const dupFound = newItems.filter(item => existingUsers.has(item.username.trim().toLowerCase()));
-
-        if (dupFound.length > 0) {
-          const names = dupFound.map(d => `"${d.username}"`).join(", ");
-          showNotice({
-            title: "Tài Khoản ĐÃ TỒN TẠI!",
-            message: `Tài khoản [ ${names} ] đã có sẵn trong danh sách! Bạn có muốn tiếp tục lưu thêm không?`,
-            icon: "⚠️",
-            type: "danger",
-            onConfirm: () => {
-              accounts = [...newItems, ...accounts];
-              saveData();
-              renderList();
-              rawInput.value = "";
-              defaultUnlock.value = "";
-              defaultRank.value = "";
-              showToast(`✅ Đã thêm ${newItems.length} tài khoản!`);
-            }
-          });
-          return;
-        }
+        if (newItems.length === 0) return;
 
         accounts = [...newItems, ...accounts];
         saveData();
         renderList();
+        triggerAutoSync();
 
         rawInput.value = "";
         defaultUnlock.value = "";
         defaultRank.value = "";
+        if (defaultUyTin) defaultUyTin.value = "";
         showToast(`✅ Đã thêm ${newItems.length} tài khoản!`);
-      });
+      };
 
       function saveData() {
         localStorage.setItem("lq_accounts", JSON.stringify(accounts));
       }
 
-      window.updateField = function(id, field, value) {
+      window.updateField = function (id, field, value) {
         const item = accounts.find((a) => a.id === id);
         if (item) {
           item[field] = value.trim();
-          if (field === 'rank') {
+          if (field === "rank") {
             item[field] = item[field].toUpperCase();
+          }
+          if (field === "uyTin") {
+            item[field] = item[field].replace(/[^0-9]/g, "");
           }
           saveData();
           renderList();
+          triggerAutoSync();
         }
       };
 
       // RESET LỊCH SỬ DÙNG
-      window.resetHistory = function(id) {
+      window.resetHistory = function (id) {
         const item = accounts.find((a) => a.id === id);
         if (!item) return;
 
@@ -1578,92 +1947,82 @@
             item.lastUsed = "";
             saveData();
             renderList();
+            triggerAutoSync();
             showToast("🔄 Đã reset số lần dùng về 0!");
-          }
+          },
         });
       };
 
-      // HIỂN THỊ DANH SÁCH ĐÃ GOM NHÓM & TỰ ĐỘNG SẮP XẾP THEO RANK: BK, KC, TA, CT, DCT
+      // HIỂN THỊ DANH SÁCH
       function renderList() {
-        const keyword = searchInput.value.trim().toLowerCase();
-        const fStatus = filterStatus.value;
         const fRank = activeRankFilter;
-        const dupMap = getDuplicateMap();
-
-        let dupCount = 0;
-        Object.values(dupMap).forEach((cnt) => {
-          if (cnt > 1) dupCount += cnt;
-        });
 
         let banCount = 0;
-        accounts.forEach(a => {
+        accounts.forEach((a) => {
           if (checkBanStatus(a.unlockDate).isBanned) banCount++;
         });
+        const activeCount = accounts.length - banCount;
 
-        statCount.textContent = `${accounts.length} nick`;
-        if (dupCount > 0) {
-          statDup.textContent = `(⚠️ ${dupCount} trùng)`;
-        } else {
-          statDup.textContent = "";
-        }
+        if (statCount) statCount.textContent = `${accounts.length} nick`;
+        if (statActive) statActive.innerHTML = `• 🟢 ${activeCount} hoạt động`;
+        if (statBan) statBan.innerHTML = `• 🚫 ${banCount} ban`;
 
-        const headerStatSummary = document.getElementById("header-stat-summary");
-        if (headerStatSummary) {
-          headerStatSummary.innerHTML = `${accounts.length} nick • <span style="color: #f59e0b; font-weight: 700;">${dupCount} trùng</span> • <span style="color: #f43f5e; font-weight: 700;">${banCount} ban</span>`;
-        }
+        // Lấy danh sách tài khoản đã dùng gần đây
+        const recentAccounts = accounts
+          .filter((a) => !!a.lastUsed)
+          .sort((a, b) => (b.lastUsedTime || 0) - (a.lastUsedTime || 0));
+
+        const recentTabCount = document.getElementById("recent-tab-count");
+        if (recentTabCount) recentTabCount.textContent = recentAccounts.length;
 
         displayArea.innerHTML = "";
 
-        // Lọc tài khoản theo keyword, status và rank filter
+        // Nếu người dùng đang chọn tab 'recent' (Đã dùng gần đây)
+        if (fRank === "recent") {
+          if (recentAccounts.length === 0) {
+            displayArea.innerHTML = `
+              <div style="text-align: center; color: var(--text-muted); padding: 50px 20px; background: var(--bg-surface); border-radius: 14px; border: 1px solid var(--border-color);">
+                <div style="font-size: 2rem; margin-bottom: 10px;">🕒</div>
+                <div style="font-weight: 700; font-size: 1.05rem; color: #fff; margin-bottom: 6px;">Chưa có tài khoản nào trong nhóm Đã dùng gần đây</div>
+                <div style="font-size: 0.85rem; color: #94a3b8;">Khi bạn bấm nút <b>📋 SAO CHÉP</b> ở bất kỳ tài khoản nào, nick đó sẽ tự động xuất hiện tại đây.</div>
+              </div>
+            `;
+            return;
+          }
+        }
+
         const filtered = accounts.filter((a) => {
+          if (fRank === "recent") return false;
           const rankGroup = parseRankGroup(a.rank);
-          const matchKey =
-            a.username.toLowerCase().includes(keyword) ||
-            a.password.toLowerCase().includes(keyword) ||
-            (a.rank && a.rank.toLowerCase().includes(keyword)) ||
-            (a.date && a.date.includes(keyword)) ||
-            (a.unlockDate && a.unlockDate.includes(keyword));
-
-          if (!matchKey) return false;
-
-          const isDup = (dupMap[(a.username || "").trim().toLowerCase()] || 0) > 1;
-          const banInfo = checkBanStatus(a.unlockDate);
-
-          if (fStatus === "dup" && !isDup) return false;
-          if (fStatus === "banned" && !banInfo.isBanned) return false;
-          if (fStatus === "active" && banInfo.isBanned) return false;
-
           if (fRank !== "all" && rankGroup.key !== fRank) return false;
-
           return true;
         });
 
-        if (filtered.length === 0) {
+        if (fRank !== "recent" && filtered.length === 0) {
           displayArea.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 50px; background: var(--bg-surface); border-radius: 14px; border: 1px solid var(--border-color);">Không tìm thấy tài khoản nào phù hợp</div>`;
           return;
         }
 
-        // TỰ ĐỘNG SẮP XẾP VÀ GOM NHÓM THEO THỨ TỰ RANK: BK -> KC -> TA -> CT -> DCT -> KHÁC
         const groups = {
-          BK:   { config: RANK_CONFIG.BK, items: [] },
-          KC:   { config: RANK_CONFIG.KC, items: [] },
-          TA:   { config: RANK_CONFIG.TA, items: [] },
-          CT:   { config: RANK_CONFIG.CT, items: [] },
-          DCT:  { config: RANK_CONFIG.DCT, items: [] },
-          KHAC: { config: RANK_CONFIG.KHAC, items: [] }
+          BK: { config: RANK_CONFIG.BK, items: [] },
+          KC: { config: RANK_CONFIG.KC, items: [] },
+          TA: { config: RANK_CONFIG.TA, items: [] },
+          CT: { config: RANK_CONFIG.CT, items: [] },
+          DCT: { config: RANK_CONFIG.DCT, items: [] },
+          KHAC: { config: RANK_CONFIG.KHAC, items: [] },
         };
 
-        filtered.forEach((acc) => {
-          const g = parseRankGroup(acc.rank);
-          groups[g.key].items.push(acc);
-        });
+        if (fRank !== "recent") {
+          filtered.forEach((acc) => {
+            const g = parseRankGroup(acc.rank);
+            groups[g.key].items.push(acc);
+          });
+        }
 
-        // Thứ tự nhóm cố định: BK (1) -> KC (2) -> TA (3) -> CT (4) -> DCT (5) -> KHÁC (6)
-        const sortedGroupKeys = ['BK', 'KC', 'TA', 'CT', 'DCT', 'KHAC'];
+        const sortedGroupKeys = ["BK", "KC", "TA", "CT", "DCT", "KHAC"];
 
         let globalIndex = 0;
 
-        // Container cho máy tính
         const desktopWrapper = document.createElement("div");
         desktopWrapper.className = "desktop-table-wrap";
 
@@ -1674,163 +2033,70 @@
                 <th style="width: 45px; text-align: center;">STT</th>
                 <th style="width: 135px;">Trạng Thái</th>
                 <th style="width: 105px;">Rank</th>
+                <th style="width: 80px; text-align: center;">Uy Tín</th>
                 <th style="min-width: 200px;">Tài Khoản</th>
                 <th style="min-width: 180px;">Mật Khẩu</th>
                 <th style="width: 120px;">Mở BAN</th>
                 <th style="min-width: 170px;">Lần Dùng Gần Nhất</th>
                 <th style="width: 135px; text-align: center;">Sao Chép</th>
-                <th style="width: 45px; text-align: center;">Xóa</th>
+                <th style="width: 65px; text-align: center;">Thao Tác</th>
               </tr>
             </thead>
             <tbody>
         `;
 
-        // Container cho mobile
         const mobileWrapper = document.createElement("div");
         mobileWrapper.className = "mobile-card-list";
 
-        sortedGroupKeys.forEach((key) => {
-          const grp = groups[key];
-          if (grp.items.length === 0) return;
+        // Helper render 1 dòng trong bảng desktop
+        function renderTableRow(item, isRecent = false) {
+          globalIndex++;
+          const banInfo = checkBanStatus(item.unlockDate);
+          const isBanned = banInfo.isBanned;
 
-          // HÀNG PHÂN TÁCH NHÓM RANK TRÊN BẢNG PC
-          tableHtml += `
-            <tr style="background: rgba(30, 41, 69, 0.75);">
-              <td colspan="9" style="padding: 10px 14px; border-bottom: 2px solid var(--primary); border-top: 1px solid rgba(255,255,255,0.1);">
-                <div style="display: flex; align-items: center; justify-content: space-between;">
-                  <span style="font-weight: 800; font-size: 0.95rem; color: #fff; display: flex; align-items: center; gap: 8px;">
-                    <span>${grp.config.icon}</span> NHÓM RANK: <span class="badge ${grp.config.class}">${grp.config.name}</span>
-                  </span>
-                  <span style="font-size: 0.8rem; color: var(--text-sub); font-weight: 700;">${grp.items.length} nick</span>
-                </div>
+          return `
+            <tr class="${isBanned ? "is-banned" : ""}">
+              <td style="text-align: center; font-weight: 700; color: ${isBanned ? "#fecaca" : "var(--text-muted)"}; font-size: 0.92rem;">#${globalIndex}</td>
+              <td>
+                ${isBanned ? `<span class="badge badge-banned">${banInfo.desc}</span>` : `<span class="badge badge-active">🟢 HOẠT ĐỘNG</span>`}
               </td>
-            </tr>
-          `;
-
-          // TIÊU ĐỀ PHÂN TÁCH NHÓM TRÊN MOBILE
-          const mobileBanner = document.createElement("div");
-          mobileBanner.className = "rank-group-banner";
-          mobileBanner.innerHTML = `
-            <div class="rank-group-title">
-              <span>${grp.config.icon}</span>
-              <span class="badge ${grp.config.class}">${grp.config.name}</span>
-            </div>
-            <span class="rank-group-count">${grp.items.length} nick</span>
-          `;
-          mobileWrapper.appendChild(mobileBanner);
-
-          // RENDER CÁC NICK TRONG NHÓM
-          grp.items.forEach((item) => {
-            globalIndex++;
-            const isDup = (dupMap[(item.username || "").trim().toLowerCase()] || 0) > 1;
-            const banInfo = checkBanStatus(item.unlockDate);
-            const isBanned = banInfo.isBanned;
-            const rankGrp = parseRankGroup(item.rank);
-
-            // 1. Thêm vào bảng PC
-            tableHtml += `
-              <tr class="${isBanned ? 'is-banned' : ''} ${isDup ? 'is-duplicate' : ''}">
-                <td style="text-align: center; font-weight: 700; color: ${isBanned ? '#fecaca' : (isDup ? '#fef3c7' : 'var(--text-muted)')}; font-size: 0.92rem;">#${globalIndex}</td>
-                <td>
-                  ${isDup ? `<span class="badge badge-dup">⚠️ TRÙNG LẶP</span> ` : ''}
-                  ${isBanned ? `<span class="badge badge-banned">${banInfo.desc}</span>` : (!isDup ? `<span class="badge badge-active">🟢 HOẠT ĐỘNG</span>` : '')}
-                </td>
-                <td>
-                  <input 
-                    type="text" 
-                    class="tbl-input rank-input-field" 
-                    style="text-transform: uppercase; font-weight: 700; width: 90px; cursor: pointer;"
-                    value="${escapeHtml(item.rank || '')}" 
-                    placeholder="Rank..."
-                    title="Nhấp để chọn nhanh rank"
-                    onclick="openRankPicker(this, event)"
-                    onchange="updateField('${item.id}', 'rank', this.value)"
-                  />
-                </td>
-                <td>
-                  <input 
-                    type="text" 
-                    class="tbl-input ${isDup ? 'is-dup-input' : ''}" 
-                    value="${escapeHtml(item.username)}" 
-                    placeholder="Tài khoản..."
-                    onchange="updateField('${item.id}', 'username', this.value)"
-                  />
-                </td>
-                <td>
-                  <input 
-                    type="text" 
-                    class="tbl-input" 
-                    value="${escapeHtml(item.password)}" 
-                    placeholder="Mật khẩu..."
-                    onchange="updateField('${item.id}', 'password', this.value)"
-                  />
-                </td>
-                <td>
-                  <input 
-                    type="text" 
-                    class="tbl-input" 
-                    inputmode="numeric"
-                    pattern="[0-9/]*"
-                    value="${escapeHtml(item.unlockDate || '')}" 
-                    placeholder="dd/MM"
-                    maxlength="5"
-                    oninput="formatDateOnlyNumbers(this)"
-                    onchange="updateField('${item.id}', 'unlockDate', this.value)"
-                  />
-                </td>
-                <td>
-                  <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
-                    <span style="font-size: 0.85rem; color: ${isBanned ? '#fca5a5' : (isDup ? '#fcd34d' : '#38bdf8')}; font-weight: 600;">
-                      ${item.lastUsed ? `${item.lastUsed} (${item.useCount || 1} lần)` : '<span style="color: var(--text-muted); font-weight: normal;">Chưa dùng</span>'}
-                    </span>
-                    ${item.useCount > 0 ? `
-                      <button class="btn-reset-tag" onclick="resetHistory('${item.id}')" title="Reset về 0">🔄 0</button>
-                    ` : ''}
-                  </div>
-                </td>
-                <td style="text-align: center;">
-                  <button class="btn-copy-action" onclick="copyCombo('${item.id}')">
-                    📋 Copy tk:mk
-                  </button>
-                </td>
-                <td style="text-align: center;">
-                  <button class="btn-del-action" onclick="deleteAccount('${item.id}')" title="Xóa tài khoản này">
-                    🗑️
-                  </button>
-                </td>
-              </tr>
-            `;
-
-            // 2. Thêm vào Mobile Card
-            const card = document.createElement("div");
-            card.className = `m-row-card ${isBanned ? 'is-banned' : ''} ${isDup ? 'is-duplicate' : ''}`;
-
-            card.innerHTML = `
-              <!-- Dòng 1: STT + Huy hiệu Trạng thái + Huy hiệu Rank -->
-              <div class="m-card-top-row">
-                <div class="m-stt-wrap">
-                  <span class="m-stt">#${globalIndex}</span>
-                  ${item.rank ? `<span class="badge ${rankGrp.class}">${escapeHtml(item.rank)}</span>` : ''}
-                  ${isDup ? `<span class="badge badge-dup">⚠️ TRÙNG</span> ` : ''}
-                  ${isBanned ? `<span class="badge badge-banned">${banInfo.desc}</span>` : (!isDup ? `<span class="badge badge-active">🟢 HOẠT ĐỘNG</span>` : '')}
-                </div>
-              </div>
-
-              <!-- Dòng 2: Lịch sử dùng -->
-              <div class="m-history-row">
-                <span style="color: ${isBanned ? '#fca5a5' : (isDup ? '#fcd34d' : '#38bdf8')};">🕒 ${item.lastUsed ? `${item.lastUsed} (${item.useCount || 1} lần)` : 'Chưa sử dụng'}</span>
-                ${item.useCount > 0 ? `<button class="btn-reset-tag" onclick="resetHistory('${item.id}')" title="Reset về 0">🔄 Reset</button>` : ''}
-              </div>
-
-              <!-- Dòng 3: Tài khoản (50%) | Mật khẩu (50%) -->
-              <div class="m-creds-row">
+              <td>
                 <input 
                   type="text" 
-                  class="tbl-input ${isDup ? 'is-dup-input' : ''}" 
+                  class="tbl-input rank-input-field" 
+                  style="text-transform: uppercase; font-weight: 700; width: 90px; cursor: pointer;"
+                  value="${escapeHtml(item.rank || "")}" 
+                  placeholder="Rank..."
+                  title="Nhấp để chọn nhanh rank"
+                  onclick="openRankPicker(this, event)"
+                  onchange="updateField('${item.id}', 'rank', this.value)"
+                />
+              </td>
+              <td style="text-align: center;">
+                <input 
+                  type="text" 
+                  class="tbl-input" 
+                  inputmode="numeric"
+                  pattern="[0-9]*"
+                  maxlength="3"
+                  style="width: 60px; text-align: center; font-weight: 800; color: #38bdf8;"
+                  value="${escapeHtml(item.uyTin || "")}" 
+                  placeholder="100"
+                  title="Điểm uy tín (chỉ nhập số)"
+                  oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                  onchange="updateField('${item.id}', 'uyTin', this.value)"
+                />
+              </td>
+              <td>
+                <input 
+                  type="text" 
+                  class="tbl-input" 
                   value="${escapeHtml(item.username)}" 
                   placeholder="Tài khoản..."
                   onchange="updateField('${item.id}', 'username', this.value)"
                 />
+              </td>
+              <td>
                 <input 
                   type="text" 
                   class="tbl-input" 
@@ -1838,43 +2104,235 @@
                   placeholder="Mật khẩu..."
                   onchange="updateField('${item.id}', 'password', this.value)"
                 />
-              </div>
-
-              <!-- Dòng 4: Ô Rank + Ô Mở BAN + Nút COPY TK:MK + Nút Xóa -->
-              <div class="m-action-row">
-                <input 
-                  type="text" 
-                  class="tbl-input rank-input-field" 
-                  style="text-transform: uppercase; font-weight: 700; cursor: pointer;"
-                  value="${escapeHtml(item.rank || '')}" 
-                  placeholder="Rank"
-                  title="Nhấp để chọn nhanh Rank"
-                  onclick="openRankPicker(this, event)"
-                  onchange="updateField('${item.id}', 'rank', this.value)"
-                />
+              </td>
+              <td>
                 <input 
                   type="text" 
                   class="tbl-input" 
                   inputmode="numeric"
                   pattern="[0-9/]*"
-                  value="${escapeHtml(item.unlockDate || '')}" 
+                  value="${escapeHtml(item.unlockDate || "")}" 
                   placeholder="dd/MM"
                   maxlength="5"
-                  title="Ngày mở BAN (dd/MM)"
                   oninput="formatDateOnlyNumbers(this)"
                   onchange="updateField('${item.id}', 'unlockDate', this.value)"
                 />
-                <button class="m-btn-copy" onclick="copyCombo('${item.id}')">
-                  📋 COPY TK:MK
+              </td>
+              <td>
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+                  <span style="font-size: 0.85rem; color: ${isBanned ? "#fca5a5" : "#38bdf8"}; font-weight: 600;">
+                    ${item.lastUsed ? `${item.lastUsed} (${item.useCount || 1} lần)` : '<span style="color: var(--text-muted); font-weight: normal;">Chưa dùng</span>'}
+                  </span>
+                  ${
+                    item.useCount > 0
+                      ? `
+                    <button class="btn-reset-tag" onclick="resetHistory('${item.id}')" title="Reset về 0">🔄 0</button>
+                  `
+                      : ""
+                  }
+                </div>
+              </td>
+              <td style="text-align: center;">
+                <button class="btn-copy-action" onclick="copyCombo('${item.id}')">
+                  📋 SAO CHÉP
                 </button>
+              </td>
+              <td style="text-align: center;">
+                ${
+                  isRecent
+                    ? `
+                  <button class="btn-remove-recent" onclick="removeFromRecent('${item.id}')" title="Gỡ khỏi nhóm Đã dùng gần đây (vẫn giữ nick trong danh sách quản lý)">
+                    ✕ Bỏ
+                  </button>
+                `
+                    : `
+                  <button class="btn-del-action" onclick="deleteAccount('${item.id}')" title="Xóa tài khoản này">
+                    🗑️
+                  </button>
+                `
+                }
+              </td>
+            </tr>
+          `;
+        }
+
+        // Helper render 1 card trên mobile
+        function renderMobileCard(item, isRecent = false) {
+          const banInfo = checkBanStatus(item.unlockDate);
+          const isBanned = banInfo.isBanned;
+          const rankGrp = parseRankGroup(item.rank);
+
+          const card = document.createElement("div");
+          card.className = `m-row-card ${isBanned ? "is-banned" : ""}`;
+
+          card.innerHTML = `
+            <div class="m-card-top-row">
+              <div class="m-stt-wrap">
+                <span class="m-stt">#${globalIndex}</span>
+                ${item.rank ? `<span class="badge ${rankGrp.class}">${escapeHtml(item.rank)}</span>` : ""}
+                ${isBanned ? `<span class="badge badge-banned">${banInfo.desc}</span>` : `<span class="badge badge-active">🟢 HOẠT ĐỘNG</span>`}
+              </div>
+            </div>
+
+            <div class="m-history-row">
+              <span style="color: ${isBanned ? "#fca5a5" : "#38bdf8"};">🕒 ${item.lastUsed ? `${item.lastUsed} (${item.useCount || 1} lần)` : "Chưa sử dụng"}</span>
+              ${item.useCount > 0 ? `<button class="btn-reset-tag" onclick="resetHistory('${item.id}')" title="Reset về 0">🔄 Reset</button>` : ""}
+            </div>
+
+            <div class="m-creds-row">
+              <input 
+                type="text" 
+                class="tbl-input" 
+                value="${escapeHtml(item.username)}" 
+                placeholder="Tài khoản..."
+                onchange="updateField('${item.id}', 'username', this.value)"
+              />
+              <input 
+                type="text" 
+                class="tbl-input" 
+                value="${escapeHtml(item.password)}" 
+                placeholder="Mật khẩu..."
+                onchange="updateField('${item.id}', 'password', this.value)"
+              />
+            </div>
+
+            <div class="m-action-row">
+              <input 
+                type="text" 
+                class="tbl-input rank-input-field" 
+                style="text-transform: uppercase; font-weight: 700; cursor: pointer;"
+                value="${escapeHtml(item.rank || "")}" 
+                placeholder="Rank"
+                title="Nhấp để chọn nhanh Rank"
+                onclick="openRankPicker(this, event)"
+                onchange="updateField('${item.id}', 'rank', this.value)"
+              />
+              <input 
+                type="text" 
+                class="tbl-input" 
+                inputmode="numeric"
+                pattern="[0-9]*"
+                maxlength="3"
+                style="text-align: center; font-weight: 800; color: #38bdf8;"
+                value="${escapeHtml(item.uyTin || "")}" 
+                placeholder="Uy tín"
+                title="Điểm uy tín (chỉ nhập số)"
+                oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                onchange="updateField('${item.id}', 'uyTin', this.value)"
+              />
+              <input 
+                type="text" 
+                class="tbl-input" 
+                inputmode="numeric"
+                pattern="[0-9/]*"
+                value="${escapeHtml(item.unlockDate || "")}" 
+                placeholder="dd/MM"
+                maxlength="5"
+                title="Ngày mở BAN (dd/MM)"
+                oninput="formatDateOnlyNumbers(this)"
+                onchange="updateField('${item.id}', 'unlockDate', this.value)"
+              />
+              <button class="m-btn-copy" onclick="copyCombo('${item.id}')">
+                📋 COPY
+              </button>
+              ${
+                isRecent
+                  ? `
+                <button class="m-btn-remove-recent" onclick="removeFromRecent('${item.id}')" title="Gỡ khỏi nhóm Đã dùng gần đây (vẫn giữ nick)">
+                  ✕
+                </button>
+              `
+                  : `
                 <button class="m-btn-del" onclick="deleteAccount('${item.id}')" title="Xóa">
                   🗑️
                 </button>
-              </div>
-            `;
-            mobileWrapper.appendChild(card);
+              `
+              }
+            </div>
+          `;
+          return card;
+        }
+
+        // 1. HIỂN THỊ NHÓM "ĐÃ DÙNG GẦN ĐÂY" (Khi fRank === 'recent' hoặc khi fRank === 'all' và có nick đã dùng)
+        if (
+          (fRank === "recent" || fRank === "all") &&
+          recentAccounts.length > 0
+        ) {
+          tableHtml += `
+            <tr style="background: linear-gradient(90deg, rgba(14, 165, 233, 0.22), rgba(15, 23, 42, 0.95)); border-left: 4px solid #38bdf8;">
+              <td colspan="10" style="padding: 10px 14px; border-bottom: 2px solid #38bdf8; border-top: 1px solid rgba(56, 189, 248, 0.3);">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                  <span style="font-weight: 800; font-size: 0.95rem; color: #38bdf8; display: flex; align-items: center; gap: 8px;">
+                    <span>🕒</span> NHÓM: ĐÃ DÙNG GẦN ĐÂY
+                  </span>
+                  <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 0.8rem; color: #bae6fd; font-weight: 700;">${recentAccounts.length} nick</span>
+                    <button class="btn-reset-tag" onclick="clearAllRecent()" style="background: rgba(244, 63, 94, 0.2); border-color: rgba(244, 63, 94, 0.4); color: #fda4af;" title="Làm trống nhóm Đã dùng gần đây (vẫn giữ nguyên nick)">🧹 Dọn sạch nhóm</button>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          `;
+
+          const recentBanner = document.createElement("div");
+          recentBanner.className = "rank-group-banner";
+          recentBanner.style.borderLeftColor = "#38bdf8";
+          recentBanner.style.background =
+            "linear-gradient(90deg, rgba(14, 165, 233, 0.22), rgba(15, 23, 42, 0.95))";
+          recentBanner.innerHTML = `
+            <div class="rank-group-title" style="color: #38bdf8;">
+              <span>🕒</span>
+              <span>ĐÃ DÙNG GẦN ĐÂY</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span class="rank-group-count" style="color: #38bdf8;">${recentAccounts.length} nick</span>
+              <button class="btn-reset-tag" onclick="clearAllRecent()" style="background: rgba(244, 63, 94, 0.2); border-color: rgba(244, 63, 94, 0.4); color: #fda4af;">🧹 Dọn</button>
+            </div>
+          `;
+          mobileWrapper.appendChild(recentBanner);
+
+          recentAccounts.forEach((item) => {
+            tableHtml += renderTableRow(item, true);
+            mobileWrapper.appendChild(renderMobileCard(item, true));
           });
-        });
+        }
+
+        // 2. HIỂN THỊ CÁC NHÓM RANK THƯỜNG (Khi fRank !== 'recent')
+        if (fRank !== "recent") {
+          sortedGroupKeys.forEach((key) => {
+            const grp = groups[key];
+            if (grp.items.length === 0) return;
+
+            tableHtml += `
+              <tr style="background: rgba(15, 23, 42, 0.95); border-left: 4px solid var(--primary);">
+                <td colspan="10" style="padding: 10px 14px; border-bottom: 2px solid var(--primary); border-top: 1px solid rgba(255,255,255,0.1);">
+                  <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <span style="font-weight: 800; font-size: 0.95rem; color: #fff; display: flex; align-items: center; gap: 8px;">
+                      <span>${grp.config.icon}</span> NHÓM RANK: <span class="badge ${grp.config.class}">${grp.config.name}</span>
+                    </span>
+                    <span style="font-size: 0.8rem; color: var(--text-sub); font-weight: 700;">${grp.items.length} nick</span>
+                  </div>
+                </td>
+              </tr>
+            `;
+
+            const mobileBanner = document.createElement("div");
+            mobileBanner.className = "rank-group-banner";
+            mobileBanner.innerHTML = `
+              <div class="rank-group-title">
+                <span>${grp.config.icon}</span>
+                <span class="badge ${grp.config.class}">${grp.config.name}</span>
+              </div>
+              <span class="rank-group-count">${grp.items.length} nick</span>
+            `;
+            mobileWrapper.appendChild(mobileBanner);
+
+            grp.items.forEach((item) => {
+              tableHtml += renderTableRow(item, false);
+              mobileWrapper.appendChild(renderMobileCard(item, false));
+            });
+          });
+        }
 
         tableHtml += `</tbody></table>`;
         desktopWrapper.innerHTML = tableHtml;
@@ -1884,26 +2342,30 @@
       }
 
       // COPY TK:MK
-      window.copyCombo = function(id) {
+      window.copyCombo = function (id) {
         const item = accounts.find((a) => a.id === id);
         if (!item) return;
 
         const textToCopy = `${item.username}:${item.password}`;
 
         const now = new Date();
-        const hh = String(now.getHours()).padStart(2, '0');
-        const min = String(now.getMinutes()).padStart(2, '0');
-        const dd = String(now.getDate()).padStart(2, '0');
-        const mm = String(now.getMonth() + 1).padStart(2, '0');
+        const hh = String(now.getHours()).padStart(2, "0");
+        const min = String(now.getMinutes()).padStart(2, "0");
+        const dd = String(now.getDate()).padStart(2, "0");
+        const mm = String(now.getMonth() + 1).padStart(2, "0");
         const timeStr = `${hh}:${min} - ${dd}/${mm}`;
 
         item.lastUsed = timeStr;
+        item.lastUsedTime = Date.now();
         item.useCount = (item.useCount || 0) + 1;
         saveData();
         renderList();
+        triggerAutoSync();
 
         if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(textToCopy).then(() => showToast(`📋 Đã copy: ${textToCopy}`));
+          navigator.clipboard
+            .writeText(textToCopy)
+            .then(() => showToast(`📋 Đã copy: ${textToCopy}`));
         } else {
           const temp = document.createElement("textarea");
           temp.value = textToCopy;
@@ -1915,8 +2377,42 @@
         }
       };
 
+      // GỠ KHỎI NHÓM ĐÃ DÙNG GẦN ĐÂY (VẪN GIỮ NICK TRONG DANH SÁCH GỐC)
+      window.removeFromRecent = function (id) {
+        const item = accounts.find((a) => a.id === id);
+        if (!item) return;
+
+        item.lastUsed = "";
+        delete item.lastUsedTime;
+        saveData();
+        renderList();
+        triggerAutoSync();
+        showToast(`✅ Đã gỡ "${item.username}" khỏi nhóm gần đây`);
+      };
+
+      // DỌN SẠCH TẤT CẢ KHỎI NHÓM GẦN ĐÂY
+      window.clearAllRecent = function () {
+        showNotice({
+          title: "Dọn Sạch Nhóm Gần Đây",
+          message:
+            "Làm trống nhóm Đã dùng gần đây? Tất cả tài khoản vẫn được giữ nguyên vẹn trong danh sách quản lý.",
+          icon: "🕒",
+          type: "confirm",
+          onConfirm: () => {
+            accounts.forEach((a) => {
+              a.lastUsed = "";
+              delete a.lastUsedTime;
+            });
+            saveData();
+            renderList();
+            triggerAutoSync();
+            showToast("🧹 Đã dọn sạch nhóm Đã dùng gần đây!");
+          },
+        });
+      };
+
       // XÓA TÀI KHOẢN
-      window.deleteAccount = function(id) {
+      window.deleteAccount = function (id) {
         const item = accounts.find((a) => a.id === id);
         if (!item) return;
 
@@ -1929,8 +2425,9 @@
             accounts = accounts.filter((a) => a.id !== id);
             saveData();
             renderList();
+            triggerAutoSync();
             showToast("Đã xóa tài khoản!");
-          }
+          },
         });
       };
 
@@ -1945,11 +2442,12 @@
         }, 1800);
       }
 
-      searchInput.addEventListener("input", renderList);
-      filterStatus.addEventListener("change", renderList);
-
       function escapeHtml(str) {
-        return String(str || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+        return String(str || "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
       }
 
       // ==========================================
@@ -1963,95 +2461,89 @@
       const btnSaveTele = document.getElementById("btn-save-tele");
       const btnTestTele = document.getElementById("btn-test-tele");
 
-      // Load cấu hình telegram đã lưu
-      const savedTeleConfig = JSON.parse(localStorage.getItem("lq_tele_config") || '{"token":"","chatId":""}');
-      if (teleBotTokenInput) teleBotTokenInput.value = savedTeleConfig.token || "";
+      const savedTeleConfig = JSON.parse(
+        localStorage.getItem("lq_tele_config") || '{"token":"","chatId":""}',
+      );
+      if (teleBotTokenInput)
+        teleBotTokenInput.value = savedTeleConfig.token || "";
       if (teleChatIdInput) teleChatIdInput.value = savedTeleConfig.chatId || "";
 
-      if (btnOpenTele) {
-        btnOpenTele.addEventListener("click", () => {
-          teleModal.classList.add("show");
-        });
-      }
-      if (btnCloseTele) {
-        btnCloseTele.addEventListener("click", () => {
-          teleModal.classList.remove("show");
-        });
-      }
       if (teleModal) {
         teleModal.addEventListener("click", (e) => {
           if (e.target === teleModal) teleModal.classList.remove("show");
         });
       }
 
-      // Hàm gửi tin nhắn qua Telegram Bot API
+      window.handleSaveTele = function () {
+        const token = teleBotTokenInput.value.trim();
+        const chatId = teleChatIdInput.value.trim();
+        localStorage.setItem(
+          "lq_tele_config",
+          JSON.stringify({ token, chatId }),
+        );
+        showToast("💾 Đã lưu cấu hình Telegram!");
+        window.closeTeleModal();
+        setTimeout(autoCheckUnbannedAccounts, 500);
+      };
+
       async function sendTelegramMessage(token, chatId, text) {
-        const url = `https://api.telegram.org/bot${token.trim()}/sendMessage`;
-        const res = await fetch(url, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            chat_id: chatId.trim(),
-            text: text,
-            parse_mode: "HTML"
-          })
-        });
-        return res.json();
+        try {
+          const res = await fetch(
+            `https://api.telegram.org/bot${token}/sendMessage`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                chat_id: chatId,
+                text: text,
+                parse_mode: "HTML",
+              }),
+            },
+          );
+          const data = await res.json();
+          return data.ok;
+        } catch (err) {
+          console.error("Lỗi gửi Telegram:", err);
+          return false;
+        }
       }
 
-      // Lưu cấu hình Telegram
-      if (btnSaveTele) {
-        btnSaveTele.addEventListener("click", () => {
-          const token = teleBotTokenInput.value.trim();
-          const chatId = teleChatIdInput.value.trim();
-          localStorage.setItem("lq_tele_config", JSON.stringify({ token, chatId }));
-          showToast("💾 Đã lưu cấu hình Telegram!");
-          teleModal.classList.remove("show");
-        });
-      }
+      window.handleTestTele = async function () {
+        const token = teleBotTokenInput.value.trim();
+        const chatId = teleChatIdInput.value.trim();
+        if (!token || !chatId) {
+          showNotice({
+            title: "Thiếu Cấu Hình",
+            message: "Vui lòng nhập cả Token Bot và Chat ID trước khi test!",
+            icon: "⚠️",
+          });
+          return;
+        }
 
-      // Bắn thử 1 tin
-      if (btnTestTele) {
-        btnTestTele.addEventListener("click", async () => {
-          const token = teleBotTokenInput.value.trim();
-          const chatId = teleChatIdInput.value.trim();
-          if (!token || !chatId) {
-            showNotice({
-              title: "Thiếu Thông Tin",
-              message: "Vui lòng nhập đầy đủ Bot Token và Chat ID!",
-              icon: "⚠️"
-            });
-            return;
-          }
+        if (btnTestTele) {
           btnTestTele.textContent = "⏳ Đang gửi...";
           btnTestTele.disabled = true;
-          try {
-            const data = await sendTelegramMessage(
-              token, 
-              chatId, 
-              "🔔 <b>Liên Quân Account Manager:</b>\nKết nối Telegram thành công! Khi có tài khoản hết hạn BAN, bot sẽ báo ngay cho bạn."
-            );
-            if (data.ok) {
-              showToast("✅ Đã gửi tin nhắn thử thành công!");
-            } else {
-              showNotice({
-                title: "Gửi Thất Bại",
-                message: `Lỗi từ Telegram: ${data.description || "Sai token hoặc chat ID"}`,
-                icon: "❌"
-              });
-            }
-          } catch (err) {
-            showNotice({
-              title: "Lỗi Kết Nối",
-              message: "Không thể kết nối đến máy chủ Telegram. Vui lòng kiểm tra lại mạng!",
-              icon: "❌"
-            });
-          } finally {
-            btnTestTele.textContent = "🔔 Bắn Thử 1 Tin";
-            btnTestTele.disabled = false;
-          }
-        });
-      }
+        }
+
+        const testMsg = `🔔 <b>devsepa AOV Manager - KẾT NỐI THÀNH CÔNG!</b>\n\nBot thông báo tự động đã sẵn sàng. Bạn sẽ nhận được thông báo khi tài khoản hết hạn BAN!`;
+        const success = await sendTelegramMessage(token, chatId, testMsg);
+
+        if (btnTestTele) {
+          btnTestTele.textContent = "🔔 Bắn Thử 1 Tin";
+          btnTestTele.disabled = false;
+        }
+
+        if (success) {
+          showToast("✅ Đã gửi tin nhắn test đến Telegram!");
+        } else {
+          showNotice({
+            title: "Gửi Thất Bại",
+            message:
+              "Không thể gửi tin nhắn! Hãy chắc chắn bạn đã vào Telegram và bấm <b>/start</b> với Bot trước nhé.",
+            icon: "❌",
+          });
+        }
+      };
 
       // ==========================================
       // TÍNH NĂNG ĐỒNG BỘ CLOUD GITHUB (PC & MOBILE DÙNG CHUNG)
@@ -2062,24 +2554,18 @@
       const ghTokenInput = document.getElementById("gh-token");
       const btnPullCloud = document.getElementById("btn-pull-cloud");
       const btnPushCloud = document.getElementById("btn-push-cloud");
+      const cloudStatusIcon = document.getElementById("cloud-status-icon");
+      const cloudBtnText = document.getElementById("cloud-btn-text");
 
       const GH_REPO = "devsepa/quanlyaccount";
       const GH_FILE = "data.json";
 
-      // Load token đã lưu
-      const savedGhToken = localStorage.getItem("lq_gh_token") || "";
+      // Lưu sẵn token người dùng cung cấp
+      const defaultToken = "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";
+      let savedGhToken = localStorage.getItem("lq_gh_token") || defaultToken;
+      localStorage.setItem("lq_gh_token", savedGhToken);
       if (ghTokenInput) ghTokenInput.value = savedGhToken;
 
-      if (btnOpenCloud) {
-        btnOpenCloud.addEventListener("click", () => {
-          cloudModal.classList.add("show");
-        });
-      }
-      if (btnCloseCloud) {
-        btnCloseCloud.addEventListener("click", () => {
-          cloudModal.classList.remove("show");
-        });
-      }
       if (cloudModal) {
         cloudModal.addEventListener("click", (e) => {
           if (e.target === cloudModal) cloudModal.classList.remove("show");
@@ -2089,143 +2575,212 @@
       // 1. TẢI DỮ LIỆU TỪ GITHUB VỀ (PULL)
       async function pullFromCloud(silent = false) {
         try {
-          const res = await fetch(`https://raw.githubusercontent.com/${GH_REPO}/main/${GH_FILE}?t=${Date.now()}`);
+          if (!silent && cloudBtnText) cloudBtnText.textContent = "Đang tải...";
+          const res = await fetch(
+            `https://raw.githubusercontent.com/${GH_REPO}/main/${GH_FILE}?t=${Date.now()}`,
+          );
           if (!res.ok) {
             if (!silent) showToast("Chưa có file dữ liệu trên mây!");
+            if (cloudBtnText) cloudBtnText.textContent = "Đồng Bộ PC & ĐT";
             return;
           }
           const cloudData = await res.json();
-          if (Array.isArray(cloudData)) {
+          if (Array.isArray(cloudData) && cloudData.length > 0) {
             accounts = cloudData;
             localStorage.setItem("lq_accounts", JSON.stringify(accounts));
             renderList();
-            if (!silent) showToast(`✅ Đã tải về ${accounts.length} nick từ đám mây!`);
+            if (cloudStatusIcon) cloudStatusIcon.textContent = "☁️";
+            if (cloudBtnText) cloudBtnText.textContent = "Đồng Bộ PC & ĐT";
+            if (!silent)
+              showToast(`✅ Đã tải về ${accounts.length} nick từ đám mây!`);
+          } else {
+            if (cloudBtnText) cloudBtnText.textContent = "Đồng Bộ PC & ĐT";
           }
         } catch (e) {
-          if (!silent) showNotice({ title: "Lỗi Tải Cloud", message: "Không thể tải dữ liệu từ GitHub!", icon: "❌" });
+          if (cloudBtnText) cloudBtnText.textContent = "Đồng Bộ PC & ĐT";
+          if (!silent)
+            showNotice({
+              title: "Lỗi Tải Cloud",
+              message: "Không thể tải dữ liệu từ GitHub!",
+              icon: "❌",
+            });
         }
       }
 
+      window.pullFromCloud = pullFromCloud;
+      window.pushToCloud = pushToCloud;
+
       // 2. ĐẨY DỮ LIỆU LÊN GITHUB (PUSH)
-      async function pushToCloud() {
-        const token = ghTokenInput.value.trim();
+      async function pushToCloud(silent = false) {
+        const token =
+          (ghTokenInput ? ghTokenInput.value.trim() : "") ||
+          localStorage.getItem("lq_gh_token") ||
+          defaultToken;
         if (!token) {
-          showNotice({
-            title: "Cần GitHub Token",
-            message: "Vui lòng nhập Personal Access Token để có quyền lưu lên GitHub!",
-            icon: "🔑"
-          });
+          if (!silent) {
+            showNotice({
+              title: "Cần GitHub Token",
+              message:
+                "Vui lòng nhập Personal Access Token để có quyền lưu lên GitHub!",
+              icon: "🔑",
+            });
+          }
           return;
         }
 
-        btnPushCloud.textContent = "⏳ Đang đẩy...";
-        btnPushCloud.disabled = true;
+        if (btnPushCloud) {
+          btnPushCloud.textContent = "⏳ Đang đẩy...";
+          btnPushCloud.disabled = true;
+        }
+        if (cloudStatusIcon) cloudStatusIcon.textContent = "⏳";
+        if (cloudBtnText) cloudBtnText.textContent = "Đang lưu...";
 
         try {
           localStorage.setItem("lq_gh_token", token);
-          // Lấy SHA file hiện tại nếu có
+
           let sha = "";
-          const getRes = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE}`, {
-            headers: { Authorization: `token ${token}` }
-          });
+          const getRes = await fetch(
+            `https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE}`,
+            {
+              headers: { Authorization: `token ${token}` },
+            },
+          );
           if (getRes.ok) {
             const fileInfo = await getRes.json();
             sha = fileInfo.sha;
           }
 
-          // Encode Base64 UTF-8
           const contentStr = JSON.stringify(accounts, null, 2);
           const contentBase64 = btoa(unescape(encodeURIComponent(contentStr)));
 
-          const putRes = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE}`, {
-            method: "PUT",
-            headers: {
-              Authorization: `token ${token}`,
-              "Content-Type": "application/json"
+          const putRes = await fetch(
+            `https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE}`,
+            {
+              method: "PUT",
+              headers: {
+                Authorization: `token ${token}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                message: `Cập nhật dữ liệu nick: ${accounts.length} tài khoản`,
+                content: contentBase64,
+                sha: sha || undefined,
+              }),
             },
-            body: JSON.stringify({
-              message: `Cập nhật dữ liệu nick: ${accounts.length} tài khoản`,
-              content: contentBase64,
-              sha: sha || undefined
-            })
-          });
+          );
 
           if (putRes.ok) {
-            showToast("☁️ Đã đồng bộ lên GitHub thành công!");
-            cloudModal.classList.remove("show");
+            if (cloudStatusIcon) cloudStatusIcon.textContent = "☁️";
+            if (cloudBtnText) cloudBtnText.textContent = "Đã lưu Cloud";
+            if (!silent) {
+              showToast("☁️ Đã đồng bộ lên GitHub thành công!");
+              cloudModal.classList.remove("show");
+            }
           } else {
             const err = await putRes.json();
-            showNotice({ title: "Lỗi Đồng Bộ", message: `GitHub báo lỗi: ${err.message}`, icon: "❌" });
+            if (cloudStatusIcon) cloudStatusIcon.textContent = "⚠️";
+            if (cloudBtnText) cloudBtnText.textContent = "Lỗi lưu Cloud";
+            if (!silent)
+              showNotice({
+                title: "Lỗi Đồng Bộ",
+                message: `GitHub báo lỗi: ${err.message}`,
+                icon: "❌",
+              });
           }
         } catch (err) {
-          showNotice({ title: "Lỗi Kết Nối", message: "Không thể kết nối đến GitHub API!", icon: "❌" });
+          if (cloudStatusIcon) cloudStatusIcon.textContent = "❌";
+          if (cloudBtnText) cloudBtnText.textContent = "Lỗi mạng";
+          if (!silent)
+            showNotice({
+              title: "Lỗi Kết Nối",
+              message: "Không thể kết nối đến GitHub API!",
+              icon: "❌",
+            });
         } finally {
-          btnPushCloud.textContent = "☁️ Đẩy Lên Mây";
-          btnPushCloud.disabled = false;
+          if (btnPushCloud) {
+            btnPushCloud.textContent = "☁️ Đẩy Lên Mây";
+            btnPushCloud.disabled = false;
+          }
         }
       }
 
-      if (btnPullCloud) btnPullCloud.addEventListener("click", () => pullFromCloud(false));
-      if (btnPushCloud) btnPushCloud.addEventListener("click", pushToCloud);
+      // TỰ ĐỘNG ĐỒNG BỘ NGẦM (DEBOUNCE 1.5S) KHI CÓ THAY ĐỔI
+      let autoSyncTimer = null;
+      function triggerAutoSync() {
+        clearTimeout(autoSyncTimer);
+        if (cloudStatusIcon) cloudStatusIcon.textContent = "⏳";
+        if (cloudBtnText) cloudBtnText.textContent = "Đang lưu...";
+        autoSyncTimer = setTimeout(() => {
+          pushToCloud(true);
+        }, 1500);
+      }
 
-      // TỰ ĐỘNG QUÉT VÀ THÔNG BÁO: BÁO TRƯỚC 1 NGÀY VÀ BÁO ĐÚNG NGÀY
+      // TỰ ĐỘNG QUÉT VÀ THÔNG BÁO BAN TELEGRAM
       function getTomorrowFormatted() {
         const tomorrow = new Date();
         tomorrow.setDate(tomorrow.getDate() + 1);
-        const dd = String(tomorrow.getDate()).padStart(2, '0');
-        const mm = String(tomorrow.getMonth() + 1).padStart(2, '0');
+        const dd = String(tomorrow.getDate()).padStart(2, "0");
+        const mm = String(tomorrow.getMonth() + 1).padStart(2, "0");
         return `${dd}/${mm}`;
       }
 
       function autoCheckUnbannedAccounts() {
-        const config = JSON.parse(localStorage.getItem("lq_tele_config") || '{"token":"","chatId":""}');
+        const config = JSON.parse(
+          localStorage.getItem("lq_tele_config") || '{"token":"","chatId":""}',
+        );
         if (!config.token || !config.chatId) return;
 
-        const today = getTodayFormatted(); // "dd/MM"
-        const tomorrow = getTomorrowFormatted(); // "dd/MM"
-        const notifiedList = JSON.parse(localStorage.getItem("lq_tele_notified_today") || "{}");
+        const today = getTodayFormatted();
+        const tomorrow = getTomorrowFormatted();
+        const notifiedList = JSON.parse(
+          localStorage.getItem("lq_tele_notified_today") || "{}",
+        );
 
-        // 1. Tìm những nick HẾT HẠN BAN HÔM NAY (ĐÃ MỞ BAN)
-        const unbannedNow = accounts.filter(a => {
+        const unbannedNow = accounts.filter((a) => {
           if (!a.unlockDate) return false;
           const status = checkBanStatus(a.unlockDate);
           return !status.isBanned && a.unlockDate.trim() === today;
         });
-        const newUnbanned = unbannedNow.filter(a => !notifiedList[a.id + "_today"]);
+        const newUnbanned = unbannedNow.filter(
+          (a) => !notifiedList[a.id + "_today"],
+        );
 
         if (newUnbanned.length > 0) {
           let msg = `✅ <b>THÔNG BÁO: CÓ ${newUnbanned.length} NICK ĐÃ MỞ BAN HÔM NAY (${today})!</b>\n\n`;
           newUnbanned.forEach((a, i) => {
-            msg += `${i + 1}. 🟢 <b>${a.username}</b> | Rank: <b>${a.rank || 'Chưa rank'}</b>\n   Pass: <code>${a.password}</code>\n`;
+            msg += `${i + 1}. 🟢 <b>${a.username}</b> | Rank: <b>${a.rank || "Chưa rank"}</b>\n   Pass: <code>${a.password}</code>\n`;
             notifiedList[a.id + "_today"] = today;
           });
           msg += `\n👉 <i>Tài khoản đã sẵn sàng sử dụng ngay!</i>`;
           sendTelegramMessage(config.token, config.chatId, msg);
         }
 
-        // 2. Tìm những nick SẮP HẾT HẠN BAN VÀO NGÀY MAI (BÁO TRƯỚC 1 NGÀY)
-        const unbanTomorrow = accounts.filter(a => {
+        const unbanTomorrow = accounts.filter((a) => {
           if (!a.unlockDate) return false;
           return a.unlockDate.trim() === tomorrow;
         });
-        const newTomorrow = unbanTomorrow.filter(a => !notifiedList[a.id + "_tomorrow"]);
+        const newTomorrow = unbanTomorrow.filter(
+          (a) => !notifiedList[a.id + "_tomorrow"],
+        );
 
         if (newTomorrow.length > 0) {
           let msg = `⏳ <b>NHẮC NHỞ: CÓ ${newTomorrow.length} NICK SẮP MỞ BAN VÀO NGÀY MAI (${tomorrow})!</b>\n\n`;
           newTomorrow.forEach((a, i) => {
-            msg += `${i + 1}. 🟡 <b>${a.username}</b> | Rank: <b>${a.rank || 'Chưa rank'}</b>\n   Pass: <code>${a.password}</code>\n`;
+            msg += `${i + 1}. 🟡 <b>${a.username}</b> | Rank: <b>${a.rank || "Chưa rank"}</b>\n   Pass: <code>${a.password}</code>\n`;
             notifiedList[a.id + "_tomorrow"] = tomorrow;
           });
           msg += `\n👉 <i>Chuẩn bị sẵn sàng nhé!</i>`;
           sendTelegramMessage(config.token, config.chatId, msg);
         }
 
-        localStorage.setItem("lq_tele_notified_today", JSON.stringify(notifiedList));
+        localStorage.setItem(
+          "lq_tele_notified_today",
+          JSON.stringify(notifiedList),
+        );
       }
 
       // KHỞI CHẠY
       renderList();
-      // Tự động kéo dữ liệu từ đám mây khi mở web nếu có
       pullFromCloud(true);
       setTimeout(autoCheckUnbannedAccounts, 2000);
     </script>
