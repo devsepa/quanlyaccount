@@ -39,6 +39,10 @@
         --success-base: #10b981;
       }
 
+      html {
+        scroll-behavior: smooth;
+      }
+
       * {
         box-sizing: border-box;
         margin: 0;
@@ -189,12 +193,16 @@
         font-weight: 700;
         font-size: 0.82rem;
         cursor: pointer;
-        transition: all 0.15s ease;
+        transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
         white-space: nowrap;
       }
 
+      .btn:hover {
+        transform: translateY(-2px);
+      }
+
       .btn:active {
-        transform: scale(0.97);
+        transform: scale(0.96) translateY(0);
       }
 
       .btn-primary {
@@ -205,7 +213,8 @@
       }
 
       .btn-primary:hover {
-        opacity: 0.95;
+        box-shadow: 0 6px 20px var(--primary-glow);
+        filter: brightness(1.1);
       }
 
       .btn-cloud {
@@ -217,6 +226,7 @@
       .btn-cloud:hover {
         background: rgba(99, 102, 241, 0.28);
         color: #fff;
+        box-shadow: 0 4px 16px rgba(99, 102, 241, 0.35);
       }
 
       .btn-tele {
@@ -228,6 +238,7 @@
       .btn-tele:hover {
         background: rgba(51, 65, 85, 0.95);
         color: #fff;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
       }
 
       /* KHU VỰC NHẬP NICK (MODERN SLATE) */
@@ -370,28 +381,30 @@
 
       .rank-nav-chip {
         flex-shrink: 0;
-        padding: 5px 12px;
+        padding: 6px 14px;
         border-radius: 10px;
-        font-size: 0.76rem;
+        font-size: 0.78rem;
         font-weight: 700;
         background: rgba(2, 6, 23, 0.6);
         border: 1px solid rgba(148, 163, 184, 0.15);
         color: var(--text-sub);
         cursor: pointer;
-        transition: all 0.15s ease;
+        transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
         white-space: nowrap;
         user-select: none;
       }
       .rank-nav-chip:hover {
-        background: rgba(30, 41, 59, 0.8);
+        background: rgba(30, 41, 59, 0.85);
         color: #fff;
-        border-color: rgba(148, 163, 184, 0.3);
+        border-color: rgba(148, 163, 184, 0.35);
+        transform: translateY(-1px);
       }
       .rank-nav-chip.active {
         background: var(--primary-gradient);
         color: #fff;
         border-color: transparent;
-        box-shadow: 0 2px 10px var(--primary-glow);
+        box-shadow: 0 4px 15px var(--primary-glow);
+        transform: translateY(-1px);
       }
 
       /* MENU CHỌN RANK NHANH (DROPDOWN PICKER) KHI CLICK Ô RANK */
@@ -399,22 +412,26 @@
         position: fixed;
         background: #1a233a;
         border: 1px solid rgba(255, 255, 255, 0.18);
-        border-radius: 10px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+        border-radius: 12px;
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.75);
         padding: 6px;
         z-index: 9999999;
         display: none;
-        width: 170px;
-        backdrop-filter: blur(8px);
+        width: 175px;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        transform: scale(0.95);
+        transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
       }
       .rank-popover.show {
         display: block;
+        transform: scale(1);
       }
       .rank-opt-btn {
         width: 100%;
         text-align: left;
         padding: 7px 10px;
-        border-radius: 6px;
+        border-radius: 8px;
         background: transparent;
         border: none;
         color: #e2e8f0;
@@ -424,11 +441,12 @@
         display: flex;
         align-items: center;
         gap: 8px;
-        transition: background 0.12s;
+        transition: all 0.15s ease;
       }
       .rank-opt-btn:hover {
-        background: rgba(99, 102, 241, 0.25);
+        background: rgba(99, 102, 241, 0.28);
         color: #fff;
+        transform: translateX(3px);
       }
 
       /* NÚT CUỘN LÊN ĐẦU TRANG */
@@ -436,32 +454,39 @@
         position: fixed;
         bottom: 24px;
         right: 20px;
-        width: 44px;
-        height: 44px;
+        width: 46px;
+        height: 46px;
         border-radius: 50%;
         background: var(--primary-gradient);
         color: #fff;
         border: none;
-        font-size: 1.2rem;
+        font-size: 1.25rem;
         font-weight: 800;
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 6px 18px var(--primary-glow);
+        box-shadow: 0 6px 20px var(--primary-glow);
         cursor: pointer;
         opacity: 0;
         pointer-events: none;
+        transform: translateY(16px) scale(0.9);
         transition:
-          opacity 0.25s,
-          transform 0.2s;
+          opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+          transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+          box-shadow 0.25s ease;
         z-index: 9999;
       }
       #btn-back-top.show {
         opacity: 1;
         pointer-events: auto;
+        transform: translateY(0) scale(1);
+      }
+      #btn-back-top:hover {
+        transform: translateY(-4px) scale(1.08);
+        box-shadow: 0 10px 26px var(--primary-glow);
       }
       #btn-back-top:active {
-        transform: scale(0.92);
+        transform: translateY(0) scale(0.94);
       }
 
       .stats-badge {
@@ -474,46 +499,99 @@
       }
 
       /* ========================================================
-         BẢNG MÁY TÍNH (> 820px)
+         BẢNG MÁY TÍNH (> 820px) - MẪU 1 VỚI CÁCH DÒNG NHỎ (ROW SPACING)
          ======================================================== */
       .desktop-table-wrap {
         display: block;
-        background: var(--bg-surface);
-        border: 1px solid var(--border-color);
-        border-radius: 16px;
+        background: transparent;
+        border: none;
+        border-radius: 0;
         overflow-x: auto;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+        box-shadow: none;
+        padding-bottom: 8px;
       }
 
       .acc-table {
         width: 100%;
-        border-collapse: collapse;
+        border-collapse: separate;
+        border-spacing: 0 6px; /* Cách dòng nhỏ 6px tách biệt giữa các nick */
         text-align: left;
         font-size: 0.9rem;
       }
 
       .acc-table th {
-        background: rgba(15, 23, 42, 0.95);
+        background: rgba(15, 23, 42, 0.9);
         color: var(--text-sub);
-        font-weight: 700;
-        padding: 13px 14px;
-        border-bottom: 1px solid var(--border-color);
-        font-size: 0.78rem;
+        font-weight: 800;
+        padding: 11px 12px;
+        font-size: 0.76rem;
         text-transform: uppercase;
         letter-spacing: 0.5px;
         white-space: nowrap;
+        border-top: 1px solid var(--border-color);
+        border-bottom: 1px solid var(--border-color);
+      }
+      .acc-table th:first-child {
+        border-top-left-radius: 10px;
+        border-bottom-left-radius: 10px;
+        border-left: 1px solid var(--border-color);
+      }
+      .acc-table th:last-child {
+        border-top-right-radius: 10px;
+        border-bottom-right-radius: 10px;
+        border-right: 1px solid var(--border-color);
+      }
+
+      /* DÒNG TIÊU ĐỀ NHÓM RANK TRONG BẢNG */
+      .acc-table tbody tr.acc-group-header-row td {
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+      }
+
+      /* DÒNG TÀI KHOẢN (ROW ITEM TÁCH BIỆT) */
+      .acc-table tbody tr.acc-row-item {
+        background: var(--bg-surface);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+        transition:
+          transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+          background 0.2s ease,
+          box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .acc-table tbody tr.acc-row-item:hover {
+        background: #151f35;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
       }
 
       .acc-table td {
-        padding: 11px 12px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        padding: 9px 12px;
         vertical-align: middle;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         transition: background 0.15s;
       }
 
-      .acc-table tr:hover {
-        background: rgba(30, 41, 69, 0.5);
+      .acc-table tbody tr.acc-row-item td:first-child {
+        border-top-left-radius: 10px;
+        border-bottom-left-radius: 10px;
+        border-left: 4px solid var(--border-color);
       }
+
+      .acc-table tbody tr.acc-row-item td:last-child {
+        border-top-right-radius: 10px;
+        border-bottom-right-radius: 10px;
+        border-right: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      /* VIỀN NHẬN DIỆN MÀU THEO RANK (MẪU 1 - RANK ACCENT) */
+      .rank-border-bk td:first-child { border-left: 4px solid #38bdf8 !important; }
+      .rank-border-kc td:first-child { border-left: 4px solid #06b6d4 !important; }
+      .rank-border-ta td:first-child { border-left: 4px solid #a855f7 !important; }
+      .rank-border-ct td:first-child { border-left: 4px solid #f97316 !important; }
+      .rank-border-dct td:first-child { border-left: 4px solid #eab308 !important; }
+      .rank-border-khac td:first-child { border-left: 4px solid #64748b !important; }
+      .rank-border-recent td:first-child { border-left: 4px solid #38bdf8 !important; }
 
       /* ĐỔ MÀU ĐỎ KHI BỊ BAN */
       .acc-table tr.is-banned {
@@ -522,8 +600,15 @@
       .acc-table tr.is-banned:hover {
         background: var(--ban-bg-hover) !important;
       }
+      .acc-table tr.is-banned td:first-child {
+        border-left: 4px solid #f43f5e !important;
+      }
       .acc-table tr.is-banned td {
-        border-bottom: 1px solid rgba(239, 68, 68, 0.3);
+        border-top-color: rgba(244, 63, 94, 0.25);
+        border-bottom-color: rgba(244, 63, 94, 0.25);
+      }
+      .acc-table tr.is-banned td:last-child {
+        border-right-color: rgba(244, 63, 94, 0.25);
       }
       .acc-table tr.is-banned .tbl-input {
         background: rgba(127, 29, 29, 0.4);
@@ -532,20 +617,21 @@
       }
 
       .tbl-input {
-        padding: 8px 12px;
-        font-size: 0.9rem;
+        padding: 8px 11px;
+        font-size: 0.88rem;
         background: rgba(11, 15, 25, 0.7);
         border: 1px solid rgba(255, 255, 255, 0.1);
         border-radius: 8px;
         color: #fff;
         font-family: "JetBrains Mono", monospace;
         width: 100%;
-        transition: all 0.15s;
+        transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
       }
 
       .tbl-input:focus {
-        border-color: #6366f1;
+        border-color: #38bdf8;
         background: #020617;
+        box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.25);
       }
 
       .badge {
@@ -571,68 +657,50 @@
         border: 1px solid rgba(16, 185, 129, 0.3);
       }
 
-      /* HUY HIỆU RANK MÀU SẮC ĐẶC TRƯNG */
-      .badge-rank {
-        display: inline-flex;
-        align-items: center;
-        gap: 3px;
-        font-weight: 800;
-        font-size: 0.75rem;
-        padding: 3px 8px;
-        border-radius: 6px;
-        letter-spacing: 0.3px;
-        text-transform: uppercase;
-        white-space: nowrap;
-      }
+      /* HUY HIỆU RANK MẪU 1 CHUẨN MÀU */
       .badge-rank-bk {
-        background: rgba(56, 189, 248, 0.18);
+        background: rgba(56, 189, 248, 0.15);
         color: #38bdf8;
         border: 1px solid rgba(56, 189, 248, 0.4);
       }
       .badge-rank-kc {
-        background: rgba(99, 102, 241, 0.22);
-        color: #818cf8;
-        border: 1px solid rgba(99, 102, 241, 0.45);
+        background: rgba(6, 182, 212, 0.15);
+        color: #22d3ee;
+        border: 1px solid rgba(6, 182, 212, 0.4);
       }
       .badge-rank-ta {
-        background: rgba(168, 85, 247, 0.22);
+        background: rgba(168, 85, 247, 0.15);
         color: #c084fc;
-        border: 1px solid rgba(168, 85, 247, 0.45);
+        border: 1px solid rgba(168, 85, 247, 0.4);
       }
       .badge-rank-ct {
-        background: rgba(239, 68, 68, 0.22);
-        color: #f87171;
-        border: 1px solid rgba(239, 68, 68, 0.45);
+        background: rgba(249, 115, 22, 0.15);
+        color: #fb923c;
+        border: 1px solid rgba(249, 115, 22, 0.4);
       }
       .badge-rank-dct {
-        background: rgba(234, 179, 8, 0.25);
-        color: #fde047;
-        border: 1px solid rgba(234, 179, 8, 0.55);
+        background: rgba(234, 179, 8, 0.2);
+        color: #facc15;
+        border: 1px solid rgba(234, 179, 8, 0.5);
         box-shadow: 0 0 10px rgba(234, 179, 8, 0.25);
       }
       .badge-rank-khac {
-        background: rgba(100, 116, 139, 0.2);
-        color: #94a3b8;
-        border: 1px solid rgba(100, 116, 139, 0.35);
+        background: rgba(148, 163, 184, 0.15);
+        color: #cbd5e1;
+        border: 1px solid rgba(148, 163, 184, 0.35);
       }
 
-      /* KHỐI TIÊU ĐỀ PHÂN NHÓM THEO RANK */
+      /* KHỐI TIÊU ĐỀ PHÂN NHÓM THEO RANK (MOBILE) */
       .rank-group-banner {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 9px 14px;
+        padding: 10px 14px;
         margin: 18px 0 10px;
-        background: linear-gradient(
-          90deg,
-          rgba(30, 41, 69, 0.85) 0%,
-          rgba(15, 23, 42, 0.6) 100%
-        );
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
         border-left: 4px solid var(--primary);
-        border-radius: 8px;
-        border-top: 1px solid var(--border-color);
-        border-right: 1px solid var(--border-color);
-        border-bottom: 1px solid var(--border-color);
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
       }
       .rank-group-banner:first-child {
         margin-top: 4px;
@@ -649,29 +717,40 @@
         font-size: 0.78rem;
         color: var(--text-muted);
         background: rgba(0, 0, 0, 0.3);
-        padding: 2px 8px;
+        padding: 3px 9px;
         border-radius: 10px;
+        font-weight: 700;
       }
 
+      /* NÚT SAO CHÉP MẪU 1 VỚI HIỆU ỨNG MƯỢT MÀ */
       .btn-copy-action {
         background: var(--primary-gradient);
         color: #fff;
         border: none;
         padding: 8px 14px;
         border-radius: 8px;
-        font-size: 0.85rem;
-        font-weight: 700;
+        font-size: 0.82rem;
+        font-weight: 800;
         cursor: pointer;
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        box-shadow: 0 2px 10px var(--primary-glow);
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.35);
         white-space: nowrap;
-        transition: all 0.15s;
+        transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
       }
-
+      .btn-copy-action:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+        filter: brightness(1.12);
+      }
       .btn-copy-action:active {
-        transform: scale(0.97);
+        transform: scale(0.95) translateY(0);
+      }
+      .btn-copy-action.copied {
+        background: linear-gradient(135deg, #10b981, #059669) !important;
+        box-shadow: 0 0 16px rgba(16, 185, 129, 0.6) !important;
+        transform: scale(1.05);
       }
 
       .btn-del-action {
@@ -682,27 +761,32 @@
         padding: 8px 12px;
         font-size: 0.9rem;
         cursor: pointer;
-        transition: all 0.15s;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
       }
-
       .btn-del-action:hover {
         background: #dc2626;
         color: #fff;
+        transform: translateY(-2px);
+      }
+      .btn-del-action:active {
+        transform: scale(0.95);
       }
 
       .btn-reset-tag {
         background: rgba(51, 65, 85, 0.8);
         color: #cbd5e1;
         border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 5px;
-        padding: 3px 7px;
+        border-radius: 6px;
+        padding: 3px 8px;
         font-size: 0.72rem;
+        font-weight: 700;
         cursor: pointer;
+        transition: all 0.18s ease;
       }
-
       .btn-reset-tag:hover {
         background: #dc2626;
         color: #fff;
+        transform: translateY(-1px);
       }
 
       .btn-remove-recent {
@@ -718,16 +802,20 @@
         align-items: center;
         gap: 4px;
         white-space: nowrap;
-        transition: all 0.15s ease;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
       }
       .btn-remove-recent:hover {
         background: rgba(244, 63, 94, 0.28);
         color: #fff;
         border-color: #f43f5e;
+        transform: translateY(-2px);
+      }
+      .btn-remove-recent:active {
+        transform: scale(0.95);
       }
 
       /* ========================================================
-         GIAO DIỆN MOBILE
+         GIAO DIỆN MOBILE - MẪU 1 VỚI VIỀN MÀU THEO RANK
          ======================================================== */
       .mobile-card-list {
         display: none;
@@ -744,11 +832,27 @@
         flex-direction: column;
         gap: 9px;
         box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        transition:
+          transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+          box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1);
       }
+      .m-row-card:active {
+        transform: scale(0.985);
+      }
+
+      /* VIỀN MOBILE THEO RANK */
+      .m-row-card.rank-border-bk { border-left: 4px solid #38bdf8 !important; }
+      .m-row-card.rank-border-kc { border-left: 4px solid #06b6d4 !important; }
+      .m-row-card.rank-border-ta { border-left: 4px solid #a855f7 !important; }
+      .m-row-card.rank-border-ct { border-left: 4px solid #f97316 !important; }
+      .m-row-card.rank-border-dct { border-left: 4px solid #eab308 !important; }
+      .m-row-card.rank-border-khac { border-left: 4px solid #64748b !important; }
+      .m-row-card.rank-border-recent { border-left: 4px solid #38bdf8 !important; }
 
       .m-row-card.is-banned {
         background: var(--ban-bg) !important;
-        border: 1px solid var(--ban-border) !important;
+        border: 1px solid rgba(239, 68, 68, 0.35) !important;
+        border-left: 4px solid #f43f5e !important;
       }
 
       .m-card-top-row {
@@ -801,7 +905,7 @@
         width: 100%;
         padding: 10px 12px;
         font-size: 0.85rem;
-        font-weight: 700;
+        font-weight: 800;
         background: var(--primary-gradient);
         color: #fff;
         border: none;
@@ -811,8 +915,16 @@
         align-items: center;
         justify-content: center;
         gap: 6px;
-        box-shadow: 0 2px 10px var(--primary-glow);
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.3);
         white-space: nowrap;
+        transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .m-btn-copy:active {
+        transform: scale(0.95);
+      }
+      .m-btn-copy.copied {
+        background: linear-gradient(135deg, #10b981, #059669) !important;
+        box-shadow: 0 0 16px rgba(16, 185, 129, 0.6) !important;
       }
 
       .m-btn-del {
@@ -828,6 +940,10 @@
         justify-content: center;
         font-size: 0.9rem;
         cursor: pointer;
+        transition: all 0.18s ease;
+      }
+      .m-btn-del:active {
+        transform: scale(0.95);
       }
 
       .m-btn-remove-recent {
@@ -844,11 +960,14 @@
         font-size: 0.95rem;
         font-weight: 700;
         cursor: pointer;
-        transition: all 0.15s;
+        transition: all 0.18s ease;
       }
       .m-btn-remove-recent:hover {
         background: #f43f5e;
         color: #fff;
+      }
+      .m-btn-remove-recent:active {
+        transform: scale(0.95);
       }
 
       /* RESPONSIVE MOBILE */
@@ -901,42 +1020,51 @@
         position: fixed;
         inset: 0;
         background: rgba(0, 0, 0, 0.75);
-        backdrop-filter: blur(6px);
-        -webkit-backdrop-filter: blur(6px);
-        display: none;
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        display: flex;
         align-items: center;
         justify-content: center;
         padding: 16px;
         z-index: 99999;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1);
       }
 
       .modal-overlay.show {
-        display: flex !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
       }
 
       .modal-card {
         background: #161e31;
         border: 1px solid rgba(255, 255, 255, 0.12);
-        border-radius: 16px;
+        border-radius: 20px;
         width: 100%;
-        max-width: 350px;
-        padding: 22px 18px;
+        max-width: 380px;
+        padding: 24px 20px;
         text-align: center;
-        box-shadow: 0 20px 35px rgba(0, 0, 0, 0.6);
-        transform: scale(0.92);
-        transition: transform 0.2s ease;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7);
+        transform: scale(0.9) translateY(16px);
+        transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
       }
 
       .modal-overlay.show .modal-card {
-        transform: scale(1);
+        transform: scale(1) translateY(0);
       }
 
       .modal-icon {
-        font-size: 2.4rem;
+        font-size: 2.6rem;
         margin-bottom: 8px;
+        animation: pulseIcon 1.5s infinite;
+      }
+      @keyframes pulseIcon {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.08); }
       }
       .modal-title {
-        font-size: 1.1rem;
+        font-size: 1.15rem;
         font-weight: 800;
         color: #fff;
         margin-bottom: 6px;
@@ -944,58 +1072,79 @@
       .modal-msg {
         font-size: 0.88rem;
         color: #cbd5e1;
-        line-height: 1.45;
-        margin-bottom: 20px;
+        line-height: 1.5;
+        margin-bottom: 22px;
       }
       .modal-btns {
         display: flex;
-        gap: 8px;
+        gap: 10px;
       }
 
       .modal-btn-act {
         flex: 1;
         padding: 10px 14px;
-        border-radius: 8px;
+        border-radius: 10px;
         border: none;
         font-weight: 700;
         font-size: 0.88rem;
         cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .modal-btn-act:hover {
+        transform: translateY(-2px);
+        filter: brightness(1.1);
+      }
+      .modal-btn-act:active {
+        transform: scale(0.96);
       }
 
       .btn-m-confirm {
         background: var(--primary-gradient);
         color: #fff;
+        box-shadow: 0 4px 14px var(--primary-glow);
       }
       .btn-m-danger {
-        background: #dc2626;
+        background: linear-gradient(135deg, #ef4444, #dc2626);
         color: #fff;
+        box-shadow: 0 4px 14px rgba(220, 38, 38, 0.4);
       }
       .btn-m-cancel {
         background: #334155;
         color: #e2e8f0;
       }
 
-      /* TOAST */
+      /* TOAST MƯỢT MÀ */
       #toast {
         position: fixed;
-        bottom: 24px;
+        bottom: 28px;
         left: 50%;
-        transform: translateX(-50%);
-        background: rgba(16, 185, 129, 0.95);
+        transform: translate(-50%, 20px) scale(0.92);
+        background: rgba(15, 23, 42, 0.94);
+        border: 1px solid rgba(56, 189, 248, 0.45);
         color: #fff;
-        padding: 10px 22px;
-        border-radius: 25px;
+        padding: 11px 24px;
+        border-radius: 30px;
         font-size: 0.88rem;
         font-weight: 700;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(56, 189, 248, 0.25);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
         opacity: 0;
         pointer-events: none;
-        transition: opacity 0.2s ease;
+        transition:
+          transform 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+          opacity 0.32s cubic-bezier(0.16, 1, 0.3, 1);
         z-index: 999999;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        white-space: nowrap;
       }
 
       #toast.show {
+        transform: translate(-50%, 0) scale(1);
         opacity: 1;
+        pointer-events: auto;
       }
     </style>
   </head>
@@ -1785,7 +1934,7 @@
         );
       }
 
-      // CẤU HÌNH RANK: BK < KC < TA < CT < DCT < KHAC
+      // CẤU HÌNH RANK: BK < KC < TA < CT < DCT < KHAC (MẪU 1: RANK ACCENT)
       const RANK_CONFIG = {
         BK: {
           key: "BK",
@@ -1793,6 +1942,11 @@
           name: "Bạch Kim (BK)",
           icon: "🛡️",
           class: "badge-rank-bk",
+          borderClass: "rank-border-bk",
+          color: "#38bdf8",
+          bgGradient:
+            "linear-gradient(90deg, rgba(56, 189, 248, 0.18) 0%, rgba(15, 23, 42, 0.95) 100%)",
+          btnGrad: "linear-gradient(135deg, #0284c7, #38bdf8)",
         },
         KC: {
           key: "KC",
@@ -1800,6 +1954,11 @@
           name: "Kim Cương (KC)",
           icon: "💠",
           class: "badge-rank-kc",
+          borderClass: "rank-border-kc",
+          color: "#06b6d4",
+          bgGradient:
+            "linear-gradient(90deg, rgba(6, 182, 212, 0.18) 0%, rgba(15, 23, 42, 0.95) 100%)",
+          btnGrad: "linear-gradient(135deg, #0891b2, #06b6d4)",
         },
         TA: {
           key: "TA",
@@ -1807,6 +1966,11 @@
           name: "Tinh Anh (TA)",
           icon: "💎",
           class: "badge-rank-ta",
+          borderClass: "rank-border-ta",
+          color: "#a855f7",
+          bgGradient:
+            "linear-gradient(90deg, rgba(168, 85, 247, 0.18) 0%, rgba(15, 23, 42, 0.95) 100%)",
+          btnGrad: "linear-gradient(135deg, #a855f7, #6366f1)",
         },
         CT: {
           key: "CT",
@@ -1814,6 +1978,11 @@
           name: "Cao Thủ (CT)",
           icon: "🔥",
           class: "badge-rank-ct",
+          borderClass: "rank-border-ct",
+          color: "#f97316",
+          bgGradient:
+            "linear-gradient(90deg, rgba(249, 115, 22, 0.18) 0%, rgba(15, 23, 42, 0.95) 100%)",
+          btnGrad: "linear-gradient(135deg, #f97316, #ef4444)",
         },
         DCT: {
           key: "DCT",
@@ -1821,6 +1990,11 @@
           name: "Đại Cao Thủ (DCT)",
           icon: "👑",
           class: "badge-rank-dct",
+          borderClass: "rank-border-dct",
+          color: "#eab308",
+          bgGradient:
+            "linear-gradient(90deg, rgba(234, 179, 8, 0.2) 0%, rgba(15, 23, 42, 0.95) 100%)",
+          btnGrad: "linear-gradient(135deg, #eab308, #f59e0b)",
         },
         KHAC: {
           key: "KHAC",
@@ -1828,6 +2002,11 @@
           name: "Khác / Chưa Rank",
           icon: "⚔️",
           class: "badge-rank-khac",
+          borderClass: "rank-border-khac",
+          color: "#94a3b8",
+          bgGradient:
+            "linear-gradient(90deg, rgba(148, 163, 184, 0.15) 0%, rgba(15, 23, 42, 0.95) 100%)",
+          btnGrad: "linear-gradient(135deg, #475569, #64748b)",
         },
       };
 
@@ -1959,6 +2138,7 @@
 
       function saveData() {
         localStorage.setItem("lq_accounts", JSON.stringify(accounts));
+        localStorage.setItem("lq_updated_at", Date.now().toString());
       }
 
       window.updateField = function (id, field, value) {
@@ -2096,14 +2276,25 @@
         const mobileWrapper = document.createElement("div");
         mobileWrapper.className = "mobile-card-list";
 
-        // Helper render 1 dòng trong bảng desktop
+        // Helper render 1 dòng trong bảng desktop (MẪU 1)
         function renderTableRow(item, isRecent = false) {
           globalIndex++;
           const banInfo = checkBanStatus(item.unlockDate);
           const isBanned = banInfo.isBanned;
+          const rankGrp = parseRankGroup(item.rank);
+
+          const borderClass = isRecent
+            ? "rank-border-recent"
+            : (rankGrp.borderClass || "rank-border-khac");
+
+          const copyBtnGrad = isBanned
+            ? "linear-gradient(135deg, #475569, #334155)"
+            : isRecent
+              ? "linear-gradient(135deg, #0ea5e9, #6366f1)"
+              : (rankGrp.btnGrad || "var(--primary-gradient)");
 
           return `
-            <tr class="${isBanned ? "is-banned" : ""}">
+            <tr class="acc-row-item ${borderClass} ${isBanned ? "is-banned" : ""}">
               <td style="text-align: center; font-weight: 700; color: ${isBanned ? "#fecaca" : "var(--text-muted)"}; font-size: 0.92rem;">#${globalIndex}</td>
               <td>
                 ${isBanned ? `<span class="badge badge-banned">${banInfo.desc}</span>` : `<span class="badge badge-active">🟢 HOẠT ĐỘNG</span>`}
@@ -2181,7 +2372,7 @@
                 </div>
               </td>
               <td style="text-align: center;">
-                <button class="btn-copy-action" onclick="copyCombo('${item.id}')">
+                <button class="btn-copy-action" id="btn-copy-${item.id}" style="background: ${copyBtnGrad};" onclick="copyCombo('${item.id}', this)">
                   📋 SAO CHÉP
                 </button>
               </td>
@@ -2204,14 +2395,24 @@
           `;
         }
 
-        // Helper render 1 card trên mobile
+        // Helper render 1 card trên mobile (MẪU 1)
         function renderMobileCard(item, isRecent = false) {
           const banInfo = checkBanStatus(item.unlockDate);
           const isBanned = banInfo.isBanned;
           const rankGrp = parseRankGroup(item.rank);
 
+          const borderClass = isRecent
+            ? "rank-border-recent"
+            : (rankGrp.borderClass || "rank-border-khac");
+
+          const copyBtnGrad = isBanned
+            ? "linear-gradient(135deg, #475569, #334155)"
+            : isRecent
+              ? "linear-gradient(135deg, #0ea5e9, #6366f1)"
+              : (rankGrp.btnGrad || "var(--primary-gradient)");
+
           const card = document.createElement("div");
-          card.className = `m-row-card ${isBanned ? "is-banned" : ""}`;
+          card.className = `m-row-card ${borderClass} ${isBanned ? "is-banned" : ""}`;
 
           card.innerHTML = `
             <div class="m-card-top-row">
@@ -2280,7 +2481,7 @@
                 oninput="formatDateOnlyNumbers(this)"
                 onchange="updateField('${item.id}', 'unlockDate', this.value)"
               />
-              <button class="m-btn-copy" onclick="copyCombo('${item.id}')">
+              <button class="m-btn-copy" id="m-btn-copy-${item.id}" style="background: ${copyBtnGrad};" onclick="copyCombo('${item.id}', this)">
                 📋 COPY
               </button>
               ${
@@ -2304,14 +2505,14 @@
         // 1. HIỂN THỊ NHÓM "ĐÃ DÙNG GẦN ĐÂY" (Chỉ hiển thị khi bấm vào tab Đã Dùng)
         if (fRank === "recent" && recentAccounts.length > 0) {
           tableHtml += `
-            <tr style="background: linear-gradient(90deg, rgba(14, 165, 233, 0.22), rgba(15, 23, 42, 0.95)); border-left: 4px solid #38bdf8;">
-              <td colspan="10" style="padding: 10px 14px; border-bottom: 2px solid #38bdf8; border-top: 1px solid rgba(56, 189, 248, 0.3);">
+            <tr class="acc-group-header-row" style="background: linear-gradient(90deg, rgba(14, 165, 233, 0.22), rgba(15, 23, 42, 0.95)); border-left: 4px solid #38bdf8;">
+              <td colspan="10" style="padding: 10px 14px; border-bottom: 2px solid #38bdf8; border-top: 1px solid rgba(56, 189, 248, 0.3); border-radius: 10px;">
                 <div style="display: flex; align-items: center; justify-content: space-between;">
                   <span style="font-weight: 800; font-size: 0.95rem; color: #38bdf8; display: flex; align-items: center; gap: 8px;">
                     <span>🕒</span> NHÓM: ĐÃ DÙNG GẦN ĐÂY
                   </span>
                   <div style="display: flex; align-items: center; gap: 10px;">
-                    <span style="font-size: 0.8rem; color: #bae6fd; font-weight: 700;">${recentAccounts.length} nick</span>
+                    <span style="font-size: 0.8rem; color: #bae6fd; font-weight: 700; background: rgba(0,0,0,0.3); padding: 3px 10px; border-radius: 12px;">${recentAccounts.length} nick</span>
                     <button class="btn-reset-tag" onclick="clearAllRecent()" style="background: rgba(244, 63, 94, 0.2); border-color: rgba(244, 63, 94, 0.4); color: #fda4af;" title="Làm trống nhóm Đã dùng gần đây (vẫn giữ nguyên nick)">🧹 Dọn sạch nhóm</button>
                   </div>
                 </div>
@@ -2349,13 +2550,13 @@
             if (grp.items.length === 0) return;
 
             tableHtml += `
-              <tr style="background: rgba(15, 23, 42, 0.95); border-left: 4px solid var(--primary);">
-                <td colspan="10" style="padding: 10px 14px; border-bottom: 2px solid var(--primary); border-top: 1px solid rgba(255,255,255,0.1);">
+              <tr class="acc-group-header-row" style="background: ${grp.config.bgGradient}; border-left: 4px solid ${grp.config.color};">
+                <td colspan="10" style="padding: 10px 14px; border-bottom: 2px solid ${grp.config.color}; border-top: 1px solid rgba(255,255,255,0.1); border-radius: 10px;">
                   <div style="display: flex; align-items: center; justify-content: space-between;">
                     <span style="font-weight: 800; font-size: 0.95rem; color: #fff; display: flex; align-items: center; gap: 8px;">
                       <span>${grp.config.icon}</span> NHÓM RANK: <span class="badge ${grp.config.class}">${grp.config.name}</span>
                     </span>
-                    <span style="font-size: 0.8rem; color: var(--text-sub); font-weight: 700;">${grp.items.length} nick</span>
+                    <span style="font-size: 0.8rem; color: #cbd5e1; font-weight: 700; background: rgba(0,0,0,0.3); padding: 3px 10px; border-radius: 12px;">${grp.items.length} nick</span>
                   </div>
                 </td>
               </tr>
@@ -2363,12 +2564,14 @@
 
             const mobileBanner = document.createElement("div");
             mobileBanner.className = "rank-group-banner";
+            mobileBanner.style.borderLeftColor = grp.config.color;
+            mobileBanner.style.background = grp.config.bgGradient;
             mobileBanner.innerHTML = `
-              <div class="rank-group-title">
+              <div class="rank-group-title" style="color: ${grp.config.color};">
                 <span>${grp.config.icon}</span>
                 <span class="badge ${grp.config.class}">${grp.config.name}</span>
               </div>
-              <span class="rank-group-count">${grp.items.length} nick</span>
+              <span class="rank-group-count" style="color: #fff; background: rgba(0,0,0,0.3);">${grp.items.length} nick</span>
             `;
             mobileWrapper.appendChild(mobileBanner);
 
@@ -2387,7 +2590,7 @@
       }
 
       // COPY TK:MK
-      window.copyCombo = function (id) {
+      window.copyCombo = function (id, btnEl = null) {
         const item = accounts.find((a) => a.id === id);
         if (!item) return;
 
@@ -2405,8 +2608,21 @@
         item.useCount = (item.useCount || 0) + 1;
         item.inRecent = true;
         saveData();
-        renderList();
         triggerAutoSync();
+
+        // Hiệu ứng mượt mà đổi text nút sang 'ĐÃ COPY' tức thì
+        if (btnEl) {
+          const oldText = btnEl.innerHTML;
+          btnEl.classList.add("copied");
+          btnEl.innerHTML = "✅ ĐÃ COPY";
+          setTimeout(() => {
+            btnEl.classList.remove("copied");
+            btnEl.innerHTML = oldText;
+            renderList();
+          }, 900);
+        } else {
+          renderList();
+        }
 
         if (navigator.clipboard && navigator.clipboard.writeText) {
           navigator.clipboard
@@ -2475,15 +2691,15 @@
         });
       };
 
-      // TOAST
+      // TOAST MƯỢT MÀ
       let toastTimer;
       function showToast(msg) {
         clearTimeout(toastTimer);
-        toast.textContent = msg;
+        toast.innerHTML = msg;
         toast.classList.add("show");
         toastTimer = setTimeout(() => {
           toast.classList.remove("show");
-        }, 1800);
+        }, 2200);
       }
 
       function escapeHtml(str) {
@@ -2636,18 +2852,36 @@
             if (cloudBtnText) cloudBtnText.textContent = "Đồng Bộ PC & ĐT";
             return;
           }
-          const cloudData = await res.json();
-          if (Array.isArray(cloudData) && cloudData.length > 0) {
-            accounts = cloudData;
-            localStorage.setItem("lq_accounts", JSON.stringify(accounts));
-            renderList();
-            if (cloudStatusIcon) cloudStatusIcon.textContent = "☁️";
-            if (cloudBtnText) cloudBtnText.textContent = "Đã tải Cloud";
-            if (!silent)
-              showToast(`✅ Đã tải về ${accounts.length} nick từ đám mây!`);
-          } else {
-            if (cloudBtnText) cloudBtnText.textContent = "Đồng Bộ PC & ĐT";
+          const cloudRaw = await res.json();
+          let cloudAccounts = [];
+          let cloudUpdatedAt = 0;
+
+          if (Array.isArray(cloudRaw)) {
+            cloudAccounts = cloudRaw;
+          } else if (cloudRaw && Array.isArray(cloudRaw.accounts)) {
+            cloudAccounts = cloudRaw.accounts;
+            cloudUpdatedAt = cloudRaw.updatedAt || 0;
           }
+
+          const localUpdatedAt = parseInt(localStorage.getItem("lq_updated_at") || "0", 10);
+          const hasLocalData = localStorage.getItem("lq_accounts") !== null;
+
+          // Nếu tải ngầm khi mở web (silent = true):
+          // Nếu máy người dùng đã có dữ liệu và vừa thao tác (localUpdatedAt >= cloudUpdatedAt) -> KHÔNG ĐÈ, giữ nguyên thao tác xoá của người dùng!
+          if (silent && hasLocalData && localUpdatedAt >= cloudUpdatedAt) {
+            if (cloudBtnText) cloudBtnText.textContent = "Đồng Bộ PC & ĐT";
+            return;
+          }
+
+          // Cập nhật dữ liệu từ đám mây (khi thiết bị mới mở lần đầu hoặc khi cloud thực sự mới hơn)
+          accounts = cloudAccounts;
+          localStorage.setItem("lq_accounts", JSON.stringify(accounts));
+          localStorage.setItem("lq_updated_at", (cloudUpdatedAt || Date.now()).toString());
+          renderList();
+          if (cloudStatusIcon) cloudStatusIcon.textContent = "☁️";
+          if (cloudBtnText) cloudBtnText.textContent = "Đã tải Cloud";
+          if (!silent)
+            showToast(`✅ Đã tải về ${accounts.length} nick từ đám mây!`);
         } catch (e) {
           if (cloudBtnText) cloudBtnText.textContent = "Đồng Bộ PC & ĐT";
           if (!silent)
@@ -2759,12 +2993,12 @@
         } catch (err) {
           if (err.message === "BAD_CREDENTIALS") {
             if (cloudStatusIcon) cloudStatusIcon.textContent = "⚠️";
-            if (cloudBtnText) cloudBtnText.textContent = "Token hết hạn";
+            if (cloudBtnText) cloudBtnText.textContent = "Token không hợp lệ";
             if (!silent)
               showNotice({
                 title: "Token Không Hợp Lệ (Bad credentials)",
                 message:
-                  "Mã Token GitHub đã bị thu hồi hoặc hết hạn!<br><br><b>Cách xử lý:</b> Hãy tạo 1 mã Token mới trên GitHub (chọn quyền <b>repo</b> và <b>No expiration</b>) rồi dán vào ô Token bên trên nhé.",
+                  "GitHub từ chối mã Token này (Bad credentials)!<br><br><b>Nguyên nhân thường gặp:</b><br>1. Bạn chưa dán mã Token mới vào ô bên dưới, hoặc trình duyệt vẫn lưu mã cũ.<br>2. Copy bị thiếu ký tự (mã chuẩn bắt đầu bằng <code>ghp_...</code>).<br>3. Chưa tích chọn quyền <b>repo</b> khi tạo Token.<br><br>👉 Hãy bấm nút xanh tạo Token mới (chọn <b>repo</b> và <b>No expiration</b>), copy đầy đủ và dán vào ô bên dưới rồi bấm <b>Đẩy Lên Mây</b> nhé.",
                 icon: "🔑",
                 type: "danger",
               });
