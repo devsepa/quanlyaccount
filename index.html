@@ -1221,8 +1221,8 @@
             id="btn-open-cloud"
             onclick="openCloudModal()"
           >
-            <span id="cloud-status-icon">☁️</span>
-            <span id="cloud-btn-text">Đồng Bộ PC & ĐT</span>
+            <span id="cloud-status-icon">🟢</span>
+            <span id="cloud-btn-text">Đám Mây Tự Động</span>
           </button>
           <button
             class="btn btn-tele"
@@ -1389,7 +1389,7 @@
     <!-- NÚT CUỘN LÊN ĐẦU TRANG -->
     <button id="btn-back-top" title="Cuộn lên đầu trang">▲</button>
 
-    <!-- MODAL ĐỒNG BỘ CLOUD GITHUB (ĐỒNG BỘ PC VÀ ĐIỆN THOẠI) -->
+    <!-- MODAL ĐỒNG BỘ CLOUD FIREBASE (PC & MOBILE DÙNG CHUNG) -->
     <div id="cloud-modal" class="modal-overlay">
       <div class="modal-card" style="max-width: 440px; text-align: left">
         <div
@@ -1410,7 +1410,7 @@
               gap: 8px;
             "
           >
-            <span>☁️</span> Đồng Bộ PC & Điện Thoại
+            <span>☁️</span> Đám Mây Firebase Tự Động
           </div>
           <button
             id="btn-close-cloud"
@@ -1427,6 +1427,29 @@
           </button>
         </div>
 
+        <div
+          style="
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(16, 185, 129, 0.35);
+            border-radius: 8px;
+            padding: 10px 12px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+          "
+        >
+          <span style="font-size: 1.3rem;">🟢</span>
+          <div>
+            <div style="font-size: 0.82rem; font-weight: 800; color: #34d399;">
+              Hệ Thống Trực Tuyến Thời Gian Thực (Realtime)
+            </div>
+            <div style="font-size: 0.72rem; color: #94a3b8; font-family: monospace;">
+              aopvman-default-rtdb.firebaseio.com
+            </div>
+          </div>
+        </div>
+
         <p
           style="
             font-size: 0.8rem;
@@ -1435,55 +1458,8 @@
             line-height: 1.45;
           "
         >
-          Dữ liệu nick được lưu trực tiếp vào kho <b>devsepa/quanlyaccount</b>.
-          Dù mở trên PC hay Điện thoại đều tự động cập nhật chung 1 danh sách!
+          Dữ liệu nick được đồng bộ <b>tự động 100%</b> qua Google Firebase. Bạn và bạn bè khi mở web hay bấm <b>📋 SAO CHÉP</b> đều tự động đồng bộ ngay lập tức mà <b>không cần nhập bất kỳ mã token nào</b>!
         </p>
-
-        <div style="margin-bottom: 12px">
-          <a
-            href="https://github.com/settings/tokens/new?description=AOV-Manager&scopes=repo"
-            target="_blank"
-            style="
-              display: inline-flex;
-              align-items: center;
-              justify-content: center;
-              gap: 8px;
-              width: 100%;
-              padding: 10px 14px;
-              background: rgba(56, 189, 248, 0.15);
-              color: #38bdf8;
-              border: 1px solid rgba(56, 189, 248, 0.4);
-              border-radius: 8px;
-              font-size: 0.82rem;
-              font-weight: 700;
-              text-decoration: none;
-              text-align: center;
-              box-sizing: border-box;
-            "
-          >
-            🔑 Bấm Đây Để Tạo Token Nhanh (Đã chọn sẵn quyền) ➔
-          </a>
-        </div>
-
-        <div style="margin-bottom: 12px">
-          <label
-            style="
-              font-size: 0.78rem;
-              font-weight: 700;
-              color: #cbd5e1;
-              display: block;
-              margin-bottom: 4px;
-            "
-            >Dán mã GitHub Personal Access Token mới vào đây:</label
-          >
-          <input
-            type="text"
-            id="gh-token"
-            placeholder="Dán mã Token mới (ghp_...) vào đây..."
-            value=""
-            style="font-size: 0.85rem; font-family: monospace"
-          />
-        </div>
 
         <div style="display: flex; gap: 8px; margin-bottom: 12px">
           <button
@@ -1492,7 +1468,7 @@
             onclick="pullFromCloud(false)"
             style="flex: 1; padding: 10px"
           >
-            📥 Tải Về Máy
+            📥 Tải Lại Dữ Liệu
           </button>
           <button
             class="btn btn-primary"
@@ -1500,7 +1476,7 @@
             onclick="pushToCloud(false)"
             style="flex: 1; padding: 10px"
           >
-            ☁️ Đẩy Lên Mây
+            ☁️ Đồng Bộ Ngay
           </button>
         </div>
 
@@ -1512,33 +1488,12 @@
             font-size: 0.75rem;
             color: #94a3b8;
             line-height: 1.45;
-            margin-bottom: 10px;
           "
         >
-          💡 <b>Cơ chế Tự Động Đồng Bộ (Auto-Sync):</b><br />
+          💡 <b>Cơ chế Tự Động Hoàn Toàn:</b><br />
           • Mọi thao tác thêm, sửa, xóa, copy nick đều
-          <b>tự động đẩy ngầm lên GitHub</b> sau 1.5 giây!<br />
-          • Dữ liệu lưu an toàn trong kho GitHub của bạn.
-        </div>
-
-        <div
-          style="
-            background: rgba(244, 63, 94, 0.1);
-            border: 1px solid rgba(244, 63, 94, 0.3);
-            border-radius: 8px;
-            padding: 10px;
-            font-size: 0.75rem;
-            color: #fca5a5;
-            line-height: 1.45;
-          "
-        >
-          🔑 <b>Cách xử lý lỗi "Bad credentials" / "Lỗi lưu Cloud":</b><br />
-          Token cũ <code>ghp_JAPy...</code> đã bị GitHub quét và vô hiệu hóa.<br />
-          1. Bấm nút xanh dương bên trên để mở trang tạo Token mới.<br />
-          2. Chọn <b>Expiration: No expiration</b> rồi bấm nút xanh lá
-          <b>Generate token</b> ở cuối trang.<br />
-          3. Copy mã token mới (dạng <code>ghp_...</code>) dán vào ô bên trên
-          rồi bấm <b>Đẩy Lên Mây</b>.
+          <b>tự động lưu lên Firebase</b> tức thì.<br />
+          • Bất kỳ ai bấm SAO CHÉP nick sẽ hiện giờ dùng công khai cho tất cả mọi người cùng thấy để tránh vào trùng nick!
         </div>
       </div>
     </div>
@@ -2806,32 +2761,22 @@
       };
 
       // ==========================================
-      // TÍNH NĂNG ĐỒNG BỘ CLOUD GITHUB (PC & MOBILE DÙNG CHUNG)
+      // TÍNH NĂNG ĐỒNG BỘ CLOUD FIREBASE (PC & MOBILE DÙNG CHUNG)
       // ==========================================
+      const FIREBASE_DB_URL = "https://aopvman-default-rtdb.firebaseio.com";
+      const FIREBASE_ENDPOINT = `${FIREBASE_DB_URL}/accounts.json`;
+
       const cloudModal = document.getElementById("cloud-modal");
       const btnOpenCloud = document.getElementById("btn-open-cloud");
       const btnCloseCloud = document.getElementById("btn-close-cloud");
-      const ghTokenInput = document.getElementById("gh-token");
       const btnPullCloud = document.getElementById("btn-pull-cloud");
       const btnPushCloud = document.getElementById("btn-push-cloud");
       const cloudStatusIcon = document.getElementById("cloud-status-icon");
       const cloudBtnText = document.getElementById("cloud-btn-text");
 
-      const GH_REPO = "devsepa/quanlyaccount";
-      const GH_FILE = "data.json";
-
-      // Đọc token đã lưu (tự động loại bỏ token cũ đã bị thu hồi)
-      let savedGhToken = localStorage.getItem("lq_gh_token") || "";
-      if (savedGhToken === "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") {
-        savedGhToken = "";
-        localStorage.removeItem("lq_gh_token");
-      }
-      if (ghTokenInput) {
-        ghTokenInput.value = savedGhToken;
-        ghTokenInput.addEventListener("input", () => {
-          const val = ghTokenInput.value.trim();
-          localStorage.setItem("lq_gh_token", val);
-        });
+      function updateCloudUI(status, text) {
+        if (cloudStatusIcon) cloudStatusIcon.textContent = status;
+        if (cloudBtnText) cloudBtnText.textContent = text;
       }
 
       if (cloudModal) {
@@ -2840,198 +2785,175 @@
         });
       }
 
-      // 1. TẢI DỮ LIỆU TỪ GITHUB VỀ (PULL)
+      // 1. TẢI DỮ LIỆU TỪ FIREBASE (PULL)
       async function pullFromCloud(silent = false) {
         try {
-          if (!silent && cloudBtnText) cloudBtnText.textContent = "Đang tải...";
-          const res = await fetch(
-            `https://raw.githubusercontent.com/${GH_REPO}/main/${GH_FILE}?t=${Date.now()}`,
-          );
+          if (!silent) updateCloudUI("⏳", "Đang tải...");
+          const res = await fetch(`${FIREBASE_ENDPOINT}?t=${Date.now()}`);
           if (!res.ok) {
-            if (!silent) showToast("Chưa có file dữ liệu trên mây!");
-            if (cloudBtnText) cloudBtnText.textContent = "Đồng Bộ PC & ĐT";
+            if (!silent) showToast("Không thể kết nối Firebase!");
+            updateCloudUI("⚠️", "Lỗi Cloud");
             return;
           }
-          const cloudRaw = await res.json();
+          const data = await res.json();
           let cloudAccounts = [];
-          let cloudUpdatedAt = 0;
-
-          if (Array.isArray(cloudRaw)) {
-            cloudAccounts = cloudRaw;
-          } else if (cloudRaw && Array.isArray(cloudRaw.accounts)) {
-            cloudAccounts = cloudRaw.accounts;
-            cloudUpdatedAt = cloudRaw.updatedAt || 0;
+          if (Array.isArray(data)) {
+            cloudAccounts = data;
+          } else if (data && typeof data === "object") {
+            cloudAccounts = Object.values(data);
           }
 
-          const localUpdatedAt = parseInt(localStorage.getItem("lq_updated_at") || "0", 10);
-          const hasLocalData = localStorage.getItem("lq_accounts") !== null;
+          if (cloudAccounts.length > 0) {
+            accounts = cloudAccounts
+              .filter((a) => a && typeof a === "object")
+              .map((a) => ({
+                id:
+                  a.id ||
+                  Date.now().toString() +
+                    Math.random().toString(36).substr(2, 5),
+                username: String(a.username || ""),
+                password: String(a.password || ""),
+                rank: String(a.rank || ""),
+                uyTin:
+                  a.uyTin !== undefined && a.uyTin !== null
+                    ? String(a.uyTin)
+                    : "",
+                date: a.date || getTodayFormatted(),
+                unlockDate: String(a.unlockDate || ""),
+                lastUsed: a.lastUsed || "",
+                lastUsedTime: Number(a.lastUsedTime) || 0,
+                useCount: Number(a.useCount) || 0,
+                inRecent: a.inRecent !== undefined ? a.inRecent : undefined,
+              }));
 
-          // Nếu tải ngầm khi mở web (silent = true):
-          // Nếu máy người dùng đã có dữ liệu và vừa thao tác (localUpdatedAt >= cloudUpdatedAt) -> KHÔNG ĐÈ, giữ nguyên thao tác xoá của người dùng!
-          if (silent && hasLocalData && localUpdatedAt >= cloudUpdatedAt) {
-            if (cloudBtnText) cloudBtnText.textContent = "Đồng Bộ PC & ĐT";
-            return;
+            localStorage.setItem("lq_accounts", JSON.stringify(accounts));
+            localStorage.setItem("lq_updated_at", Date.now().toString());
+            renderList();
+            updateCloudUI("🟢", "Đám Mây Tự Động");
+            if (!silent)
+              showToast(`✅ Đã tải về ${accounts.length} nick từ đám mây!`);
+          } else if (data === null) {
+            if (accounts.length > 0) {
+              await pushToCloud(true);
+            }
+            updateCloudUI("🟢", "Đám Mây Tự Động");
           }
-
-          // Cập nhật dữ liệu từ đám mây (khi thiết bị mới mở lần đầu hoặc khi cloud thực sự mới hơn)
-          accounts = cloudAccounts;
-          localStorage.setItem("lq_accounts", JSON.stringify(accounts));
-          localStorage.setItem("lq_updated_at", (cloudUpdatedAt || Date.now()).toString());
-          renderList();
-          if (cloudStatusIcon) cloudStatusIcon.textContent = "☁️";
-          if (cloudBtnText) cloudBtnText.textContent = "Đã tải Cloud";
-          if (!silent)
-            showToast(`✅ Đã tải về ${accounts.length} nick từ đám mây!`);
         } catch (e) {
-          if (cloudBtnText) cloudBtnText.textContent = "Đồng Bộ PC & ĐT";
-          if (!silent)
+          console.warn("Lỗi pullFromCloud:", e);
+          updateCloudUI("⚠️", "Đám Mây Tự Động");
+          if (!silent) {
             showNotice({
-              title: "Lỗi Tải Cloud",
-              message: "Không thể tải dữ liệu từ GitHub!",
+              title: "Lỗi Kết Nối",
+              message: "Không thể kết nối đến máy chủ đám mây Firebase!",
               icon: "❌",
             });
+          }
         }
       }
 
       window.pullFromCloud = pullFromCloud;
       window.pushToCloud = pushToCloud;
 
-      // 2. ĐẨY DỮ LIỆU LÊN GITHUB (PUSH)
+      // 2. ĐẨY DỮ LIỆU LÊN FIREBASE (PUSH)
       async function pushToCloud(silent = false) {
-        const token =
-          (ghTokenInput ? ghTokenInput.value.trim() : "") ||
-          localStorage.getItem("lq_gh_token") ||
-          "";
-
-        if (!token) {
-          if (!silent) {
-            showNotice({
-              title: "Cần GitHub Token",
-              message:
-                "Vui lòng dán mã Personal Access Token mới vào ô cài đặt để đồng bộ lên GitHub!",
-              icon: "🔑",
-              type: "danger",
-            });
-          }
-          if (cloudStatusIcon) cloudStatusIcon.textContent = "🔑";
-          if (cloudBtnText) cloudBtnText.textContent = "Cần Token";
-          return;
-        }
-
         if (btnPushCloud) {
-          btnPushCloud.textContent = "⏳ Đang đẩy...";
+          btnPushCloud.textContent = "⏳ Đang lưu...";
           btnPushCloud.disabled = true;
         }
-        if (cloudStatusIcon) cloudStatusIcon.textContent = "⏳";
-        if (cloudBtnText) cloudBtnText.textContent = "Đang lưu...";
+        updateCloudUI("⏳", "Đang lưu...");
 
         try {
-          localStorage.setItem("lq_gh_token", token);
+          const res = await fetch(FIREBASE_ENDPOINT, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(accounts),
+          });
 
-          let sha = "";
-          const getRes = await fetch(
-            `https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE}`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/vnd.github+json",
-              },
-            },
-          );
-
-          if (getRes.status === 401) {
-            throw new Error("BAD_CREDENTIALS");
-          }
-
-          if (getRes.ok) {
-            const fileInfo = await getRes.json();
-            sha = fileInfo.sha;
-          }
-
-          const contentStr = JSON.stringify(accounts, null, 2);
-          const contentBase64 = btoa(unescape(encodeURIComponent(contentStr)));
-
-          const putRes = await fetch(
-            `https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE}`,
-            {
-              method: "PUT",
-              headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/vnd.github+json",
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                message: `Cập nhật dữ liệu nick: ${accounts.length} tài khoản`,
-                content: contentBase64,
-                sha: sha || undefined,
-              }),
-            },
-          );
-
-          if (putRes.status === 401) {
-            throw new Error("BAD_CREDENTIALS");
-          }
-
-          if (putRes.ok) {
-            if (cloudStatusIcon) cloudStatusIcon.textContent = "☁️";
-            if (cloudBtnText) cloudBtnText.textContent = "Đã lưu Cloud";
+          if (res.ok) {
+            updateCloudUI("🟢", "Đám Mây Tự Động");
             if (!silent) {
-              showToast("☁️ Đã đồng bộ lên GitHub thành công!");
-              cloudModal.classList.remove("show");
+              showToast("☁️ Đã đồng bộ lên Firebase thành công!");
+              if (cloudModal) cloudModal.classList.remove("show");
             }
           } else {
-            const err = await putRes.json();
-            if (cloudStatusIcon) cloudStatusIcon.textContent = "⚠️";
-            if (cloudBtnText) cloudBtnText.textContent = "Lỗi lưu Cloud";
-            if (!silent)
+            const err = await res.json().catch(() => ({}));
+            updateCloudUI("⚠️", "Lỗi quyền Firebase");
+            if (!silent) {
               showNotice({
-                title: "Lỗi Đồng Bộ",
-                message: `GitHub báo lỗi: ${err.message || "Không thể lưu"}`,
+                title: "Lỗi Lưu Firebase",
+                message: `Firebase từ chối ghi: ${err.error || "Vui lòng mở Rules trong Firebase Console"}.`,
                 icon: "❌",
               });
+            }
           }
         } catch (err) {
-          if (err.message === "BAD_CREDENTIALS") {
-            if (cloudStatusIcon) cloudStatusIcon.textContent = "⚠️";
-            if (cloudBtnText) cloudBtnText.textContent = "Token không hợp lệ";
-            if (!silent)
-              showNotice({
-                title: "Token Không Hợp Lệ (Bad credentials)",
-                message:
-                  "GitHub từ chối mã Token này (Bad credentials)!<br><br><b>Nguyên nhân thường gặp:</b><br>1. Bạn chưa dán mã Token mới vào ô bên dưới, hoặc trình duyệt vẫn lưu mã cũ.<br>2. Copy bị thiếu ký tự (mã chuẩn bắt đầu bằng <code>ghp_...</code>).<br>3. Chưa tích chọn quyền <b>repo</b> khi tạo Token.<br><br>👉 Hãy bấm nút xanh tạo Token mới (chọn <b>repo</b> và <b>No expiration</b>), copy đầy đủ và dán vào ô bên dưới rồi bấm <b>Đẩy Lên Mây</b> nhé.",
-                icon: "🔑",
-                type: "danger",
-              });
-          } else {
-            if (cloudStatusIcon) cloudStatusIcon.textContent = "❌";
-            if (cloudBtnText) cloudBtnText.textContent = "Lỗi mạng";
-            if (!silent)
-              showNotice({
-                title: "Lỗi Kết Nối",
-                message: "Không thể kết nối đến GitHub API!",
-                icon: "❌",
-              });
+          console.error("Lỗi pushToCloud:", err);
+          updateCloudUI("⚠️", "Lỗi kết nối");
+          if (!silent) {
+            showNotice({
+              title: "Lỗi Kết Nối",
+              message: "Không thể kết nối đến máy chủ Firebase!",
+              icon: "❌",
+            });
           }
         } finally {
           if (btnPushCloud) {
-            btnPushCloud.textContent = "☁️ Đẩy Lên Mây";
+            btnPushCloud.textContent = "☁️ Đồng Bộ Ngay";
             btnPushCloud.disabled = false;
           }
         }
       }
 
-      // TỰ ĐỘNG ĐỒNG BỘ NGẦM (DEBOUNCE 1.5S) KHI CÓ THAY ĐỔI
+      // TỰ ĐỘNG ĐỒNG BỘ NGẦM (DEBOUNCE 500ms) KHI CÓ THAY ĐỔI
       let autoSyncTimer = null;
       function triggerAutoSync() {
         clearTimeout(autoSyncTimer);
-        const token = localStorage.getItem("lq_gh_token");
-        if (!token) return; // Không có token thì không tự động gửi lỗi
-        if (cloudStatusIcon) cloudStatusIcon.textContent = "⏳";
-        if (cloudBtnText) cloudBtnText.textContent = "Đang lưu...";
+        updateCloudUI("⏳", "Đang lưu...");
         autoSyncTimer = setTimeout(() => {
           pushToCloud(true);
-        }, 1500);
+        }, 500);
       }
+
+      // LẮNG NGHE REALTIME EVENT-SOURCE TỪ FIREBASE
+      function initFirebaseRealtimeListener() {
+        try {
+          if (typeof EventSource !== "undefined") {
+            const es = new EventSource(FIREBASE_ENDPOINT);
+            es.addEventListener("put", (e) => {
+              try {
+                const parsed = JSON.parse(e.data);
+                if (parsed && parsed.path === "/" && Array.isArray(parsed.data)) {
+                  const newAccounts = parsed.data.filter(
+                    (a) => a && typeof a === "object",
+                  );
+                  if (JSON.stringify(newAccounts) !== JSON.stringify(accounts)) {
+                    accounts = newAccounts;
+                    localStorage.setItem("lq_accounts", JSON.stringify(accounts));
+                    renderList();
+                    updateCloudUI("🟢", "Đám Mây Tự Động");
+                  }
+                } else if (parsed && parsed.path && parsed.path !== "/") {
+                  pullFromCloud(true);
+                }
+              } catch (err) {}
+            });
+            es.addEventListener("patch", () => {
+              pullFromCloud(true);
+            });
+          }
+        } catch (err) {
+          console.warn("Realtime listener error:", err);
+        }
+      }
+
+      // Tự động kiểm tra dữ liệu khi quay lại tab trình duyệt
+      window.addEventListener("focus", () => pullFromCloud(true));
+      document.addEventListener("visibilitychange", () => {
+        if (!document.hidden) pullFromCloud(true);
+      });
+      setInterval(() => {
+        pullFromCloud(true);
+      }, 15000);
 
       // TỰ ĐỘNG QUÉT VÀ THÔNG BÁO BAN TELEGRAM
       function getTomorrowFormatted() {
@@ -3100,6 +3022,7 @@
       // KHỞI CHẠY
       renderList();
       pullFromCloud(true);
+      initFirebaseRealtimeListener();
       setTimeout(autoCheckUnbannedAccounts, 2000);
     </script>
   </body>
