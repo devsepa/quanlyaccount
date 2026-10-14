@@ -3736,6 +3736,832 @@
       .device-info-pill div:last-child {
         margin-bottom: 0;
       }
+
+      /* ========================================================
+         NÚT CHUÔNG THÔNG BÁO & FLYOUT DROPDOWN LỊCH SỬ THÊM ACC
+         ======================================================== */
+      .noti-bell-wrapper {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+      }
+
+      .btn-noti-bell {
+        position: relative;
+        padding: 8px 12px !important;
+        font-size: 0.95rem;
+        font-weight: 700;
+        gap: 6px;
+        border-radius: 10px;
+        transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .btn-noti-bell:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 16px rgba(56, 189, 248, 0.35);
+      }
+
+      .btn-noti-bell.has-unread #noti-bell-icon {
+        display: inline-block;
+        animation: bellSwing 1.8s ease-in-out infinite;
+        transform-origin: top center;
+      }
+
+      @keyframes bellSwing {
+        0%, 100% { transform: rotate(0deg); }
+        10%, 30% { transform: rotate(14deg); }
+        20%, 40% { transform: rotate(-14deg); }
+        50% { transform: rotate(8deg); }
+        60% { transform: rotate(-8deg); }
+        70% { transform: rotate(0deg); }
+      }
+
+      .noti-badge-count {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        min-width: 18px;
+        height: 18px;
+        padding: 0 5px;
+        border-radius: 9px;
+        background: linear-gradient(135deg, #ef4444, #f43f5e);
+        color: #ffffff;
+        font-size: 0.68rem;
+        font-weight: 900;
+        line-height: 18px;
+        text-align: center;
+        box-shadow: 0 0 10px rgba(239, 68, 68, 0.85);
+        border: 1.5px solid #0f172a;
+        pointer-events: none;
+        animation: pulseBadge 1.8s infinite;
+      }
+
+      @keyframes pulseBadge {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.15); box-shadow: 0 0 14px rgba(239, 68, 68, 1); }
+      }
+
+      .noti-flyout-panel {
+        position: absolute;
+        top: calc(100% + 10px);
+        left: 0;
+        width: 360px;
+        max-width: 90vw;
+        background: linear-gradient(180deg, rgba(15, 23, 42, 0.98) 0%, rgba(20, 24, 46, 0.98) 100%);
+        border: 1px solid rgba(56, 189, 248, 0.35);
+        border-radius: 16px;
+        box-shadow:
+          0 18px 45px rgba(0, 0, 0, 0.8),
+          0 0 25px rgba(56, 189, 248, 0.2),
+          inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        z-index: 10000;
+        display: none;
+        flex-direction: column;
+        overflow: hidden;
+        animation: notiPanelFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+
+      .noti-flyout-panel.show {
+        display: flex;
+      }
+
+      @keyframes notiPanelFadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-8px) scale(0.96);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      .noti-flyout-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 14px;
+        background: rgba(30, 41, 59, 0.6);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .noti-flyout-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.88rem;
+        font-weight: 800;
+        color: #ffffff;
+      }
+
+      .btn-noti-clear {
+        padding: 4px 8px;
+        border-radius: 6px;
+        background: rgba(239, 68, 68, 0.15);
+        border: 1px solid rgba(239, 68, 68, 0.35);
+        color: #fca5a5;
+        font-size: 0.72rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .btn-noti-clear:hover {
+        background: rgba(239, 68, 68, 0.3);
+        color: #fff;
+      }
+
+      .btn-noti-close {
+        width: 26px;
+        height: 26px;
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        color: #94a3b8;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .btn-noti-close:hover {
+        background: rgba(255, 255, 255, 0.15);
+        color: #fff;
+      }
+
+      .noti-flyout-list {
+        max-height: 380px;
+        overflow-y: auto;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .noti-item-card {
+        padding: 10px 12px;
+        border-radius: 12px;
+        background: rgba(15, 23, 42, 0.65);
+        border: 1px solid rgba(148, 163, 184, 0.16);
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        transition: all 0.2s ease;
+        position: relative;
+      }
+
+      .noti-item-card:hover {
+        background: rgba(30, 41, 59, 0.65);
+        border-color: rgba(56, 189, 248, 0.4);
+        transform: translateX(2px);
+      }
+
+      .noti-item-card.is-chungsuc {
+        border-left: 3px solid #f59e0b;
+      }
+
+      .noti-item-card.is-rank {
+        border-left: 3px solid #38bdf8;
+      }
+
+      .noti-item-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+        background: rgba(56, 189, 248, 0.15);
+        border: 1px solid rgba(56, 189, 248, 0.3);
+      }
+
+      .noti-item-card.is-chungsuc .noti-item-avatar {
+        background: rgba(245, 158, 11, 0.18);
+        border-color: rgba(245, 158, 11, 0.35);
+      }
+
+      .noti-item-content {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .noti-item-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 6px;
+        margin-bottom: 3px;
+      }
+
+      .noti-item-user {
+        font-weight: 800;
+        font-size: 0.85rem;
+        color: #38bdf8;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .noti-item-time {
+        font-size: 0.72rem;
+        color: #94a3b8;
+        font-weight: 600;
+        white-space: nowrap;
+      }
+
+      .noti-item-del-btn {
+        width: 19px;
+        height: 19px;
+        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        color: #94a3b8;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.7rem;
+        cursor: pointer;
+        transition: all 0.18s ease;
+        padding: 0;
+        line-height: 1;
+        flex-shrink: 0;
+      }
+
+      .noti-item-del-btn:hover {
+        background: rgba(239, 68, 68, 0.25);
+        border-color: rgba(239, 68, 68, 0.5);
+        color: #fca5a5;
+        transform: scale(1.1);
+      }
+
+      .noti-item-desc {
+        font-size: 0.8rem;
+        color: #e2e8f0;
+        line-height: 1.4;
+      }
+
+      .noti-item-badge-cat {
+        font-size: 0.68rem;
+        font-weight: 800;
+        padding: 1px 6px;
+        border-radius: 4px;
+        display: inline-block;
+        margin-top: 4px;
+      }
+
+      .badge-cat-rank {
+        background: rgba(56, 189, 248, 0.15);
+        color: #38bdf8;
+        border: 1px solid rgba(56, 189, 248, 0.3);
+      }
+
+      .badge-cat-chungsuc {
+        background: rgba(245, 158, 11, 0.15);
+        color: #f59e0b;
+        border: 1px solid rgba(245, 158, 11, 0.3);
+      }
+
+      .noti-empty-state {
+        padding: 24px 16px;
+        text-align: center;
+        color: #94a3b8;
+        font-size: 0.84rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+      }
+
+      /* ========================================================
+         TAG NOTI / MESSAGE GÓC DƯỚI BÊN TRÁI KHI THÊM ACC MỚI
+         ======================================================== */
+      .activity-toast-container {
+        position: fixed;
+        bottom: 24px;
+        left: 24px;
+        z-index: 9999998;
+        display: flex;
+        flex-direction: column-reverse;
+        gap: 12px;
+        max-width: 380px;
+        width: calc(100% - 48px);
+        pointer-events: none;
+      }
+
+      .activity-toast-item {
+        pointer-events: auto;
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(
+          135deg,
+          rgba(15, 23, 42, 0.98) 0%,
+          rgba(24, 28, 56, 0.96) 100%
+        );
+        border: 1px solid rgba(56, 189, 248, 0.45);
+        border-radius: 14px;
+        padding: 12px 14px 14px;
+        box-shadow:
+          0 14px 35px rgba(0, 0, 0, 0.75),
+          0 0 25px rgba(56, 189, 248, 0.25),
+          inset 0 1px 0 rgba(255, 255, 255, 0.18);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        animation: toastSlideInLeft 0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        transition: transform 0.25s ease, opacity 0.25s ease;
+      }
+
+      .activity-toast-item.is-chungsuc {
+        border-color: rgba(245, 158, 11, 0.55);
+        box-shadow:
+          0 14px 35px rgba(0, 0, 0, 0.75),
+          0 0 25px rgba(245, 158, 11, 0.25),
+          inset 0 1px 0 rgba(255, 255, 255, 0.18);
+      }
+
+      .activity-toast-item.hide {
+        opacity: 0;
+        transform: translateX(-40px) scale(0.92);
+      }
+
+      @keyframes toastSlideInLeft {
+        from {
+          opacity: 0;
+          transform: translateX(-60px) scale(0.88);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0) scale(1);
+        }
+      }
+
+      .activity-toast-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+
+      .activity-toast-badge {
+        font-size: 0.72rem;
+        font-weight: 800;
+        padding: 2px 8px;
+        border-radius: 6px;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .activity-toast-badge.is-rank {
+        background: rgba(56, 189, 248, 0.2);
+        color: #38bdf8;
+        border: 1px solid rgba(56, 189, 248, 0.4);
+      }
+
+      .activity-toast-badge.is-chungsuc {
+        background: rgba(245, 158, 11, 0.2);
+        color: #fbbf24;
+        border: 1px solid rgba(245, 158, 11, 0.4);
+      }
+
+      .activity-toast-close {
+        width: 22px;
+        height: 22px;
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        color: #94a3b8;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .activity-toast-close:hover {
+        background: rgba(255, 255, 255, 0.2);
+        color: #fff;
+      }
+
+      .activity-toast-body {
+        font-size: 0.86rem;
+        color: #f1f5f9;
+        line-height: 1.45;
+        font-weight: 600;
+      }
+
+      .activity-toast-user {
+        font-weight: 900;
+        background: linear-gradient(135deg, #38bdf8, #c084fc);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .activity-toast-target {
+        font-weight: 800;
+        color: #fcd34d;
+      }
+
+      .activity-toast-item.is-rank .activity-toast-target {
+        color: #7dd3fc;
+      }
+
+      .activity-toast-acc-preview {
+        font-size: 0.76rem;
+        color: #94a3b8;
+        background: rgba(0, 0, 0, 0.35);
+        padding: 3px 8px;
+        border-radius: 6px;
+        font-family: monospace;
+        margin-top: 2px;
+        display: inline-block;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+      }
+
+      .activity-toast-progress-bar {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #38bdf8, #818cf8);
+        width: 100%;
+        transform-origin: left;
+        animation: toastProgress 6s linear forwards;
+      }
+
+      .activity-toast-item.is-chungsuc .activity-toast-progress-bar {
+        background: linear-gradient(90deg, #f59e0b, #ef4444);
+      }
+
+      @keyframes toastProgress {
+        from { transform: scaleX(1); }
+        to { transform: scaleX(0); }
+      }
+
+      @media (max-width: 768px) {
+        .activity-toast-container {
+          bottom: 16px;
+          left: 14px;
+          width: calc(100% - 28px);
+        }
+        .noti-flyout-panel {
+          position: fixed;
+          top: 60px;
+          left: 14px;
+          right: 14px;
+          width: auto;
+          max-width: none;
+        }
+      }
+
+      /* ========================================================
+         MODAL ANALYTICS THỐNG KÊ & PHÂN TÍCH DỮ LIỆU CHUYÊN SÂU
+         ======================================================== */
+      .btn-analytics {
+        background: linear-gradient(
+          135deg,
+          rgba(168, 85, 247, 0.22) 0%,
+          rgba(59, 130, 246, 0.25) 100%
+        );
+        border: 1px solid rgba(168, 85, 247, 0.45);
+        color: #c084fc;
+        padding: 8px 14px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        gap: 6px;
+        border-radius: 10px;
+        transition: all 0.22s ease;
+      }
+      .btn-analytics:hover {
+        background: linear-gradient(135deg, #a855f7, #3b82f6);
+        color: #ffffff;
+        border-color: transparent;
+        box-shadow: 0 4px 18px rgba(168, 85, 247, 0.45);
+        transform: translateY(-1px);
+      }
+
+      .modal-card-analytics {
+        background: linear-gradient(
+          180deg,
+          rgba(15, 23, 42, 0.98) 0%,
+          rgba(20, 24, 46, 0.99) 100%
+        );
+        border: 1.5px solid rgba(168, 85, 247, 0.45);
+        border-radius: 20px;
+        width: 980px;
+        max-width: 96vw;
+        height: 88vh;
+        max-height: 820px;
+        padding: 0;
+        text-align: left;
+        box-shadow:
+          0 25px 75px rgba(0, 0, 0, 0.9),
+          0 0 40px rgba(168, 85, 247, 0.25),
+          inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        transform: scale(0.92) translateY(14px);
+        transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .modal-overlay.show .modal-card-analytics {
+        transform: scale(1) translateY(0);
+      }
+
+      .analytics-header {
+        padding: 16px 20px;
+        background: rgba(30, 41, 59, 0.6);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-shrink: 0;
+      }
+
+      .analytics-title-group {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .analytics-icon-badge {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, rgba(168, 85, 247, 0.25), rgba(56, 189, 248, 0.25));
+        border: 1px solid rgba(168, 85, 247, 0.45);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.35rem;
+        box-shadow: 0 0 14px rgba(168, 85, 247, 0.35);
+        flex-shrink: 0;
+      }
+
+      .analytics-title-main {
+        font-size: 1.1rem;
+        font-weight: 900;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        letter-spacing: 0.3px;
+      }
+
+      .analytics-title-sub {
+        font-size: 0.78rem;
+        color: #94a3b8;
+        margin-top: 2px;
+      }
+
+      .analytics-close-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        color: #94a3b8;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        flex-shrink: 0;
+      }
+
+      .analytics-close-btn:hover {
+        background: rgba(255, 255, 255, 0.15);
+        color: #ffffff;
+      }
+
+      .analytics-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: 18px 20px 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+
+      /* HÀNG 4 KPI CARDS */
+      .analytics-kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+      }
+
+      .analytics-kpi-card {
+        background: rgba(15, 23, 42, 0.65);
+        border: 1px solid rgba(148, 163, 184, 0.16);
+        border-radius: 14px;
+        padding: 14px;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        transition: all 0.2s ease;
+      }
+
+      .analytics-kpi-card:hover {
+        border-color: rgba(56, 189, 248, 0.4);
+        background: rgba(30, 41, 59, 0.6);
+        transform: translateY(-2px);
+      }
+
+      .analytics-kpi-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        flex-shrink: 0;
+      }
+
+      .analytics-kpi-val {
+        font-size: 1.45rem;
+        font-weight: 900;
+        color: #ffffff;
+        line-height: 1.1;
+      }
+
+      .analytics-kpi-lbl {
+        font-size: 0.76rem;
+        font-weight: 700;
+        color: #94a3b8;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        margin-top: 3px;
+      }
+
+      .analytics-kpi-sub {
+        font-size: 0.72rem;
+        color: #64748b;
+        margin-top: 4px;
+      }
+
+      /* NAV TABS TRONG ANALYTICS */
+      .analytics-tab-bar {
+        display: flex;
+        gap: 8px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        padding-bottom: 4px;
+        overflow-x: auto;
+      }
+
+      .analytics-tab-btn {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        color: #94a3b8;
+        padding: 8px 16px;
+        border-radius: 10px;
+        font-size: 0.82rem;
+        font-weight: 800;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+      }
+
+      .analytics-tab-btn:hover {
+        color: #ffffff;
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      .analytics-tab-btn.active {
+        background: linear-gradient(135deg, rgba(168, 85, 247, 0.25), rgba(56, 189, 248, 0.25));
+        border-color: rgba(168, 85, 247, 0.5);
+        color: #38bdf8;
+        box-shadow: 0 0 14px rgba(168, 85, 247, 0.2);
+      }
+
+      /* CÁC PHÂN ĐOẠN NỘI DUNG */
+      .analytics-section-card {
+        background: rgba(15, 23, 42, 0.6);
+        border: 1px solid rgba(148, 163, 184, 0.15);
+        border-radius: 16px;
+        padding: 16px 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      .analytics-section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .analytics-section-title {
+        font-size: 0.95rem;
+        font-weight: 800;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .analytics-bar-item {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-bottom: 12px;
+      }
+
+      .analytics-bar-item:last-child {
+        margin-bottom: 0;
+      }
+
+      .analytics-bar-labels {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 0.8rem;
+        font-weight: 700;
+      }
+
+      .analytics-bar-track {
+        height: 10px;
+        background: rgba(255, 255, 255, 0.06);
+        border-radius: 5px;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .analytics-bar-fill {
+        height: 100%;
+        border-radius: 5px;
+        transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      /* BẢNG XẾP HẠNG VÀ DANH SÁCH */
+      .analytics-table-wrap {
+        overflow-x: auto;
+      }
+
+      .analytics-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.82rem;
+      }
+
+      .analytics-table th {
+        text-align: left;
+        padding: 9px 12px;
+        color: #94a3b8;
+        font-weight: 800;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        text-transform: uppercase;
+        font-size: 0.72rem;
+        letter-spacing: 0.5px;
+      }
+
+      .analytics-table td {
+        padding: 10px 12px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        color: #e2e8f0;
+      }
+
+      .analytics-table tr:hover td {
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      @media (max-width: 768px) {
+        .modal-card-analytics {
+          width: 96vw;
+          height: 92vh;
+        }
+        .analytics-kpi-grid {
+          grid-template-columns: 1fr 1fr;
+          gap: 8px;
+        }
+        .analytics-header {
+          padding: 12px 14px;
+        }
+        .analytics-body {
+          padding: 12px 14px 20px;
+          gap: 14px;
+        }
+      }
     </style>
   </head>
   <body>
@@ -3898,6 +4724,33 @@
             <span id="admin-icon">👑</span>
             <span id="admin-text">Quản Trị</span>
           </button>
+
+          <!-- NÚT CHUÔNG THÔNG BÁO LỊCH SỬ THÊM ACC -->
+          <div class="noti-bell-wrapper">
+            <button
+              class="btn btn-tool btn-noti-bell"
+              id="btn-open-noti"
+              onclick="toggleNotiFlyout(event)"
+              title="Thông báo lịch sử thêm tài khoản"
+            >
+              <span id="noti-bell-icon">🔔</span>
+              <span id="noti-badge-count" class="noti-badge-count" style="display: none;">0</span>
+            </button>
+            <!-- Panel Flyout Dropdown -->
+            <div class="noti-flyout-panel" id="noti-flyout-panel" onclick="event.stopPropagation()">
+              <div class="noti-flyout-header">
+                <div class="noti-flyout-title">
+                  <span>🔔</span>
+                  <span>Lịch Sử Thêm Tài Khoản</span>
+                </div>
+                <div style="display: flex; gap: 6px; align-items: center;">
+                  <button type="button" class="btn-noti-clear" onclick="clearAllNotifications()">🧹 Xóa hết</button>
+                  <button type="button" class="btn-noti-close" onclick="closeNotiFlyout()">✕</button>
+                </div>
+              </div>
+              <div class="noti-flyout-list" id="noti-flyout-list"></div>
+            </div>
+          </div>
           <button
             class="btn btn-emergency"
             id="btn-toggle-emergency"
@@ -3968,6 +4821,15 @@
 
         <!-- BẢNG NÚT THAO TÁC (ĐÁM MÂY & TELEGRAM NẰM BÊN PHẢI) -->
         <div class="header-action-group">
+          <button
+            class="btn btn-analytics"
+            id="btn-open-analytics"
+            onclick="openAnalyticsModal()"
+            title="Xem bảng thống kê & phân tích dữ liệu toàn diện"
+          >
+            <span id="analytics-icon">📊</span>
+            <span>Thống Kê</span>
+          </button>
           <button
             class="btn btn-cloud"
             id="btn-open-cloud"
@@ -4938,8 +5800,256 @@
       </div>
     </div>
 
+    <!-- MODAL ANALYTICS THỐNG KÊ TOÀN DIỆN -->
+    <div
+      id="analytics-modal"
+      class="modal-overlay"
+      onclick="handleAnalyticsOverlayClick(event)"
+    >
+      <div
+        class="modal-card-analytics"
+        onclick="event.stopPropagation()"
+      >
+        <!-- HEADER ANALYTICS -->
+        <div class="analytics-header">
+          <div class="analytics-title-group">
+            <div class="analytics-icon-badge">📊</div>
+            <div>
+              <div class="analytics-title-main">
+                <span>TRUNG TÂM PHÂN TÍCH & THỐNG KÊ</span>
+                <span class="badge" style="background: rgba(168, 85, 247, 0.2); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.4); font-size: 0.68rem;">REALTIME</span>
+              </div>
+              <div class="analytics-title-sub">
+                Thống kê chi tiết dữ liệu thêm mới, tần suất sử dụng và phân bổ khu vực
+              </div>
+            </div>
+          </div>
+          <button
+            type="button"
+            class="analytics-close-btn"
+            onclick="closeAnalyticsModal()"
+            title="Đóng bảng thống kê (Esc)"
+          >
+            ✕
+          </button>
+        </div>
+
+        <!-- BODY ANALYTICS -->
+        <div class="analytics-body">
+          <!-- HÀNG 4 KPI CARDS -->
+          <div class="analytics-kpi-grid">
+            <div class="analytics-kpi-card">
+              <div class="analytics-kpi-icon" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3);">📦</div>
+              <div>
+                <div class="analytics-kpi-val" id="analytics-kpi-total">0</div>
+                <div class="analytics-kpi-lbl">Tổng Số Nick</div>
+                <div class="analytics-kpi-sub" id="analytics-kpi-total-sub">0 rank • 0 chung sức</div>
+              </div>
+            </div>
+
+            <div class="analytics-kpi-card">
+              <div class="analytics-kpi-icon" style="background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3);">⚡</div>
+              <div>
+                <div class="analytics-kpi-val" id="analytics-kpi-usage">0</div>
+                <div class="analytics-kpi-lbl">Lượt Sao Chép</div>
+                <div class="analytics-kpi-sub" id="analytics-kpi-usage-sub">0 lượt/nick tb</div>
+              </div>
+            </div>
+
+            <div class="analytics-kpi-card">
+              <div class="analytics-kpi-icon" style="background: rgba(168, 85, 247, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3);">👥</div>
+              <div>
+                <div class="analytics-kpi-val" id="analytics-kpi-contributors">0</div>
+                <div class="analytics-kpi-lbl">Người Thêm Nick</div>
+                <div class="analytics-kpi-sub" id="analytics-kpi-contributors-sub">Đóng góp kho</div>
+              </div>
+            </div>
+
+            <div class="analytics-kpi-card">
+              <div class="analytics-kpi-icon" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3);">🛡️</div>
+              <div>
+                <div class="analytics-kpi-val" id="analytics-kpi-rate">0%</div>
+                <div class="analytics-kpi-lbl">Tỷ Lệ Hoạt Động</div>
+                <div class="analytics-kpi-sub" id="analytics-kpi-rate-sub">0 sẵn sàng • 0 ban</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- THANH CHỌN TAB NỘI DUNG -->
+          <div class="analytics-tab-bar">
+            <button
+              type="button"
+              class="analytics-tab-btn active"
+              id="analytics-tab-btn-regions"
+              onclick="switchAnalyticsTab('regions')"
+            >
+              <span>🌐</span> <span>Phân Bổ Khu Vực & Rank</span>
+            </button>
+            <button
+              type="button"
+              class="analytics-tab-btn"
+              id="analytics-tab-btn-creation"
+              onclick="switchAnalyticsTab('creation')"
+            >
+              <span>➕</span> <span>Thêm Mới & Đóng Góp</span>
+            </button>
+            <button
+              type="button"
+              class="analytics-tab-btn"
+              id="analytics-tab-btn-usage"
+              onclick="switchAnalyticsTab('usage')"
+            >
+              <span>🔥</span> <span>Sử Dụng & Acc Nổi Bật</span>
+            </button>
+          </div>
+
+          <!-- TAB 1: PHÂN BỔ KHU VỰC & NHÓM RANK -->
+          <div id="analytics-panel-regions" class="analytics-tab-panel">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+              <!-- Cột 1: Phân bổ theo Nhóm Rank & Kho Nick -->
+              <div class="analytics-section-card">
+                <div class="analytics-section-header">
+                  <div class="analytics-section-title">
+                    <span>👑</span> <span>Phân Bổ Theo Nhóm Rank</span>
+                  </div>
+                  <span style="font-size: 0.76rem; color: #94a3b8;" id="analytics-rank-total-note">0 nhóm rank</span>
+                </div>
+                <div id="analytics-rank-bars-container">
+                  <!-- Render bằng JS -->
+                </div>
+              </div>
+
+              <!-- Cột 2: So sánh Phân Khu Lưu Trữ & Trạng Thái -->
+              <div class="analytics-section-card">
+                <div class="analytics-section-header">
+                  <div class="analytics-section-title">
+                    <span>🏛️</span> <span>Khu Vực Kho Lưu Trữ</span>
+                  </div>
+                  <span style="font-size: 0.76rem; color: #94a3b8;">Tỷ trọng lưu trữ</span>
+                </div>
+                <div id="analytics-storage-compare-container">
+                  <!-- Render bằng JS -->
+                </div>
+
+                <div style="margin-top: 14px; padding-top: 14px; border-top: 1px solid rgba(255, 255, 255, 0.08);">
+                  <div class="analytics-section-title" style="margin-bottom: 10px;">
+                    <span>🛡️</span> <span>Trạng Thái Tài Khoản</span>
+                  </div>
+                  <div id="analytics-status-bars-container">
+                    <!-- Render bằng JS -->
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 2: THỐNG KÊ THÊM MỚI & ĐÓNG GÓP -->
+          <div id="analytics-panel-creation" class="analytics-tab-panel" style="display: none;">
+            <div style="display: grid; grid-template-columns: 1fr 1.1fr; gap: 14px;">
+              <!-- Cột 1: Bảng Xếp Hạng Người Đóng Góp Thêm Acc -->
+              <div class="analytics-section-card">
+                <div class="analytics-section-header">
+                  <div class="analytics-section-title">
+                    <span>🏆</span> <span>Top Người Đóng Góp Thêm Nick</span>
+                  </div>
+                  <span style="font-size: 0.75rem; color: #38bdf8;" id="analytics-total-contributors-count">0 người</span>
+                </div>
+                <div class="analytics-table-wrap">
+                  <table class="analytics-table">
+                    <thead>
+                      <tr>
+                        <th style="width: 45px;">Hạng</th>
+                        <th>Thành viên</th>
+                        <th style="text-align: right;">Số Nick</th>
+                        <th style="text-align: right;">Tỷ Lệ</th>
+                      </tr>
+                    </thead>
+                    <tbody id="analytics-contributors-tbody">
+                      <!-- Render bằng JS -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Cột 2: Lịch Sử Thêm Mới Gần Đây -->
+              <div class="analytics-section-card">
+                <div class="analytics-section-header">
+                  <div class="analytics-section-title">
+                    <span>🕒</span> <span>Nhật Ký Thêm Mới Gần Đây</span>
+                  </div>
+                  <span style="font-size: 0.75rem; color: #94a3b8;">Đợt thêm gần nhất</span>
+                </div>
+                <div id="analytics-recent-adds-container" style="display: flex; flex-direction: column; gap: 8px; max-height: 380px; overflow-y: auto;">
+                  <!-- Render bằng JS -->
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 3: TẦN SUẤT SỬ DỤNG & TOP ACC -->
+          <div id="analytics-panel-usage" class="analytics-tab-panel" style="display: none;">
+            <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 14px;">
+              <!-- Cột 1: Top Tài Khoản Được Dùng Nhiều Nhất -->
+              <div class="analytics-section-card">
+                <div class="analytics-section-header">
+                  <div class="analytics-section-title">
+                    <span>🔥</span> <span>Top 10 Nick Được Dùng Nhiều Nhất</span>
+                  </div>
+                  <span style="font-size: 0.75rem; color: #f59e0b;">Xếp theo lượt copy</span>
+                </div>
+                <div class="analytics-table-wrap">
+                  <table class="analytics-table">
+                    <thead>
+                      <tr>
+                        <th style="width: 40px;">#</th>
+                        <th>Tài Khoản</th>
+                        <th>Khu Vực / Rank</th>
+                        <th style="text-align: right;">Lượt Dùng</th>
+                        <th>Dùng Gần Nhất</th>
+                      </tr>
+                    </thead>
+                    <tbody id="analytics-hot-accounts-tbody">
+                      <!-- Render bằng JS -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Cột 2: Top Người Dùng Tích Cực Nhất -->
+              <div class="analytics-section-card">
+                <div class="analytics-section-header">
+                  <div class="analytics-section-title">
+                    <span>⚡</span> <span>Top Người Dùng Tích Cực</span>
+                  </div>
+                  <span style="font-size: 0.75rem; color: #c084fc;">Lượt sao chép acc</span>
+                </div>
+                <div class="analytics-table-wrap">
+                  <table class="analytics-table">
+                    <thead>
+                      <tr>
+                        <th style="width: 45px;">Hạng</th>
+                        <th>Người Dùng</th>
+                        <th style="text-align: right;">Lượt Copy</th>
+                        <th style="text-align: right;">Tỷ Trọng</th>
+                      </tr>
+                    </thead>
+                    <tbody id="analytics-top-users-tbody">
+                      <!-- Render bằng JS -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- TOAST -->
     <div id="toast">📋 ĐÃ SAO CHÉP!</div>
+
+    <!-- CONTAINER THẺ THÔNG BÁO GÓC DƯỚI BÊN TRÁI KHI THÊM ACC MỚI -->
+    <div id="activity-toast-container" class="activity-toast-container"></div>
 
     <script>
       // BẮT MỌI LỖI RUNTIME NẾU CÓ ĐỂ KHÔNG BAO GIỜ BỊ ĐƠ WEB
@@ -4983,6 +6093,406 @@
           if (e.target === pinModal) closePinModal();
         });
       }
+
+      // ==========================================
+      // ĐIỀU KHIỂN & PHÂN TÍCH SỐ LIỆU ANALYTICS DASHBOARD
+      // ==========================================
+      let currentAnalyticsTab = "regions";
+
+      window.openAnalyticsModal = function () {
+        const m = document.getElementById("analytics-modal");
+        if (!m) return;
+        m.classList.add("show");
+        playSound("click");
+        renderAnalyticsData();
+      };
+
+      window.closeAnalyticsModal = function () {
+        const m = document.getElementById("analytics-modal");
+        if (m) m.classList.remove("show");
+      };
+
+      window.handleAnalyticsOverlayClick = function (e) {
+        if (e.target && e.target.id === "analytics-modal") {
+          window.closeAnalyticsModal();
+        }
+      };
+
+      window.switchAnalyticsTab = function (tabKey) {
+        currentAnalyticsTab = tabKey;
+        const tabs = ["regions", "creation", "usage"];
+        tabs.forEach((key) => {
+          const btn = document.getElementById(`analytics-tab-btn-${key}`);
+          const panel = document.getElementById(`analytics-panel-${key}`);
+          if (btn) btn.classList.toggle("active", key === tabKey);
+          if (panel) panel.style.display = key === tabKey ? "block" : "none";
+        });
+        playSound("click");
+      };
+
+      function renderAnalyticsData() {
+        const total = accounts.length;
+        const rankList = accounts.filter((a) => a.category !== "chungsuc");
+        const chungSucList = accounts.filter((a) => a.category === "chungsuc");
+        const totalUsage = accounts.reduce(
+          (sum, a) => sum + (Number(a.useCount) || 0),
+          0,
+        );
+        const avgUsage = total > 0 ? (totalUsage / total).toFixed(1) : 0;
+
+        let activeCount = 0;
+        let banCount = 0;
+        accounts.forEach((a) => {
+          const ban = checkBanStatus(a.unlockDate, a);
+          if (ban.isBanned) banCount++;
+          else activeCount++;
+        });
+        const activeRate = total > 0 ? Math.round((activeCount / total) * 100) : 100;
+
+        // Tổng hợp người thêm nick (Contributors)
+        const contributorMap = new Map();
+        accounts.forEach((a) => {
+          const creator = (a.createdBy || "").trim() || "Khách / Không rõ";
+          contributorMap.set(creator, (contributorMap.get(creator) || 0) + 1);
+        });
+
+        // 1. CẬP NHẬT 4 KPI CARDS
+        const kpiTotal = document.getElementById("analytics-kpi-total");
+        const kpiTotalSub = document.getElementById("analytics-kpi-total-sub");
+        const kpiUsage = document.getElementById("analytics-kpi-usage");
+        const kpiUsageSub = document.getElementById("analytics-kpi-usage-sub");
+        const kpiContributors = document.getElementById("analytics-kpi-contributors");
+        const kpiRate = document.getElementById("analytics-kpi-rate");
+        const kpiRateSub = document.getElementById("analytics-kpi-rate-sub");
+
+        if (kpiTotal) kpiTotal.textContent = total;
+        if (kpiTotalSub)
+          kpiTotalSub.textContent = `${rankList.length} rank • ${chungSucList.length} chung sức`;
+        if (kpiUsage) kpiUsage.textContent = totalUsage.toLocaleString();
+        if (kpiUsageSub) kpiUsageSub.textContent = `~${avgUsage} lượt/nick tb`;
+        if (kpiContributors) kpiContributors.textContent = contributorMap.size;
+        if (kpiRate) kpiRate.textContent = `${activeRate}%`;
+        if (kpiRateSub)
+          kpiRateSub.textContent = `${activeCount} sẵn sàng • ${banCount} ban`;
+
+        // 2. RENDER TAB 1: PHÂN BỔ THEO RANK & KHU VỰC KHO
+        const rankBarsContainer = document.getElementById(
+          "analytics-rank-bars-container",
+        );
+        const rankTotalNote = document.getElementById("analytics-rank-total-note");
+        if (rankBarsContainer) {
+          const rankCounts = {};
+          Object.keys(RANK_CONFIGS).forEach((k) => (rankCounts[k] = 0));
+
+          rankList.forEach((a) => {
+            const grp = parseRankGroup(a.rank);
+            if (rankCounts[grp.key] !== undefined) {
+              rankCounts[grp.key]++;
+            } else {
+              rankCounts["KHAC"] = (rankCounts["KHAC"] || 0) + 1;
+            }
+          });
+
+          const activeRankKeys = Object.keys(RANK_CONFIGS).filter(
+            (k) => (rankCounts[k] || 0) > 0,
+          );
+          if (rankTotalNote) {
+            rankTotalNote.textContent = `${activeRankKeys.length} nhóm rank đang có`;
+          }
+
+          let barsHtml = "";
+          Object.keys(RANK_CONFIGS).forEach((key) => {
+            const count = rankCounts[key] || 0;
+            if (count === 0) return;
+            const cfg = RANK_CONFIGS[key];
+            const pct =
+              rankList.length > 0
+                ? Math.round((count / rankList.length) * 100)
+                : 0;
+
+            barsHtml += `
+              <div class="analytics-bar-item">
+                <div class="analytics-bar-labels">
+                  <span style="display: flex; align-items: center; gap: 6px;">
+                    <span>${cfg.icon}</span> <span style="color: #f1f5f9;">${cfg.name}</span>
+                  </span>
+                  <span style="color: ${cfg.color}; font-weight: 800;">${count} nick (${pct}%)</span>
+                </div>
+                <div class="analytics-bar-track">
+                  <div class="analytics-bar-fill" style="width: ${pct}%; background: ${cfg.color}; box-shadow: 0 0 10px ${cfg.color};"></div>
+                </div>
+              </div>
+            `;
+          });
+          if (!barsHtml) {
+            barsHtml = `<div style="text-align: center; color: #94a3b8; padding: 20px; font-size: 0.8rem;">Chưa có tài khoản trong kho rank.</div>`;
+          }
+          rankBarsContainer.innerHTML = barsHtml;
+        }
+
+        // So sánh 2 kho lưu trữ
+        const storageCompareContainer = document.getElementById(
+          "analytics-storage-compare-container",
+        );
+        if (storageCompareContainer) {
+          const rankPct =
+            total > 0 ? Math.round((rankList.length / total) * 100) : 0;
+          const csPct = total > 0 ? 100 - rankPct : 0;
+          storageCompareContainer.innerHTML = `
+            <div class="analytics-bar-item">
+              <div class="analytics-bar-labels">
+                <span style="display: flex; align-items: center; gap: 6px;">
+                  <span>🎮</span> <span style="color: #38bdf8;">Kho Nick Chơi Rank</span>
+                </span>
+                <span style="color: #38bdf8; font-weight: 800;">${rankList.length} nick (${rankPct}%)</span>
+              </div>
+              <div class="analytics-bar-track">
+                <div class="analytics-bar-fill" style="width: ${rankPct}%; background: linear-gradient(90deg, #0284c7, #38bdf8);"></div>
+              </div>
+            </div>
+
+            <div class="analytics-bar-item" style="margin-top: 10px;">
+              <div class="analytics-bar-labels">
+                <span style="display: flex; align-items: center; gap: 6px;">
+                  <span>🤝</span> <span style="color: #f59e0b;">Sự Kiện Chung Sức</span>
+                </span>
+                <span style="color: #f59e0b; font-weight: 800;">${chungSucList.length} nick (${csPct}%)</span>
+              </div>
+              <div class="analytics-bar-track">
+                <div class="analytics-bar-fill" style="width: ${csPct}%; background: linear-gradient(90deg, #d97706, #fbbf24);"></div>
+              </div>
+            </div>
+          `;
+        }
+
+        // Thanh trạng thái Hoạt Động vs Ban
+        const statusBarsContainer = document.getElementById(
+          "analytics-status-bars-container",
+        );
+        if (statusBarsContainer) {
+          const banPct = total > 0 ? 100 - activeRate : 0;
+          statusBarsContainer.innerHTML = `
+            <div class="analytics-bar-item">
+              <div class="analytics-bar-labels">
+                <span style="display: flex; align-items: center; gap: 6px;">
+                  <span>🟢</span> <span style="color: #34d399;">Hoạt Động (Sẵn Sàng)</span>
+                </span>
+                <span style="color: #34d399; font-weight: 800;">${activeCount} nick (${activeRate}%)</span>
+              </div>
+              <div class="analytics-bar-track">
+                <div class="analytics-bar-fill" style="width: ${activeRate}%; background: #10b981;"></div>
+              </div>
+            </div>
+
+            <div class="analytics-bar-item" style="margin-top: 10px;">
+              <div class="analytics-bar-labels">
+                <span style="display: flex; align-items: center; gap: 6px;">
+                  <span>🚫</span> <span style="color: #fca5a5;">Tạm Khóa (Đang BAN)</span>
+                </span>
+                <span style="color: #fca5a5; font-weight: 800;">${banCount} nick (${banPct}%)</span>
+              </div>
+              <div class="analytics-bar-track">
+                <div class="analytics-bar-fill" style="width: ${banPct}%; background: #ef4444;"></div>
+              </div>
+            </div>
+          `;
+        }
+
+        // 3. RENDER TAB 2: THỐNG KÊ THÊM MỚI & ĐÓNG GÓP
+        const contributorsTbody = document.getElementById(
+          "analytics-contributors-tbody",
+        );
+        const totalContributorsCount = document.getElementById(
+          "analytics-total-contributors-count",
+        );
+        if (contributorsTbody) {
+          const sortedContributors = Array.from(contributorMap.entries()).sort(
+            (a, b) => b[1] - a[1],
+          );
+          if (totalContributorsCount) {
+            totalContributorsCount.textContent = `${sortedContributors.length} người đóng góp`;
+          }
+
+          let tbodyHtml = "";
+          sortedContributors.forEach(([name, count], index) => {
+            const pct =
+              total > 0 ? Math.round((count / total) * 100) : 0;
+            const rankIcon =
+              index === 0
+                ? "🥇"
+                : index === 1
+                  ? "🥈"
+                  : index === 2
+                    ? "🥉"
+                    : `#${index + 1}`;
+            const isTop = index < 3;
+            tbodyHtml += `
+              <tr>
+                <td style="font-weight: 900; ${isTop ? "font-size: 1.05rem;" : "color: #94a3b8;"}">${rankIcon}</td>
+                <td>
+                  <span style="font-weight: 800; color: ${isTop ? "#38bdf8" : "#f1f5f9"};">${escapeHtml(name)}</span>
+                </td>
+                <td style="text-align: right; font-weight: 800; color: #a855f7;">${count} acc</td>
+                <td style="text-align: right; font-weight: 700; color: #94a3b8;">${pct}%</td>
+              </tr>
+            `;
+          });
+          if (!tbodyHtml) {
+            tbodyHtml = `<tr><td colspan="4" style="text-align:center; color:#94a3b8; padding: 20px;">Chưa có dữ liệu người thêm.</td></tr>`;
+          }
+          contributorsTbody.innerHTML = tbodyHtml;
+        }
+
+        // Nhật ký thêm gần nhất
+        const recentAddsContainer = document.getElementById(
+          "analytics-recent-adds-container",
+        );
+        if (recentAddsContainer) {
+          const notiList = getNotificationList();
+          let logsHtml = "";
+
+          if (notiList.length > 0) {
+            notiList.slice(0, 15).forEach((item) => {
+              const isCs = item.category === "chungsuc";
+              logsHtml += `
+                <div style="background: rgba(15, 23, 42, 0.5); border: 1px solid rgba(255, 255, 255, 0.08); border-left: 3px solid ${isCs ? "#f59e0b" : "#38bdf8"}; border-radius: 10px; padding: 9px 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+                  <div style="min-width: 0;">
+                    <div style="font-size: 0.84rem; font-weight: 700; color: #ffffff;">
+                      <span style="color: #38bdf8;">${escapeHtml(item.user || "Khách")}</span> đã thêm <b>${item.count || 1} nick</b> vào <span style="color: ${isCs ? "#fbbf24" : "#7dd3fc"};">${escapeHtml(item.categoryName || (isCs ? "Sự Kiện Chung Sức" : "Kho Nick Chơi Rank"))}</span>
+                    </div>
+                    ${item.firstAccount ? `<div style="font-size: 0.72rem; color: #94a3b8; font-family: monospace; margin-top: 2px;">• ${escapeHtml(item.firstAccount)}</div>` : ""}
+                  </div>
+                  <span style="font-size: 0.72rem; color: #94a3b8; white-space: nowrap;">${escapeHtml(item.time || "")}</span>
+                </div>
+              `;
+            });
+          } else {
+            // Dự phòng từ danh sách accounts mới nhất
+            const recentCreated = [...accounts]
+              .sort(
+                (a, b) =>
+                  (b.createdTimestamp || 0) - (a.createdTimestamp || 0),
+              )
+              .slice(0, 10);
+            recentCreated.forEach((a) => {
+              const isCs = a.category === "chungsuc";
+              logsHtml += `
+                <div style="background: rgba(15, 23, 42, 0.5); border: 1px solid rgba(255, 255, 255, 0.08); border-left: 3px solid ${isCs ? "#f59e0b" : "#38bdf8"}; border-radius: 10px; padding: 9px 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+                  <div style="min-width: 0;">
+                    <div style="font-size: 0.84rem; font-weight: 700; color: #ffffff;">
+                      <span style="color: #38bdf8;">${escapeHtml(a.createdBy || "Khách")}</span> thêm <b>${escapeHtml(a.username)}</b>
+                    </div>
+                    <div style="font-size: 0.72rem; color: #94a3b8;">Khu vực: ${isCs ? "Sự Kiện Chung Sức" : "Kho Nick Chơi Rank"}</div>
+                  </div>
+                  <span style="font-size: 0.72rem; color: #94a3b8; white-space: nowrap;">${escapeHtml(formatCreatedTime(a))}</span>
+                </div>
+              `;
+            });
+          }
+
+          if (!logsHtml) {
+            logsHtml = `<div style="text-align: center; color: #94a3b8; padding: 20px; font-size: 0.8rem;">Chưa có nhật ký thêm mới nào.</div>`;
+          }
+          recentAddsContainer.innerHTML = logsHtml;
+        }
+
+        // 4. RENDER TAB 3: TẦN SUẤT SỬ DỤNG & TOP ACC
+        const hotAccountsTbody = document.getElementById(
+          "analytics-hot-accounts-tbody",
+        );
+        if (hotAccountsTbody) {
+          const sortedHot = [...accounts]
+            .sort((a, b) => (b.useCount || 0) - (a.useCount || 0))
+            .slice(0, 10);
+
+          let hotHtml = "";
+          sortedHot.forEach((a, idx) => {
+            const isCs = a.category === "chungsuc";
+            const grp = parseRankGroup(a.rank);
+            const rankLabel = isCs ? "🤝 Chung Sức" : `${grp.icon} ${grp.name}`;
+            const useN = a.useCount || 0;
+
+            hotHtml += `
+              <tr>
+                <td style="font-weight: 900; color: ${idx < 3 ? "#f59e0b" : "#94a3b8"};">${idx + 1}</td>
+                <td>
+                  <span style="font-weight: 800; color: #ffffff; font-family: monospace;">${escapeHtml(a.username)}</span>
+                </td>
+                <td>
+                  <span style="font-size: 0.75rem; color: ${isCs ? "#f59e0b" : grp.color}; font-weight: 700;">${rankLabel}</span>
+                </td>
+                <td style="text-align: right; font-weight: 900; color: ${useN > 0 ? "#f43f5e" : "#64748b"};">
+                  ${useN > 0 ? `🔥 ${useN}` : "0"}
+                </td>
+                <td>
+                  <div style="font-size: 0.76rem; color: #cbd5e1;">👤 ${escapeHtml(a.lastUsedBy || "Chưa ai dùng")}</div>
+                  ${a.lastUsed ? `<div style="font-size: 0.7rem; color: #64748b;">${escapeHtml(a.lastUsed)}</div>` : ""}
+                </td>
+              </tr>
+            `;
+          });
+          if (!hotHtml) {
+            hotHtml = `<tr><td colspan="5" style="text-align:center; color:#94a3b8; padding:20px;">Chưa có tài khoản nào.</td></tr>`;
+          }
+          hotAccountsTbody.innerHTML = hotHtml;
+        }
+
+        // Top Người Dùng Tích Cực
+        const topUsersTbody = document.getElementById(
+          "analytics-top-users-tbody",
+        );
+        if (topUsersTbody) {
+          const userUsageMap = new Map();
+          accounts.forEach((a) => {
+            if (a.lastUsedBy && a.lastUsedBy.trim()) {
+              const u = a.lastUsedBy.trim();
+              userUsageMap.set(u, (userUsageMap.get(u) || 0) + (a.useCount || 1));
+            }
+          });
+
+          const sortedUsers = Array.from(userUsageMap.entries()).sort(
+            (a, b) => b[1] - a[1],
+          );
+
+          let usersHtml = "";
+          sortedUsers.forEach(([name, count], index) => {
+            const pct =
+              totalUsage > 0 ? Math.round((count / totalUsage) * 100) : 0;
+            const rankIcon =
+              index === 0
+                ? "🥇"
+                : index === 1
+                  ? "🥈"
+                  : index === 2
+                    ? "🥉"
+                    : `#${index + 1}`;
+            usersHtml += `
+              <tr>
+                <td style="font-weight: 900;">${rankIcon}</td>
+                <td>
+                  <span style="font-weight: 800; color: #ffffff;">👤 ${escapeHtml(name)}</span>
+                </td>
+                <td style="text-align: right; font-weight: 900; color: #38bdf8;">${count} lần</td>
+                <td style="text-align: right; font-weight: 700; color: #94a3b8;">${pct}%</td>
+              </tr>
+            `;
+          });
+          if (!usersHtml) {
+            usersHtml = `<tr><td colspan="4" style="text-align:center; color:#94a3b8; padding:20px;">Chưa ghi nhận lượt dùng nào.</td></tr>`;
+          }
+          topUsersTbody.innerHTML = usersHtml;
+        }
+      }
+
+      // Đóng Analytics bằng phím Esc
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          const m = document.getElementById("analytics-modal");
+          if (m && m.classList.contains("show")) {
+            window.closeAnalyticsModal();
+          }
+        }
+      });
 
       // ==========================================
       // HỆ THỐNG ÂM THANH ESPORTS (WEB AUDIO API)
@@ -5714,6 +7224,284 @@
         if (timerTextEl && !hasCustom) {
           timerTextEl.textContent = "🔒 Bắt buộc nhập tên để mở khóa hệ thống";
         }
+      }
+
+      // ==========================================
+      // QUẢN LÝ THÔNG BÁO LỊCH SỬ THÊM ACC & TOAST GÓC DƯỚI BÊN TRÁI
+      // ==========================================
+      function getNotificationList() {
+        try {
+          const raw = localStorage.getItem("lq_activity_notis");
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed)) return parsed;
+          }
+        } catch (e) {
+          console.warn("Lỗi đọc lq_activity_notis:", e);
+        }
+        return [];
+      }
+
+      function saveNotificationList(list) {
+        try {
+          localStorage.setItem(
+            "lq_activity_notis",
+            JSON.stringify(list.slice(0, 50)),
+          );
+        } catch (e) {
+          console.warn("Lỗi lưu lq_activity_notis:", e);
+        }
+      }
+
+      function updateNotiBadge() {
+        const notiBadge = document.getElementById("noti-badge-count");
+        const btnBell = document.getElementById("btn-open-noti");
+        if (!notiBadge || !btnBell) return;
+
+        const list = getNotificationList();
+        const unreadCount = list.filter((item) => !item.read).length;
+
+        if (unreadCount > 0) {
+          notiBadge.textContent = unreadCount > 99 ? "99+" : unreadCount;
+          notiBadge.style.display = "inline-flex";
+          btnBell.classList.add("has-unread");
+        } else {
+          notiBadge.style.display = "none";
+          btnBell.classList.remove("has-unread");
+        }
+      }
+
+      function renderNotificationList() {
+        const listContainer = document.getElementById("noti-flyout-list");
+        if (!listContainer) return;
+
+        const list = getNotificationList();
+        if (list.length === 0) {
+          listContainer.innerHTML = `
+            <div class="noti-empty-state">
+              <span style="font-size: 2rem;">📭</span>
+              <div style="font-weight: 700; color: #cbd5e1;">Chưa có thông báo nào</div>
+              <small style="color: #64748b;">Khi có ai thêm nick mới, thông báo sẽ hiển thị tại đây.</small>
+            </div>
+          `;
+          return;
+        }
+
+        let html = "";
+        list.forEach((item) => {
+          const isChungSuc = item.category === "chungsuc";
+          const catClass = isChungSuc ? "badge-cat-chungsuc" : "badge-cat-rank";
+          const cardClass = isChungSuc ? "is-chungsuc" : "is-rank";
+          const catName =
+            item.categoryName ||
+            (isChungSuc ? "Sự Kiện Chung Sức" : "Kho Nick Chơi Rank");
+          const avatar = isChungSuc ? "🤝" : "🎮";
+
+          html += `
+            <div class="noti-item-card ${cardClass}">
+              <div class="noti-item-avatar">${avatar}</div>
+              <div class="noti-item-content">
+                <div class="noti-item-top">
+                  <span class="noti-item-user">👤 ${escapeHtml(item.user || "Khách")}</span>
+                  <div style="display: flex; align-items: center; gap: 7px;">
+                    <span class="noti-item-time">${escapeHtml(item.time || "")}</span>
+                    <button type="button" class="noti-item-del-btn" onclick="deleteSingleNotification('${escapeHtml(item.id)}', event)" title="Xóa thông báo này">✕</button>
+                  </div>
+                </div>
+                <div class="noti-item-desc">
+                  Đã thêm <b>${item.count || 1} tài khoản</b> vào <b>${escapeHtml(catName)}</b>
+                  ${item.firstAccount ? `<div style="font-size: 0.73rem; color: #94a3b8; font-family: monospace; margin-top: 2px;">• ${escapeHtml(item.firstAccount)}${item.count > 1 ? ` (+${item.count - 1} nick khác)` : ""}</div>` : ""}
+                </div>
+                <span class="noti-item-badge-cat ${catClass}">${escapeHtml(catName)}</span>
+              </div>
+            </div>
+          `;
+        });
+
+        listContainer.innerHTML = html;
+      }
+
+      window.deleteSingleNotification = function (id, e) {
+        if (e) {
+          e.stopPropagation();
+          e.preventDefault();
+        }
+        if (!id) return;
+
+        let list = getNotificationList();
+        list = list.filter((item) => item.id !== id);
+        saveNotificationList(list);
+
+        try {
+          const deleted = JSON.parse(
+            localStorage.getItem("lq_deleted_activity_ids") || "[]",
+          );
+          if (!deleted.includes(id)) {
+            deleted.push(id);
+            localStorage.setItem(
+              "lq_deleted_activity_ids",
+              JSON.stringify(deleted.slice(-150)),
+            );
+          }
+        } catch (err) {}
+
+        renderNotificationList();
+        updateNotiBadge();
+        playSound("delete");
+        pushToCloud(true);
+        showToast("🗑️ Đã xóa thông báo!");
+      };
+
+      window.toggleNotiFlyout = function (e) {
+        if (e) e.stopPropagation();
+        const panel = document.getElementById("noti-flyout-panel");
+        if (!panel) return;
+
+        const isOpen = panel.classList.contains("show");
+        if (isOpen) {
+          window.closeNotiFlyout();
+        } else {
+          // Đánh dấu tất cả là đã đọc khi mở panel
+          const list = getNotificationList();
+          let hasUnread = false;
+          list.forEach((it) => {
+            if (!it.read) {
+              it.read = true;
+              hasUnread = true;
+            }
+          });
+          if (hasUnread) {
+            saveNotificationList(list);
+            updateNotiBadge();
+          }
+          renderNotificationList();
+          panel.classList.add("show");
+          playSound("click");
+        }
+      };
+
+      window.closeNotiFlyout = function () {
+        const panel = document.getElementById("noti-flyout-panel");
+        if (panel) panel.classList.remove("show");
+      };
+
+      window.clearAllNotifications = function () {
+        const list = getNotificationList();
+        if (list.length === 0) {
+          showToast("✨ Danh sách thông báo hiện đang trống!");
+          return;
+        }
+
+        showNotice({
+          title: "Xóa Lịch Sử Thông Báo",
+          message:
+            "Bạn có chắc chắn muốn xóa toàn bộ lịch sử thông báo thêm tài khoản?",
+          icon: "🧹",
+          type: "confirm",
+          onConfirm: () => {
+            const clearedTime = Date.now();
+            localStorage.setItem(
+              "lq_activity_cleared_time",
+              clearedTime.toString(),
+            );
+            saveNotificationList([]);
+            renderNotificationList();
+            updateNotiBadge();
+            playSound("delete");
+            pushToCloud(true);
+            showToast("🧹 Đã xóa sạch lịch sử thông báo!");
+          },
+        });
+      };
+
+      // Đóng flyout khi nhấp ra ngoài
+      document.addEventListener("click", (e) => {
+        const panel = document.getElementById("noti-flyout-panel");
+        const btnBell = document.getElementById("btn-open-noti");
+        if (panel && panel.classList.contains("show")) {
+          if (
+            !panel.contains(e.target) &&
+            (!btnBell || !btnBell.contains(e.target))
+          ) {
+            window.closeNotiFlyout();
+          }
+        }
+      });
+
+      // HIỂN THỊ THẺ NOTI / MESSAGE GÓC DƯỚI BÊN TRÁI
+      function showLeftCornerToast(notiItem) {
+        const container = document.getElementById("activity-toast-container");
+        if (!container) return;
+
+        const isChungSuc = notiItem.category === "chungsuc";
+        const catName =
+          notiItem.categoryName ||
+          (isChungSuc ? "Sự Kiện Chung Sức" : "Kho Nick Chơi Rank");
+        const badgeClass = isChungSuc ? "is-chungsuc" : "is-rank";
+        const itemClass = isChungSuc ? "is-chungsuc" : "is-rank";
+        const icon = isChungSuc ? "🤝" : "🎮";
+
+        const toastEl = document.createElement("div");
+        toastEl.className = `activity-toast-item ${itemClass}`;
+        toastEl.innerHTML = `
+          <div class="activity-toast-top">
+            <span class="activity-toast-badge ${badgeClass}">
+              <span>${icon}</span>
+              <span>${escapeHtml(catName)}</span>
+            </span>
+            <button type="button" class="activity-toast-close" title="Đóng">✕</button>
+          </div>
+          <div class="activity-toast-body">
+            <span class="activity-toast-user">${escapeHtml(notiItem.user || "Khách")}</span> đã thêm <b>${notiItem.count || 1} tài khoản</b> vào <span class="activity-toast-target">${escapeHtml(catName)}</span>
+          </div>
+          ${
+            notiItem.firstAccount
+              ? `<div class="activity-toast-acc-preview">👉 ${escapeHtml(notiItem.firstAccount)}${notiItem.count > 1 ? ` (+${notiItem.count - 1} nick khác)` : ""}</div>`
+              : ""
+          }
+          <div class="activity-toast-progress-bar"></div>
+        `;
+
+        const closeBtn = toastEl.querySelector(".activity-toast-close");
+        let removeTimer = null;
+
+        const dismiss = () => {
+          if (removeTimer) clearTimeout(removeTimer);
+          toastEl.classList.add("hide");
+          setTimeout(() => {
+            if (toastEl.parentNode) toastEl.parentNode.removeChild(toastEl);
+          }, 250);
+        };
+
+        if (closeBtn) {
+          closeBtn.onclick = (e) => {
+            e.stopPropagation();
+            dismiss();
+          };
+        }
+
+        // Tự biến mất sau 6 giây
+        removeTimer = setTimeout(dismiss, 6000);
+
+        container.appendChild(toastEl);
+
+        // Giữ tối đa 3 thông báo cùng lúc ở góc trái
+        while (container.children.length > 3) {
+          container.removeChild(container.firstChild);
+        }
+      }
+
+      function pushAccountNotification(notiItem) {
+        const list = getNotificationList();
+        list.unshift(notiItem);
+        saveNotificationList(list);
+        updateNotiBadge();
+        const panel = document.getElementById("noti-flyout-panel");
+        if (panel && panel.classList.contains("show")) {
+          renderNotificationList();
+        }
+        showLeftCornerToast(notiItem);
+        triggerAutoSync();
       }
 
       window.showWelcomeBannerModal = function () {
@@ -7066,6 +8854,25 @@
           targetCategory === "chungsuc"
             ? "Sự Kiện Chung Sức"
             : "Kho Nick Chơi Rank";
+
+        const now = new Date();
+        const hh = String(now.getHours()).padStart(2, "0");
+        const mm = String(now.getMinutes()).padStart(2, "0");
+        const dd = String(now.getDate()).padStart(2, "0");
+        const mo = String(now.getMonth() + 1).padStart(2, "0");
+
+        const notiItem = {
+          id: Date.now().toString() + Math.random().toString(36).substr(2, 4),
+          user: getUserName(),
+          count: newItems.length,
+          firstAccount: newItems[0].username,
+          category: targetCategory,
+          categoryName: storeLabel,
+          time: `${hh}:${mm} - ${dd}/${mo}`,
+          timestamp: Date.now(),
+          read: false,
+        };
+        pushAccountNotification(notiItem);
 
         if (duplicateItems.length > 0) {
           showCenterToast({
@@ -8700,6 +10507,43 @@
             }
           }
 
+          if (raw && typeof raw === "object" && Array.isArray(raw.activities)) {
+            const clearedTime =
+              Number(localStorage.getItem("lq_activity_cleared_time")) || 0;
+            let deletedIds = new Set();
+            try {
+              const dArr = JSON.parse(
+                localStorage.getItem("lq_deleted_activity_ids") || "[]",
+              );
+              if (Array.isArray(dArr)) deletedIds = new Set(dArr);
+            } catch (e) {}
+
+            const currentNotis = getNotificationList();
+            const existingIds = new Set(currentNotis.map((n) => n.id));
+            let hasNewFromOther = false;
+            raw.activities.forEach((act) => {
+              if (!act || !act.id) return;
+              if (deletedIds.has(act.id)) return;
+              const actTime = Number(act.timestamp) || 0;
+              if (clearedTime > 0 && actTime <= clearedTime) return;
+
+              if (!existingIds.has(act.id)) {
+                currentNotis.unshift(act);
+                existingIds.add(act.id);
+                hasNewFromOther = true;
+                if (Date.now() - actTime < 180000) {
+                  showLeftCornerToast(act);
+                }
+              }
+            });
+            if (hasNewFromOther) {
+              saveNotificationList(currentNotis);
+              updateNotiBadge();
+              const p = document.getElementById("noti-flyout-panel");
+              if (p && p.classList.contains("show")) renderNotificationList();
+            }
+          }
+
           updateCloudUI("🟢", "Đám Mây Tự Động");
           if (!silent)
             showToast(`✅ Đã tải về ${accounts.length} nick từ đám mây!`);
@@ -8732,6 +10576,7 @@
             accounts: accounts,
             updatedAt: Date.now(),
             isEmergencyLocked: isEmergencyLocked,
+            activities: getNotificationList().slice(0, 30),
           };
 
           const res = await fetch(FIREBASE_ENDPOINT, {
@@ -9046,6 +10891,7 @@
 
       // KHỞI CHẠY
       updateGreetingUI();
+      updateNotiBadge();
       switchAccountStorage(currentStorage, false);
       initWelcomeBanner();
       initBrandTypewriter();
