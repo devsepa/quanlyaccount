@@ -365,28 +365,33 @@
         background: rgba(15, 12, 35, 0.95);
       }
 
-      /* NÚT THÊM TÀI KHOẢN: THIẾT KẾ XỊN XÒ - NGỌC LỤC BẢO HEXTECH (CRYSTAL EMERALD) */
+      /* NÚT THÊM TÀI KHOẢN: HIỆU ỨNG 3D HIỆN ĐẠI & ĐẸP MẮT (MODERN 3D TACTILE BUTTON) */
       #btn-add {
         position: relative;
         overflow: hidden;
         background: linear-gradient(
-          135deg,
-          #047857 0%,
-          #10b981 40%,
-          #06b6d4 100%
+          180deg,
+          #6366f1 0%,
+          #4f46e5 50%,
+          #4338ca 100%
         ) !important;
-        border: 1px solid rgba(110, 231, 183, 0.6) !important;
+        border: 1px solid rgba(255, 255, 255, 0.28) !important;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.45) !important;
+        border-radius: 10px !important;
         box-shadow:
-          0 4px 18px rgba(16, 185, 129, 0.4),
-          0 0 24px rgba(6, 182, 212, 0.25),
-          inset 0 1px 1px rgba(255, 255, 255, 0.65),
-          inset 0 -2px 4px rgba(0, 0, 0, 0.3) !important;
-        font-weight: 900 !important;
-        letter-spacing: 0.8px;
+          0 4px 0 #312e81,
+          0 8px 20px rgba(79, 70, 229, 0.45),
+          inset 0 1px 0 rgba(255, 255, 255, 0.45),
+          inset 0 -2px 4px rgba(0, 0, 0, 0.25) !important;
+        color: #ffffff !important;
+        font-weight: 800 !important;
+        font-size: 0.84rem !important;
+        letter-spacing: 0.6px;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
         cursor: pointer;
-        transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        transition: all 0.16s cubic-bezier(0.16, 1, 0.3, 1);
         isolation: isolate;
-        border-radius: 10px;
+        transform: translateY(0);
       }
 
       #btn-add .btn-text-glossy {
@@ -394,46 +399,30 @@
         z-index: 3;
         display: inline-flex;
         align-items: center;
-        justify-content: center;
-        gap: 6px;
-        font-weight: 900;
-        font-size: 0.84rem;
-        letter-spacing: 0.8px;
-        color: #ffffff !important;
-        text-shadow:
-          0 1px 3px rgba(0, 0, 0, 0.8),
-          0 0 12px rgba(255, 255, 255, 0.5);
-        transition: all 0.2s ease;
+        gap: 7px;
+        font-weight: 800;
+        color: #ffffff;
       }
 
-      #btn-add .btn-add-icon {
-        font-size: 1.15rem;
-        font-weight: 900;
-        line-height: 1;
-        display: inline-block;
-        color: #ffffff !important;
-        filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8));
-      }
-
-      /* LỚP TRÁNG GƯƠNG TINH TẾ NỬA TRÊN (BÓNG KÍNH KHÔNG CHE MỜ CHỮ) */
+      /* LỚP PHỦ ÁNH SÁNG NỬA TRÊN 3D */
       #btn-add::before {
         content: "";
         position: absolute;
         top: 0;
         left: 0;
         right: 0;
-        height: 44%;
+        height: 48%;
         background: linear-gradient(
           180deg,
-          rgba(255, 255, 255, 0.25) 0%,
-          rgba(255, 255, 255, 0.02) 100%
+          rgba(255, 255, 255, 0.35) 0%,
+          rgba(255, 255, 255, 0.05) 100%
         );
-        border-radius: 9px 9px 60px 60px / 9px 9px 12px 12px;
+        border-radius: 9px 9px 40px 40px / 9px 9px 12px 12px;
         pointer-events: none;
         z-index: 1;
       }
 
-      /* DẢI ÁNH SÁNG BÓNG LOÁNG LƯỚT QUA ĐỊNH KỲ (LIGHT SHIMMER SWEEP MƯỢT MÀ) */
+      /* DẢI ÁNH SÁNG TRÁNG GƯƠNG LƯỚT QUA CHẬM RÃI & MƯỢT MÀ */
       #btn-add::after {
         content: "";
         position: absolute;
@@ -444,15 +433,15 @@
         background: linear-gradient(
           90deg,
           transparent 0%,
-          rgba(255, 255, 255, 0.05) 20%,
-          rgba(255, 255, 255, 0.5) 50%,
-          rgba(255, 255, 255, 0.05) 80%,
+          rgba(255, 255, 255, 0.08) 20%,
+          rgba(255, 255, 255, 0.65) 50%,
+          rgba(255, 255, 255, 0.08) 80%,
           transparent 100%
         );
         transform: rotate(25deg);
         pointer-events: none;
         z-index: 2;
-        animation: btnGlossySweep 5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        animation: btnGlossySweep 5.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
       }
 
       @keyframes btnGlossySweep {
@@ -475,31 +464,47 @@
       }
 
       #btn-add:hover {
-        filter: brightness(1.12) !important;
+        filter: brightness(1.1) !important;
+        transform: translateY(-1px);
         box-shadow:
-          0 6px 24px rgba(16, 185, 129, 0.6),
-          0 0 28px rgba(6, 182, 212, 0.4),
-          inset 0 1px 2px rgba(255, 255, 255, 0.8),
-          inset 0 -2px 4px rgba(0, 0, 0, 0.35) !important;
-        transform: translateY(-2px);
-      }
-
-      #btn-add:hover .btn-text-glossy {
-        text-shadow:
-          0 1px 3px rgba(0, 0, 0, 0.8),
-          0 0 16px rgba(255, 255, 255, 0.8),
-          0 0 24px rgba(110, 231, 183, 0.8);
-      }
-
-      #btn-add:hover::after {
-        animation-duration: 3.2s;
+          0 5px 0 #312e81,
+          0 10px 24px rgba(99, 102, 241, 0.55),
+          inset 0 1px 0 rgba(255, 255, 255, 0.55),
+          inset 0 -2px 4px rgba(0, 0, 0, 0.25) !important;
       }
 
       #btn-add:active {
-        transform: scale(0.97) translateY(0);
+        transform: translateY(3px) !important;
         box-shadow:
-          0 2px 8px rgba(16, 185, 129, 0.4),
-          inset 0 2px 4px rgba(0, 0, 0, 0.35) !important;
+          0 1px 0 #312e81,
+          0 3px 8px rgba(79, 70, 229, 0.35),
+          inset 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+        filter: brightness(0.96) !important;
+      }
+
+      /* PHÁT SÁNG NICK VỪA TẠO THÀNH CÔNG */
+      @keyframes rowNewlyAddedGlow {
+        0% {
+          background-color: rgba(16, 185, 129, 0.45);
+          box-shadow: 0 0 28px rgba(16, 185, 129, 0.85), inset 0 0 16px rgba(16, 185, 129, 0.4);
+        }
+        35% {
+          background-color: rgba(16, 185, 129, 0.3);
+          box-shadow: 0 0 22px rgba(16, 185, 129, 0.65), inset 0 0 12px rgba(16, 185, 129, 0.3);
+        }
+        70% {
+          background-color: rgba(16, 185, 129, 0.18);
+          box-shadow: 0 0 14px rgba(16, 185, 129, 0.4), inset 0 0 8px rgba(16, 185, 129, 0.15);
+        }
+        100% {
+          background-color: transparent;
+          box-shadow: none;
+        }
+      }
+      .row-newly-added-glow {
+        animation: rowNewlyAddedGlow 3.5s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+        outline: 2px solid #10b981 !important;
+        outline-offset: -2px;
       }
 
       @media (max-width: 820px) {
@@ -536,6 +541,98 @@
         border-color: var(--border-focus);
         box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
         background: #020617;
+      }
+
+      /* THANH TÌM KIẾM TÀI KHOẢN HIỆN ĐẠI (SEARCH BAR) */
+      .search-bar-wrap {
+        margin-top: 6px;
+        margin-bottom: 12px;
+        width: 100%;
+      }
+
+      .search-bar-inner {
+        position: relative;
+        display: flex;
+        align-items: center;
+        width: 100%;
+        background: rgba(15, 23, 42, 0.72);
+        border: 1px solid rgba(148, 163, 184, 0.22);
+        border-radius: 12px;
+        padding: 0 14px;
+        box-shadow:
+          0 4px 16px rgba(0, 0, 0, 0.35),
+          inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .search-bar-inner:hover {
+        border-color: rgba(56, 189, 248, 0.35);
+        background: rgba(15, 23, 42, 0.85);
+      }
+
+      .search-bar-inner:focus-within {
+        border-color: #38bdf8;
+        box-shadow:
+          0 0 0 3px rgba(56, 189, 248, 0.2),
+          0 6px 20px rgba(0, 0, 0, 0.45),
+          inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        background: rgba(2, 6, 23, 0.95);
+      }
+
+      .search-bar-icon {
+        font-size: 1rem;
+        color: #94a3b8;
+        margin-right: 10px;
+        flex-shrink: 0;
+        user-select: none;
+        display: flex;
+        align-items: center;
+      }
+
+      .search-bar-input {
+        width: 100%;
+        background: transparent !important;
+        border: none !important;
+        outline: none !important;
+        box-shadow: none !important;
+        color: #ffffff !important;
+        font-size: 0.9rem !important;
+        font-weight: 600 !important;
+        padding: 10px 0 !important;
+        font-family: "JetBrains Mono", monospace;
+      }
+
+      .search-bar-input::placeholder {
+        color: #64748b;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-weight: 500;
+        font-size: 0.86rem;
+      }
+
+      .btn-clear-search {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        color: #cbd5e1;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.72rem;
+        cursor: pointer;
+        flex-shrink: 0;
+        margin-left: 8px;
+        transition: all 0.15s ease;
+      }
+
+      .btn-clear-search:hover {
+        background: rgba(239, 68, 68, 0.35);
+        color: #ffffff;
+        border-color: #ef4444;
+        transform: scale(1.1);
       }
 
       /* THANH ĐIỀU HƯỚNG RANK CUỘN NGANG (FRAMELESS & AIRY) */
@@ -1723,29 +1820,32 @@
         color: #e2e8f0;
       }
 
-      /* TOAST MƯỢT MÀ */
+      /* TOAST THÔNG BÁO HIỆN ĐẠI CÓ TICK XANH & FADE OUT */
       #toast {
         position: fixed;
-        bottom: 28px;
+        bottom: 30px;
         left: 50%;
-        transform: translate(-50%, 20px) scale(0.92);
-        background: rgba(15, 23, 42, 0.94);
-        border: 1px solid rgba(56, 189, 248, 0.45);
+        transform: translate(-50%, 25px) scale(0.9);
+        background: rgba(15, 23, 42, 0.95);
+        border: 1px solid rgba(16, 185, 129, 0.55);
         color: #fff;
-        padding: 11px 24px;
+        padding: 10px 22px;
         border-radius: 30px;
-        font-size: 0.88rem;
-        font-weight: 700;
-        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(56, 189, 248, 0.25);
+        font-size: 0.9rem;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        box-shadow:
+          0 12px 32px rgba(0, 0, 0, 0.65),
+          0 0 24px rgba(16, 185, 129, 0.35);
         backdrop-filter: blur(14px);
         -webkit-backdrop-filter: blur(14px);
         opacity: 0;
         pointer-events: none;
         transition:
-          transform 0.32s cubic-bezier(0.16, 1, 0.3, 1),
-          opacity 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+          transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+          opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1);
         z-index: 999999;
-        display: flex;
+        display: inline-flex;
         align-items: center;
         gap: 8px;
         white-space: nowrap;
@@ -1755,6 +1855,22 @@
         transform: translate(-50%, 0) scale(1);
         opacity: 1;
         pointer-events: auto;
+      }
+
+      /* DẤU TICK XANH XÁC MINH (VERIFIED BADGE) Ở TIÊU ĐỀ */
+      .verified-tick-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 18px;
+        height: 18px;
+        background: linear-gradient(135deg, #0284c7, #0ea5e9);
+        color: #ffffff;
+        border-radius: 50%;
+        margin-left: 6px;
+        box-shadow: 0 0 10px rgba(14, 165, 233, 0.65);
+        flex-shrink: 0;
+        vertical-align: middle;
       }
     </style>
   </head>
@@ -1822,8 +1938,14 @@
             >
           </div>
           <div>
-            <h1 id="brand-typewriter-wrap">
-              <span id="brand-typewriter-text">devsepa <span style="font-size: 0.82rem; font-weight: 700; color: #38bdf8">• AOV Manager</span></span><span class="typewriter-cursor">|</span>
+            <h1 id="brand-typewriter-wrap" style="display: inline-flex; align-items: center;">
+              <span id="brand-typewriter-text"
+                >devsepa
+                <span
+                  style="font-size: 0.82rem; font-weight: 700; color: #38bdf8"
+                  >• AOV Manager</span
+                ></span
+              ><span class="typewriter-cursor">|</span><span class="verified-tick-badge" title="Đã xác minh"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
             </h1>
             <div class="header-sub">
               <div
@@ -1940,12 +2062,34 @@
                 onclick="handleAddAccount()"
                 style="height: 40px; width: 100%; padding: 0 16px"
               >
-                <span class="btn-text-glossy">
-                  <span class="btn-add-icon">+</span> THÊM TÀI KHOẢN
-                </span>
+                <span class="btn-text-glossy">➕ THÊM TÀI KHOẢN</span>
               </button>
             </div>
           </div>
+        </div>
+      </div>
+
+      <!-- THANH TÌM KIẾM TÀI KHOẢN HIỆN ĐẠI -->
+      <div class="search-bar-wrap">
+        <div class="search-bar-inner">
+          <span class="search-bar-icon">🔍</span>
+          <input
+            type="text"
+            id="search-account-input"
+            class="search-bar-input"
+            placeholder="Tìm kiếm tài khoản (gõ tên nick)..."
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <button
+            type="button"
+            id="btn-clear-search"
+            class="btn-clear-search"
+            onclick="clearSearchInput()"
+            title="Xóa tìm kiếm (Esc)"
+          >
+            ✕
+          </button>
         </div>
       </div>
 
@@ -2948,9 +3092,38 @@
       const rankPopover = document.getElementById("rank-popover");
       const btnBackTop = document.getElementById("btn-back-top");
       const quickRankNav = document.getElementById("quick-rank-nav");
+      const searchAccountInput = document.getElementById("search-account-input");
+      const btnClearSearch = document.getElementById("btn-clear-search");
 
+      let currentSearchQuery = "";
       let activeRankFilter = "all";
       let currentActiveRankInput = null;
+
+      if (searchAccountInput) {
+        searchAccountInput.addEventListener("input", function () {
+          currentSearchQuery = this.value.trim().toLowerCase();
+          if (btnClearSearch) {
+            btnClearSearch.style.display = this.value ? "flex" : "none";
+          }
+          renderList();
+        });
+
+        searchAccountInput.addEventListener("keydown", function (e) {
+          if (e.key === "Escape") {
+            clearSearchInput();
+          }
+        });
+      }
+
+      window.clearSearchInput = function () {
+        if (searchAccountInput) {
+          searchAccountInput.value = "";
+          currentSearchQuery = "";
+          if (btnClearSearch) btnClearSearch.style.display = "none";
+          searchAccountInput.focus();
+          renderList();
+        }
+      };
 
       // XỬ LÝ CHỌN CHIP RANK NHANH
       if (quickRankNav) {
@@ -3135,14 +3308,18 @@
         }
 
         const now = new Date();
+        const todayStart = new Date(
+          now.getFullYear(),
+          now.getMonth(),
+          now.getDate(),
+        ).getTime();
         let targetYear = now.getFullYear();
-        let targetDate = new Date(targetYear, month - 1, day, 23, 59, 59);
-
         if (now.getMonth() >= 9 && month <= 3) {
-          targetDate = new Date(targetYear + 1, month - 1, day, 23, 59, 59);
+          targetYear += 1;
         }
+        const targetStart = new Date(targetYear, month - 1, day).getTime();
 
-        if (now.getTime() <= targetDate.getTime()) {
+        if (todayStart < targetStart) {
           return {
             isBanned: true,
             desc: `🚫 BAN (${String(day).padStart(2, "0")}/${String(month).padStart(2, "0")})`,
@@ -3213,10 +3390,46 @@
 
         if (newItems.length === 0) return;
 
+        // Nếu đang lọc theo rank hoặc tab Đã dùng mà rank nick mới khác thì chuyển về tab 'Tất Cả' để hiển thị được nick
+        if (activeRankFilter !== "all" && activeRankFilter !== "recent") {
+          const firstGrp = parseRankGroup(newItems[0].rank);
+          if (activeRankFilter !== firstGrp.key) {
+            activeRankFilter = "all";
+            document.querySelectorAll(".rank-nav-chip").forEach((c) => {
+              c.classList.toggle(
+                "active",
+                c.getAttribute("data-rank") === "all",
+              );
+            });
+          }
+        } else if (activeRankFilter === "recent") {
+          activeRankFilter = "all";
+          document.querySelectorAll(".rank-nav-chip").forEach((c) => {
+            c.classList.toggle("active", c.getAttribute("data-rank") === "all");
+          });
+        }
+
         accounts = [...newItems, ...accounts];
         saveData();
         renderList();
         triggerAutoSync();
+
+        // Cuộn mượt đến tài khoản vừa tạo và kích hoạt hiệu ứng phát sáng
+        const firstNewId = newItems[0].id;
+        setTimeout(() => {
+          const targetEl =
+            document.getElementById("acc-row-" + firstNewId) ||
+            document.getElementById("m-card-" + firstNewId);
+          if (targetEl) {
+            targetEl.scrollIntoView({ behavior: "smooth", block: "center" });
+            targetEl.classList.remove("row-newly-added-glow");
+            void targetEl.offsetWidth; // force reflow
+            targetEl.classList.add("row-newly-added-glow");
+            setTimeout(() => {
+              targetEl.classList.remove("row-newly-added-glow");
+            }, 3600);
+          }
+        }, 120);
 
         rawInput.value = "";
         defaultUnlock.value = "";
@@ -3466,12 +3679,18 @@
         if (statBan) statBan.innerHTML = `• 🚫 ${banCount} ban`;
 
         // Lấy danh sách tài khoản trong nhóm Đã Dùng Gần Đây
-        const recentAccounts = accounts
+        let recentAccounts = accounts
           .filter(
             (a) =>
               a.inRecent === true || (a.inRecent !== false && !!a.lastUsed),
           )
           .sort((a, b) => (b.lastUsedTime || 0) - (a.lastUsedTime || 0));
+
+        if (currentSearchQuery) {
+          recentAccounts = recentAccounts.filter((a) =>
+            (a.username || "").toLowerCase().includes(currentSearchQuery),
+          );
+        }
 
         const recentTabCount = document.getElementById("recent-tab-count");
         if (recentTabCount) recentTabCount.textContent = recentAccounts.length;
@@ -3483,9 +3702,11 @@
           if (recentAccounts.length === 0) {
             displayArea.innerHTML = `
               <div style="text-align: center; color: var(--text-muted); padding: 50px 20px; background: var(--bg-surface); border-radius: 14px; border: 1px solid var(--border-color);">
-                <div style="font-size: 2rem; margin-bottom: 10px;">🕒</div>
-                <div style="font-weight: 700; font-size: 1.05rem; color: #fff; margin-bottom: 6px;">Chưa có tài khoản nào trong nhóm Đã dùng gần đây</div>
-                <div style="font-size: 0.85rem; color: #94a3b8;">Khi bạn bấm nút <b>📋 SAO CHÉP</b> ở bất kỳ tài khoản nào, nick đó sẽ tự động xuất hiện tại đây.</div>
+                <div style="font-size: 2rem; margin-bottom: 10px;">${currentSearchQuery ? "🔍" : "🕒"}</div>
+                <div style="font-weight: 700; font-size: 1.05rem; color: #fff; margin-bottom: 6px;">
+                  ${currentSearchQuery ? `Không tìm thấy tài khoản nào khớp với "${escapeHtml(currentSearchQuery)}"` : "Chưa có tài khoản nào trong nhóm Đã dùng gần đây"}
+                </div>
+                ${currentSearchQuery ? `<button class="btn btn-tool" onclick="clearSearchInput()" style="margin-top: 10px; display: inline-flex;">🔄 Xóa tìm kiếm</button>` : `<div style="font-size: 0.85rem; color: #94a3b8;">Khi bạn bấm nút <b>📋 SAO CHÉP</b> ở bất kỳ tài khoản nào, nick đó sẽ tự động xuất hiện tại đây.</div>`}
               </div>
             `;
             return;
@@ -3526,11 +3747,35 @@
           if (fRank === "recent") return false;
           const rankGroup = parseRankGroup(a.rank);
           if (fRank !== "all" && rankGroup.key !== fRank) return false;
+          if (currentSearchQuery) {
+            const u = (a.username || "").toLowerCase();
+            if (!u.includes(currentSearchQuery)) return false;
+          }
           return true;
         });
 
+        if (currentSearchQuery) {
+          const matchCount = fRank === "recent" ? recentAccounts.length : filtered.length;
+          if (statCount) statCount.innerHTML = `<span style="color: #38bdf8;">Khớp ${matchCount}/${accounts.length} nick</span>`;
+        } else {
+          if (statCount) statCount.textContent = `${accounts.length} nick`;
+        }
+
         if (fRank !== "recent" && filtered.length === 0) {
-          displayArea.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 50px; background: var(--bg-surface); border-radius: 14px; border: 1px solid var(--border-color);">Không tìm thấy tài khoản nào phù hợp</div>`;
+          if (currentSearchQuery) {
+            displayArea.innerHTML = `
+              <div style="text-align: center; color: var(--text-muted); padding: 45px 20px; background: var(--bg-surface); border-radius: 14px; border: 1px solid var(--border-color);">
+                <div style="font-size: 2.2rem; margin-bottom: 10px;">🔍</div>
+                <div style="font-weight: 700; font-size: 1.05rem; color: #fff; margin-bottom: 6px;">
+                  Không tìm thấy tài khoản nào khớp với "<b>${escapeHtml(currentSearchQuery)}</b>"
+                </div>
+                <div style="font-size: 0.85rem; color: #94a3b8; margin-bottom: 14px;">Hãy thử tìm với từ khóa khác hoặc xóa ô tìm kiếm.</div>
+                <button class="btn btn-tool" onclick="clearSearchInput()" style="display: inline-flex; margin: 0 auto; padding: 8px 16px;">🔄 Xóa tìm kiếm</button>
+              </div>
+            `;
+          } else {
+            displayArea.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 50px; background: var(--bg-surface); border-radius: 14px; border: 1px solid var(--border-color);">Không tìm thấy tài khoản nào phù hợp</div>`;
+          }
           return;
         }
 
@@ -3613,7 +3858,7 @@
           const onRankClick = isAdmin ? `onclick="openRankPicker(this, event)"` : "";
 
           return `
-            <tr class="acc-row-item ${borderClass} ${isBanned ? "is-banned" : ""}">
+            <tr id="acc-row-${item.id}" class="acc-row-item ${borderClass} ${isBanned ? "is-banned" : ""}">
               <td style="text-align: center; font-weight: 700; color: ${isBanned ? "#fecaca" : "var(--text-muted)"}; font-size: 0.92rem;">#${globalIndex}</td>
               <td style="text-align: center;">
                 ${isBanned ? `<span class="badge badge-banned">${banInfo.desc}</span>` : `<span class="badge badge-active">🟢 HOẠT ĐỘNG</span>`}
@@ -3775,6 +4020,7 @@
           const onRankClick = isAdmin ? `onclick="openRankPicker(this, event)"` : "";
 
           const card = document.createElement("div");
+          card.id = `m-card-${item.id}`;
           card.className = `m-row-card ${borderClass} ${isBanned ? "is-banned" : ""}`;
 
           card.innerHTML = `
@@ -4082,7 +4328,12 @@
         if (navigator.clipboard && navigator.clipboard.writeText) {
           navigator.clipboard
             .writeText(textToCopy)
-            .then(() => showToast(`📋 Đã copy: ${textToCopy}`));
+            .then(() =>
+              showToast(
+                `<span style="color: #34d399; font-size: 1.15rem;">✅</span> <span style="color: #ffffff; font-weight: 800; letter-spacing: 0.5px;">ĐÃ SAO CHÉP</span>`,
+                1800,
+              ),
+            );
         } else {
           const temp = document.createElement("textarea");
           temp.value = textToCopy;
@@ -4090,7 +4341,10 @@
           temp.select();
           document.execCommand("copy");
           document.body.removeChild(temp);
-          showToast(`📋 Đã copy: ${textToCopy}`);
+          showToast(
+            `<span style="color: #34d399; font-size: 1.15rem;">✅</span> <span style="color: #ffffff; font-weight: 800; letter-spacing: 0.5px;">ĐÃ SAO CHÉP</span>`,
+            1800,
+          );
         }
       };
 
@@ -4151,13 +4405,13 @@
 
       // TOAST MƯỢT MÀ
       let toastTimer;
-      function showToast(msg) {
+      function showToast(msg, duration = 2000) {
         clearTimeout(toastTimer);
         toast.innerHTML = msg;
         toast.classList.add("show");
         toastTimer = setTimeout(() => {
           toast.classList.remove("show");
-        }, 2200);
+        }, duration);
       }
 
       function escapeHtml(str) {
