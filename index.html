@@ -4424,7 +4424,18 @@
 
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
           <span style="font-size: 0.78rem; font-weight: 700; color: #38bdf8;" id="device-modal-stat">Đang tải danh sách...</span>
-          <button onclick="refreshDeviceList()" class="btn btn-tool" style="padding: 4px 10px; font-size: 0.75rem;">🔄 Tải lại</button>
+          <div style="display: flex; gap: 6px;">
+            <button
+              type="button"
+              onclick="cleanDuplicateDevices()"
+              class="btn btn-tool"
+              style="padding: 4px 10px; font-size: 0.75rem; color: #facc15; border-color: rgba(234, 179, 8, 0.4);"
+              title="Xóa các thiết bị cũ trùng lặp của cùng 1 người, chỉ giữ 1 thiết bị mới nhất"
+            >
+              🧹 Dọn Trùng Lặp
+            </button>
+            <button onclick="refreshDeviceList()" class="btn btn-tool" style="padding: 4px 10px; font-size: 0.75rem;">🔄 Tải lại</button>
+          </div>
         </div>
 
         <!-- BẢNG DANH SÁCH THIẾT BỊ -->
@@ -4762,10 +4773,24 @@
 
       function getOrCreateDeviceId() {
         let id = localStorage.getItem("lq_device_id");
-        if (!id) {
-          id = "dev_" + Math.random().toString(36).substring(2, 9) + "_" + Date.now().toString(36);
-          localStorage.setItem("lq_device_id", id);
+        if (id) return id;
+
+        // TẠO FINGERPRINT ỔN ĐỊNH CHO THIẾT BỊ (ĐỂ KHÔNG BỊ TRÙNG LẶP ID KHI MỞ QUA ZALO/SAFARI/CHROME)
+        try {
+          const screenFp = `${window.screen.width}x${window.screen.height}_${window.screen.colorDepth || 24}`;
+          const coreFp = navigator.hardwareConcurrency || 4;
+          const langFp = navigator.language || "vi";
+          const rawFp = `${screenFp}_${coreFp}_${langFp}_${navigator.platform || ""}`;
+          let hash = 0;
+          for (let i = 0; i < rawFp.length; i++) {
+            hash = (hash << 5) - hash + rawFp.charCodeAt(i);
+            hash |= 0;
+          }
+          id = "dev_" + Math.abs(hash).toString(36) + "_" + Date.now().toString(36).slice(-4);
+        } catch (e) {
+          id = "dev_" + Math.random().toString(36).substring(2, 9);
         }
+        localStorage.setItem("lq_device_id", id);
         return id;
       }
 
@@ -4775,10 +4800,6 @@
         const deviceId = getOrCreateDeviceId();
         const userName = getUserName();
         const deviceInfo = getClientDeviceInfo();
-        const isDefaultGuest = !hasCustomUserName() && !isAdmin;
-
-        // Nếu là admin chạy trên file hoặc đã xác thực admin, tự động duyệt
-        let statusToSend = isAdmin ? "approved" : (currentDeviceStatus || "pending");
 
         const payload = {
           id: deviceId,
@@ -4797,8 +4818,30 @@
             if (remoteData && remoteData.status) {
               currentDeviceStatus = remoteData.status;
             } else {
-              // Thiết bị mới: nếu là admin thì approved, nếu khách thì pending
-              currentDeviceStatus = isAdmin ? "approved" : "pending";
+              // THIẾT BỊ MỚI:
+              // Kiểm tra xem TÊN NGƯỜI DÙNG này đã từng được Admin phê duyệt trước đó chưa
+              let inheritedStatus = isAdmin ? "approved" : "pending";
+              if (!isAdmin && hasCustomUserName()) {
+                try {
+                  const allRes = await fetch(`${FIREBASE_DB_URL}/devices.json?t=${Date.now()}`);
+                  if (allRes.ok) {
+                    const allData = await allRes.json();
+                    if (allData) {
+                      const userRecords = Object.values(allData).filter(
+                        (d) => d && d.userName && d.userName.trim().toLowerCase() === userName.trim().toLowerCase()
+                      );
+                      if (userRecords.some(d => d.status === "blocked")) {
+                        inheritedStatus = "blocked";
+                      } else if (userRecords.some(d => d.status === "approved")) {
+                        // ĐÃ TỪNG ĐƯỢC DUYỆT TRƯỚC ĐÓ -> TỰ ĐỘNG DUYỆT THIẾT BỊ MỚI NÀY LUÔN, KHÔNG CẦN DUYỆT LẠI!
+                        inheritedStatus = "approved";
+                      }
+                    }
+                  }
+                } catch (e) {}
+              }
+
+              currentDeviceStatus = inheritedStatus;
               payload.status = currentDeviceStatus;
               await fetch(`${FIREBASE_DB_URL}/devices/${deviceId}.json`, {
                 method: "PUT",
@@ -4984,17 +5027,100 @@
 
       window.setDeviceStatus = async function (id, newStatus) {
         try {
+          // Lấy thông tin thiết bị để lấy userName
+          let targetUserName = "";
+          try {
+            const devRes = await fetch(`${FIREBASE_DB_URL}/devices/${id}.json?t=${Date.now()}`);
+            if (devRes.ok) {
+              const devData = await devRes.json();
+              if (devData && devData.userName) targetUserName = devData.userName.trim();
+            }
+          } catch (e) {}
+
           await fetch(`${FIREBASE_DB_URL}/devices/${id}/status.json`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(newStatus)
           });
+
+          // NẾU CÓ TÊN NGƯỜI DÙNG -> ĐỒNG BỘ TRẠNG THÁI CHO TẤT CẢ CÁC THIẾT BỊ CỦA NGƯỜI ĐÓ
+          if (targetUserName && targetUserName.toLowerCase() !== "khách") {
+            try {
+              const allRes = await fetch(`${FIREBASE_DB_URL}/devices.json?t=${Date.now()}`);
+              if (allRes.ok) {
+                const allData = await allRes.json();
+                if (allData) {
+                  for (const key of Object.keys(allData)) {
+                    const item = allData[key];
+                    if (item && item.userName && item.userName.trim().toLowerCase() === targetUserName.toLowerCase()) {
+                      await fetch(`${FIREBASE_DB_URL}/devices/${key}/status.json`, {
+                        method: "PUT",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(newStatus),
+                      });
+                    }
+                  }
+                }
+              }
+            } catch (e) {}
+          }
+
           playSound("click");
-          showToast(newStatus === "approved" ? "✅ Đã phê duyệt thiết bị thành công!" : "🚫 Đã chặn thiết bị thành công!");
+          showToast(newStatus === "approved" ? `✅ Đã phê duyệt cho [${targetUserName || "thiết bị"}]!` : `🚫 Đã chặn [${targetUserName || "thiết bị"}]!`);
           refreshDeviceList();
           fetchPendingDeviceCount();
         } catch (e) {
           showToast("❌ Không thể cập nhật trạng thái!");
+        }
+      };
+
+      // TỰ ĐỘNG QUÉT VÀ DỌN DẸP CÁC THIẾT BỊ CŨ TRÙNG LẶP CỦA CÙNG 1 NGƯỜI
+      window.cleanDuplicateDevices = async function () {
+        showToast("⏳ Đang quét và dọn thiết bị trùng lặp...");
+        try {
+          const res = await fetch(`${FIREBASE_DB_URL}/devices.json?t=${Date.now()}`);
+          if (!res.ok) return;
+          const raw = await res.json();
+          if (!raw) {
+            showToast("✨ Danh sách thiết bị trống!");
+            return;
+          }
+
+          // Gom nhóm thiết bị theo userName
+          const groups = {};
+          Object.keys(raw).forEach((id) => {
+            const item = { ...raw[id], id };
+            const uName = (item.userName || "khách").trim().toLowerCase();
+            if (!groups[uName]) groups[uName] = [];
+            groups[uName].push(item);
+          });
+
+          let deleteCount = 0;
+          for (const uName of Object.keys(groups)) {
+            const list = groups[uName];
+            if (list.length > 1 && uName !== "khách") {
+              // Sắp xếp: timestamp mới nhất lên đầu
+              list.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+              // Giữ lại thiết bị mới nhất (list[0]), xóa các thiết bị cũ thừa thãi
+              for (let i = 1; i < list.length; i++) {
+                await fetch(`${FIREBASE_DB_URL}/devices/${list[i].id}.json`, {
+                  method: "DELETE",
+                });
+                deleteCount++;
+              }
+            }
+          }
+
+          if (deleteCount > 0) {
+            playSound("delete");
+            showToast(`🧹 Đã dọn sạch ${deleteCount} thiết bị trùng lặp cũ!`);
+          } else {
+            showToast("✨ Danh sách không có thiết bị trùng lặp nào!");
+          }
+          refreshDeviceList();
+          fetchPendingDeviceCount();
+        } catch (e) {
+          showToast("❌ Lỗi khi dọn thiết bị trùng lặp!");
         }
       };
 
@@ -8126,75 +8252,40 @@
       function initWelcomeBanner() {
         const overlay = document.getElementById("welcome-banner-overlay");
         const banner = document.getElementById("welcome-banner");
-        const progressBar = document.getElementById("welcome-progress-bar");
         const timerTextEl = document.getElementById("welcome-timer-text");
         if (!overlay || !banner) return;
 
         updateGreetingUI();
 
-        const hasCustom = hasCustomUserName();
+        // NẾU ĐÃ CÓ TÊN (HOẶC LÀ ADMIN) -> KHÔNG BAO GIỜ TỰ ĐỘNG HIỆN LÊN ĐỂ TRÁNH NHIỄU VÀ PHIỀN
+        if (hasCustomUserName() || isAdmin) {
+          overlay.style.display = "none";
+          overlay.classList.remove("show");
+          banner.classList.remove("show");
+          return;
+        }
 
-        // Trượt hiện mượt mà sau 350ms khi trang vừa mở
+        // CHỈ HIỆN 1 LẦN DUY NHẤT KHI CHƯA NHẬP TÊN ĐỂ YÊU CẦU NHẬP TÊN
         setTimeout(() => {
           overlay.style.display = "flex";
           void overlay.offsetWidth;
           overlay.classList.add("show");
           banner.classList.add("show");
 
-          if (!hasCustom) {
-            // BẮT BUỘC NHẬP TÊN: Không đếm ngược tự đóng
-            if (progressBar) progressBar.style.width = "100%";
-            if (timerTextEl) timerTextEl.textContent = "🔒 Bắt buộc nhập tên để mở khóa hệ thống";
-            const input = document.getElementById("welcome-name-input");
-            if (input) {
-              setTimeout(() => input.focus(), 300);
-            }
-            return;
+          if (timerTextEl) {
+            timerTextEl.textContent = "🔒 Bắt buộc nhập tên để mở khóa hệ thống";
           }
-
-          if (progressBar) {
-            progressBar.style.transition = "width 6.8s linear";
-            progressBar.style.width = "0%";
+          const input = document.getElementById("welcome-name-input");
+          if (input) {
+            setTimeout(() => input.focus(), 300);
           }
-
-          let remainingSec = 7;
-          if (welcomeCountdownInterval) clearInterval(welcomeCountdownInterval);
-          welcomeCountdownInterval = setInterval(() => {
-            remainingSec--;
-            if (remainingSec > 0) {
-              if (timerTextEl) timerTextEl.textContent = `Tự đóng sau ${remainingSec}s • Esc để đóng`;
-            } else {
-              clearInterval(welcomeCountdownInterval);
-            }
-          }, 1000);
-
-          // Tự động đóng sau 7 giây nếu không tương tác (chỉ khi đã có tên)
-          welcomeBannerTimer = setTimeout(() => {
-            window.dismissWelcomeBanner();
-          }, 7000);
         }, 350);
 
-        // Tạm dừng đếm ngược khi người dùng rê chuột lên banner để đọc
-        banner.addEventListener("mouseenter", () => {
-          if (!hasCustomUserName()) return;
-          if (welcomeBannerTimer) clearTimeout(welcomeBannerTimer);
-          if (welcomeCountdownInterval) clearInterval(welcomeCountdownInterval);
-          if (timerTextEl) timerTextEl.textContent = "Đang xem • Esc để đóng";
-          if (progressBar) progressBar.style.transition = "none";
-        });
-        banner.addEventListener("mouseleave", () => {
-          if (!hasCustomUserName()) return;
-          if (timerTextEl) timerTextEl.textContent = "Tự đóng sau 2s • Esc để đóng";
-          welcomeBannerTimer = setTimeout(() => {
-            window.dismissWelcomeBanner();
-          }, 2500);
-        });
-
-        // Bấm Esc để đóng popup chào mừng (chỉ khi đã có tên)
+        // Bấm Esc để đóng popup nếu đã có tên
         document.addEventListener("keydown", (e) => {
           if (e.key === "Escape" && overlay.classList.contains("show")) {
-            if (hasCustomUserName()) {
-              window.dismissWelcomeBanner();
+            if (hasCustomUserName() || isAdmin) {
+              window.dismissWelcomeBanner(true);
             }
           }
         });
