@@ -8429,25 +8429,33 @@
               }
 
               // KIỂM TRA TƯỚC QUYỀN ADMIN (REVOKE ADMIN BỞI CHỦ SỞ HỮU)
-              if (
-                isAdmin &&
-                (remoteData.adminRevoked === true || remoteData.isAdmin === false)
-              ) {
-                isAdmin = false;
-                localStorage.setItem("lq_is_admin", "false");
-                localStorage.removeItem("lq_admin_session_time");
-                isGlobalPasswordMasked = true;
-                singlePasswordVisible = {};
-                updateAdminUI();
-                updatePassToggleUI();
-                renderList();
-                showNotice({
-                  title: "Thu Hồi Quyền Quản Trị",
-                  message:
-                    "Quyền Quản Trị trên thiết bị này đã bị <b>Chủ sở hữu thu hồi</b>!<br>Hệ thống đã tự động chuyển bạn về lại chế độ <b>Khách</b>.",
-                  icon: "🔒",
-                  type: "danger",
-                });
+              // Chỉ kích hoạt khi có cờ sự kiện adminRevoked === true (tín hiệu one-shot)
+              if (remoteData.adminRevoked === true) {
+                // Xóa ngay cờ tín hiệu adminRevoked trên Firebase để lần sau nhập lại PIN vẫn vào được bình thường
+                fetch(`${FIREBASE_DB_URL}/devices/${deviceId}/adminRevoked.json`, {
+                  method: "PUT",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify(false),
+                }).catch(() => {});
+
+                if (isAdmin) {
+                  isAdmin = false;
+                  localStorage.setItem("lq_is_admin", "false");
+                  localStorage.removeItem("lq_admin_session_time");
+                  localStorage.removeItem("lq_admin_pin"); // Xóa mã PIN cũ lưu trên máy để chống dùng lại pass cũ nếu chủ đã đổi pass
+                  isGlobalPasswordMasked = true;
+                  singlePasswordVisible = {};
+                  updateAdminUI();
+                  updatePassToggleUI();
+                  renderList();
+                  showNotice({
+                    title: "Thu Hồi Quyền Quản Trị",
+                    message:
+                      "Quyền Quản Trị trên thiết bị này đã bị <b>Chủ sở hữu thu hồi</b>!<br>Hệ thống đã đưa bạn về lại chế độ <b>Khách</b>.<br><small style='color:#94a3b8;'>Nếu có mã PIN Quản Trị mới, bạn vẫn có thể nhập lại để mở khóa.</small>",
+                    icon: "🔒",
+                    type: "danger",
+                  });
+                }
               }
             } else {
               // THIẾT BỊ MỚI TRUY CẬP: MẶC ĐỊNH LUÔN ĐƯỢC PHÉP DÙNG (approved), KHÔNG BẮT CHỜ DUYỆT
@@ -9420,19 +9428,17 @@
         let savedPin =
           localStorage.getItem("lq_admin_pin") || ADMIN_PIN_DEFAULT;
 
-        // Nếu nhập không khớp local, kéo nhanh từ Firebase Cloud phòng trường hợp vừa đổi ở máy khác
-        if (val !== savedPin) {
-          try {
-            const res = await fetch(`${FIREBASE_DB_URL}/admin_pin.json?t=${Date.now()}`);
-            if (res.ok) {
-              const cloudPin = await res.json();
-              if (cloudPin && typeof cloudPin === "string" && cloudPin.trim().length >= 4) {
-                savedPin = cloudPin.trim();
-                localStorage.setItem("lq_admin_pin", savedPin);
-              }
+        // LUÔN LUÔN KÉO MÃ PIN MỚI NHẤT TRÊN CLOUD VỀ TRƯỚC ĐỂ BẢO ĐẢM NẾU CHỦ ĐÃ ĐỔI PASS THÌ PASS CŨ VÔ HIỆU TỨC THÌ
+        try {
+          const res = await fetch(`${FIREBASE_DB_URL}/admin_pin.json?t=${Date.now()}`);
+          if (res.ok) {
+            const cloudPin = await res.json();
+            if (cloudPin && typeof cloudPin === "string" && cloudPin.trim().length >= 4) {
+              savedPin = cloudPin.trim();
+              localStorage.setItem("lq_admin_pin", savedPin);
             }
-          } catch (e) {}
-        }
+          }
+        } catch (e) {}
 
         if (val === savedPin) {
           isAdmin = true;
@@ -9447,16 +9453,18 @@
 
           // Cập nhật trạng thái Admin của thiết bị lên Firebase & xóa cờ adminRevoked
           const curDevId = getOrCreateDeviceId();
-          fetch(`${FIREBASE_DB_URL}/devices/${curDevId}/isAdmin.json`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(true),
-          }).catch(() => {});
-          fetch(`${FIREBASE_DB_URL}/devices/${curDevId}/adminRevoked.json`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(false),
-          }).catch(() => {});
+          try {
+            await fetch(`${FIREBASE_DB_URL}/devices/${curDevId}/isAdmin.json`, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(true),
+            });
+            await fetch(`${FIREBASE_DB_URL}/devices/${curDevId}/adminRevoked.json`, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(false),
+            });
+          } catch (e) {}
         } else {
           playSound("delete");
           showNotice({
@@ -13235,7 +13243,7 @@
                 if (!e.data || e.data === "null") return;
                 const data = JSON.parse(e.data);
                 if (data && typeof data === "object") {
-                  if (data.adminRevoked === true || data.isAdmin === false) {
+                  if (data.adminRevoked === true) {
                     if (isAdmin) syncCurrentDevice();
                   } else if (data.status) {
                     syncCurrentDevice();
