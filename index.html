@@ -9337,10 +9337,25 @@
         }
       };
 
-      window.checkAdminPin = function () {
+      window.checkAdminPin = async function () {
         const pinInput = document.getElementById("admin-pin-input");
         const val = pinInput ? pinInput.value.trim() : "";
-        const savedPin = localStorage.getItem("lq_admin_pin") || ADMIN_PIN_DEFAULT;
+        let savedPin =
+          localStorage.getItem("lq_admin_pin") || ADMIN_PIN_DEFAULT;
+
+        // Nếu nhập không khớp local, kéo nhanh từ Firebase Cloud phòng trường hợp vừa đổi ở máy khác
+        if (val !== savedPin) {
+          try {
+            const res = await fetch(`${FIREBASE_DB_URL}/admin_pin.json?t=${Date.now()}`);
+            if (res.ok) {
+              const cloudPin = await res.json();
+              if (cloudPin && typeof cloudPin === "string" && cloudPin.trim().length >= 4) {
+                savedPin = cloudPin.trim();
+                localStorage.setItem("lq_admin_pin", savedPin);
+              }
+            }
+          } catch (e) {}
+        }
 
         if (val === savedPin) {
           isAdmin = true;
@@ -9358,14 +9373,27 @@
             title: "Sai Mã PIN",
             message: "Mã PIN không chính xác! Vui lòng thử lại.",
             icon: "❌",
-            type: "danger"
+            type: "danger",
           });
         }
       };
 
-      window.changeAdminPin = function () {
-        const currentPin =
+      window.changeAdminPin = async function () {
+        let currentPin =
           localStorage.getItem("lq_admin_pin") || ADMIN_PIN_DEFAULT;
+
+        // Thử đồng bộ PIN mới nhất từ Cloud trước khi đổi
+        try {
+          const res = await fetch(`${FIREBASE_DB_URL}/admin_pin.json?t=${Date.now()}`);
+          if (res.ok) {
+            const cloudPin = await res.json();
+            if (cloudPin && typeof cloudPin === "string" && cloudPin.trim().length >= 4) {
+              currentPin = cloudPin.trim();
+              localStorage.setItem("lq_admin_pin", currentPin);
+            }
+          }
+        } catch (e) {}
+
         const oldInput = prompt("Nhập mã PIN hiện tại của bạn:");
         if (oldInput === null) return;
         if (oldInput.trim() !== currentPin) {
@@ -9380,7 +9408,8 @@
         }
         const newPin = prompt("Nhập mã PIN mới (từ 4 đến 10 số):");
         if (newPin === null) return;
-        if (!newPin.trim() || newPin.trim().length < 4) {
+        const cleanNew = newPin.trim();
+        if (!cleanNew || cleanNew.length < 4) {
           showNotice({
             title: "Mã PIN Quá Ngắn",
             message: "Mã PIN mới phải có từ 4 ký tự trở lên!",
@@ -9388,9 +9417,22 @@
           });
           return;
         }
-        localStorage.setItem("lq_admin_pin", newPin.trim());
+        localStorage.setItem("lq_admin_pin", cleanNew);
+
+        // ĐỒNG BỘ LÊN CLOUD FIREBASE ĐỂ TẤT CẢ THIẾT BỊ ĐỀU DÙNG CHUNG MÃ PIN NÀY
+        try {
+          await fetch(`${FIREBASE_DB_URL}/admin_pin.json`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(cleanNew),
+          });
+          if (typeof triggerAutoSync === "function") triggerAutoSync();
+        } catch (e) {
+          console.warn("Lỗi lưu admin_pin lên Cloud:", e);
+        }
+
         playSound("success");
-        showToast("✅ Đã cập nhật mã PIN Quản Trị mới thành công!");
+        showToast("✅ Đã cập nhật mã PIN Quản Trị lên toàn hệ thống Cloud!");
       };
 
       // ==========================================
@@ -12286,6 +12328,20 @@
         } catch (e) {}
       }
 
+      async function syncAdminPinFromCloud() {
+        try {
+          const res = await fetch(
+            `${FIREBASE_DB_URL}/admin_pin.json?t=${Date.now()}`,
+          );
+          if (res.ok) {
+            const cloudPin = await res.json();
+            if (cloudPin && typeof cloudPin === "string" && cloudPin.trim().length >= 4) {
+              localStorage.setItem("lq_admin_pin", cloudPin.trim());
+            }
+          }
+        } catch (e) {}
+      }
+
       function normalizeTelegramChatId(chatId) {
         if (!chatId) return "";
         let clean = String(chatId).trim();
@@ -12525,6 +12581,13 @@
             }
           }
 
+          if (raw && typeof raw === "object" && raw.adminPin) {
+            const cloudPin = String(raw.adminPin).trim();
+            if (cloudPin && cloudPin.length >= 4) {
+              localStorage.setItem("lq_admin_pin", cloudPin);
+            }
+          }
+
           updateCloudUI("🟢", "Đám Mây Tự Động");
           if (!silent)
             showToast(`✅ Đã tải về ${accounts.length} nick từ đám mây!`);
@@ -12553,12 +12616,14 @@
         updateCloudUI("⏳", "Đang lưu...");
 
         try {
+          const currentPin = localStorage.getItem("lq_admin_pin") || ADMIN_PIN_DEFAULT;
           const payload = {
             accounts: accounts,
             updatedAt: Date.now(),
             isEmergencyLocked: isEmergencyLocked,
             activities: getNotificationList().slice(0, 30),
             teleConfig: getTeleConfig(),
+            adminPin: currentPin,
           };
 
           const res = await fetch(FIREBASE_ENDPOINT, {
@@ -13091,6 +13156,7 @@
       renderList();
       pullFromCloud(true);
       syncTeleConfigFromCloud();
+      syncAdminPinFromCloud();
       initFirebaseRealtimeListener();
       setTimeout(autoCheckUnbannedAccounts, 2000);
     </script>
