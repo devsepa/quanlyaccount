@@ -2489,6 +2489,141 @@
         }
       }
 
+      /* ========================================================
+         THU GỌN / MỞ RỘNG NHÓM RANK (COLLAPSIBLE ACCORDION GROUPS)
+         ======================================================== */
+      .clickable-group-header {
+        cursor: pointer !important;
+        user-select: none !important;
+        transition: filter 0.2s ease, transform 0.18s ease;
+      }
+      .clickable-group-header:hover {
+        filter: brightness(1.15);
+      }
+      .clickable-group-header.is-collapsed {
+        filter: brightness(0.9);
+      }
+      .clickable-group-header.is-collapsed:hover {
+        filter: brightness(1.1);
+      }
+      .clickable-group-header .group-collapse-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 22px;
+        height: 22px;
+        border-radius: 6px;
+        background: rgba(0, 0, 0, 0.35);
+        font-size: 0.72rem;
+        transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .clickable-group-header.is-collapsed .group-collapse-icon {
+        transform: rotate(-90deg);
+      }
+
+      .clickable-group-banner {
+        cursor: pointer !important;
+        user-select: none !important;
+        transition: filter 0.2s ease;
+      }
+      .clickable-group-banner:hover {
+        filter: brightness(1.15);
+      }
+      .clickable-group-banner.is-collapsed {
+        filter: brightness(0.9);
+      }
+      .clickable-group-banner.is-collapsed:hover {
+        filter: brightness(1.1);
+      }
+      .clickable-group-banner .group-collapse-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 20px;
+        height: 20px;
+        border-radius: 5px;
+        background: rgba(0, 0, 0, 0.35);
+        font-size: 0.68rem;
+        transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .clickable-group-banner.is-collapsed .group-collapse-icon {
+        transform: rotate(-90deg);
+      }
+
+      .btn-toggle-all-rank-groups {
+        flex-shrink: 0;
+        cursor: pointer;
+        user-select: none;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .btn-toggle-all-rank-groups:hover {
+        background: rgba(14, 165, 233, 0.25) !important;
+        color: #38bdf8 !important;
+        border-color: #38bdf8 !important;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
+      }
+      .btn-toggle-all-rank-groups:active {
+        transform: scale(0.95);
+      }
+
+      /* BANNER PHẢN HỒI THÊM NICK THÀNH CÔNG TẠI FORM */
+      #add-success-banner {
+        margin-top: 10px;
+        padding: 9px 14px;
+        border-radius: 10px;
+        background: linear-gradient(90deg, rgba(16, 185, 129, 0.16) 0%, rgba(15, 23, 42, 0.85) 100%);
+        border: 1px solid rgba(16, 185, 129, 0.38);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        flex-wrap: wrap;
+        animation: notiPanelFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+      .btn-jump-added {
+        padding: 5px 12px;
+        border-radius: 7px;
+        background: linear-gradient(135deg, rgba(14, 165, 233, 0.22), rgba(99, 102, 241, 0.25));
+        border: 1px solid rgba(56, 189, 248, 0.45);
+        color: #38bdf8;
+        font-size: 0.76rem;
+        font-weight: 800;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+      }
+      .btn-jump-added:hover {
+        background: linear-gradient(135deg, #0284c7, #6366f1);
+        color: #ffffff;
+        border-color: transparent;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(56, 189, 248, 0.4);
+      }
+
+      /* NÚT HÀNH ĐỘNG TRONG TOAST GIỮA MÀN HÌNH */
+      .toast-center-action-btn {
+        margin-top: 8px;
+        padding: 7px 18px;
+        border-radius: 9px;
+        background: linear-gradient(135deg, #0284c7, #38bdf8);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        color: #ffffff;
+        font-size: 0.82rem;
+        font-weight: 800;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 14px rgba(2, 132, 199, 0.45);
+      }
+      .toast-center-action-btn:hover {
+        transform: translateY(-1px);
+        filter: brightness(1.12);
+        box-shadow: 0 6px 18px rgba(56, 189, 248, 0.55);
+      }
+      .toast-center-action-btn:active {
+        transform: scale(0.96);
+      }
+
       /* MODAL POPUP */
       .modal-overlay {
         position: fixed;
@@ -5016,6 +5151,7 @@
               </button>
             </div>
           </div>
+          <div id="add-success-banner" style="display: none;"></div>
         </div>
       </div>
 
@@ -5111,6 +5247,17 @@
           <span class="rank-nav-chip rank-tier-chip" data-rank="CT">🔥 CT</span>
           <span class="rank-nav-chip rank-tier-chip" data-rank="DCT">👑 DCT</span>
           <span class="rank-nav-chip rank-tier-chip" data-rank="KHAC">Khác</span>
+          <button
+            type="button"
+            class="rank-nav-chip btn-toggle-all-rank-groups"
+            id="btn-toggle-all-rank-groups"
+            onclick="toggleAllRankGroupsCollapse(event)"
+            title="Thu gọn hoặc mở rộng toàn bộ nhóm rank"
+            style="border-color: rgba(56, 189, 248, 0.4); color: #38bdf8; background: rgba(14, 165, 233, 0.12); display: inline-flex; align-items: center; gap: 5px;"
+          >
+            <span id="icon-toggle-all-groups">📁</span>
+            <span id="text-toggle-all-groups">Thu gọn hết</span>
+          </button>
         </div>
       </div>
 
@@ -5461,9 +5608,9 @@
       </div>
     </div>
 
-    <!-- MODAL CẤU HÌNH BÁO TELEGRAM -->
+    <!-- MODAL TELEGRAM CHANNEL & BOT -->
     <div id="tele-modal" class="modal-overlay">
-      <div class="modal-card" style="max-width: 420px; text-align: left">
+      <div class="modal-card" style="max-width: 480px; text-align: left">
         <div
           style="
             display: flex;
@@ -5482,7 +5629,7 @@
               gap: 8px;
             "
           >
-            <span>✈️</span> Cấu Hình Telegram Bot
+            <span>📢</span> Kênh Telegram Nhận Thông Báo
           </div>
           <button
             id="btn-close-tele"
@@ -5499,90 +5646,241 @@
           </button>
         </div>
 
-        <p
-          style="
-            font-size: 0.8rem;
-            color: #94a3b8;
-            margin-bottom: 14px;
-            line-height: 1.4;
-          "
-        >
-          Nhận tin nhắn báo chuông điện thoại trước 1 ngày và đúng ngày tài
-          khoản hết hạn BAN. Miễn phí 100%.
-        </p>
-
-        <div style="margin-bottom: 12px">
-          <label
-            style="
-              font-size: 0.78rem;
-              font-weight: 700;
-              color: #cbd5e1;
-              display: block;
-              margin-bottom: 4px;
-            "
-            >Bot Token (từ @BotFather):</label
-          >
-          <input
-            type="text"
-            id="tele-bot-token"
-            placeholder="Ví dụ: 123456789:ABCdefGhIjkLmNoPQR..."
-            style="font-size: 0.85rem; font-family: monospace"
-          />
-        </div>
-
-        <div style="margin-bottom: 16px">
-          <label
-            style="
-              font-size: 0.78rem;
-              font-weight: 700;
-              color: #cbd5e1;
-              display: block;
-              margin-bottom: 4px;
-            "
-            >Chat ID của bạn (từ @userinfobot):</label
-          >
-          <input
-            type="text"
-            id="tele-chat-id"
-            placeholder="Ví dụ: 987654321"
-            style="font-size: 0.85rem; font-family: monospace"
-          />
-        </div>
-
-        <div style="display: flex; gap: 8px; margin-bottom: 12px">
-          <button
-            class="btn btn-tool"
-            id="btn-test-tele"
-            onclick="handleTestTele()"
-            style="flex: 1; padding: 10px"
-          >
-            🔔 Bắn Thử 1 Tin
-          </button>
-          <button
-            class="btn btn-primary"
-            id="btn-save-tele"
-            onclick="handleSaveTele()"
-            style="flex: 1; padding: 10px"
-          >
-            💾 Lưu Cấu Hình
-          </button>
-        </div>
-
+        <!-- KHỐI 1: THAM GIA KÊNH DÀNH CHO KHÁCH & TẤT CẢ MỌI NGƯỜI -->
         <div
           style="
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 8px;
-            padding: 10px;
-            font-size: 0.75rem;
-            color: #94a3b8;
-            line-height: 1.45;
+            background: linear-gradient(
+              135deg,
+              rgba(14, 165, 233, 0.18),
+              rgba(99, 102, 241, 0.12)
+            );
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            border-radius: 14px;
+            padding: 16px;
+            margin-bottom: 14px;
+            text-align: center;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
           "
         >
-          💡 <b>Cách lấy Token &amp; Chat ID nhanh (1 phút):</b><br />
-          1. Vào Telegram tìm <b>@BotFather</b> → gõ
-          <code>/newbot</code> lấy Token.<br />
-          2. Tìm <b>@userinfobot</b> → bấm Start lấy Chat ID của
-          bạn.
+          <div
+            style="
+              width: 52px;
+              height: 52px;
+              margin: 0 auto 10px;
+              border-radius: 50%;
+              background: linear-gradient(135deg, #0284c7, #38bdf8);
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              box-shadow: 0 4px 16px rgba(14, 165, 233, 0.45);
+            "
+          >
+            <svg viewBox="0 0 24 24" width="28" height="28" fill="#ffffff">
+              <path
+                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.75-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .37z"
+              />
+            </svg>
+          </div>
+          <div
+            style="
+              font-weight: 800;
+              font-size: 1.05rem;
+              color: #ffffff;
+              margin-bottom: 4px;
+            "
+          >
+            Kênh Thông Báo Chung
+          </div>
+          <p
+            style="
+              font-size: 0.8rem;
+              color: #cbd5e1;
+              margin: 0 auto 12px;
+              line-height: 1.45;
+              max-width: 400px;
+            "
+          >
+            Tham gia kênh để nhận chuông thông báo tức thì trên điện thoại khi
+            có <b>nick mới</b> hoặc khi tài khoản <b>hết hạn BAN</b>. Hoàn toàn
+            tự động &amp; miễn phí!
+          </p>
+          <button
+            type="button"
+            class="btn btn-primary"
+            id="btn-join-tele-channel"
+            onclick="handleJoinTeleChannel()"
+            style="
+              width: 100%;
+              padding: 11px 18px;
+              font-weight: 800;
+              font-size: 0.92rem;
+              justify-content: center;
+              box-shadow: 0 4px 18px rgba(14, 165, 233, 0.4);
+              border-radius: 10px;
+            "
+          >
+            <span>🚀 Tham Gia Kênh Telegram Ngay</span>
+          </button>
+          <div
+            id="tele-channel-link-preview"
+            style="
+              font-size: 0.72rem;
+              color: #38bdf8;
+              margin-top: 8px;
+              font-family: monospace;
+              word-break: break-all;
+            "
+          ></div>
+        </div>
+
+        <!-- KHỐI 2: CẤU HÌNH DÀNH CHO ADMIN (CHỈ HIỆN KHI LÀ QUẢN TRỊ) -->
+        <div
+          id="tele-admin-config-section"
+          style="
+            display: none;
+            border-top: 1px dashed rgba(255, 255, 255, 0.12);
+            padding-top: 14px;
+            margin-top: 14px;
+          "
+        >
+          <div
+            style="
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              margin-bottom: 10px;
+            "
+          >
+            <span
+              style="
+                font-size: 0.85rem;
+                font-weight: 800;
+                color: #fde047;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+              "
+            >
+              <span>👑</span> Cấu Hình Bot &amp; Kênh (Quản Trị)
+            </span>
+            <span
+              style="
+                font-size: 0.7rem;
+                color: #34d399;
+                font-weight: 700;
+                background: rgba(16, 185, 129, 0.15);
+                padding: 2px 7px;
+                border-radius: 4px;
+                border: 1px solid rgba(16, 185, 129, 0.3);
+              "
+              >☁️ Tự đồng bộ Cloud</span
+            >
+          </div>
+
+          <div style="margin-bottom: 10px">
+            <label
+              style="
+                font-size: 0.76rem;
+                font-weight: 700;
+                color: #cbd5e1;
+                display: block;
+                margin-bottom: 3px;
+              "
+            >
+              1. Link Mời Kênh / Nhóm (Channel Link):
+            </label>
+            <input
+              type="text"
+              id="tele-channel-link"
+              placeholder="Ví dụ: https://t.me/ten_kenh_cua_ban"
+              style="font-size: 0.82rem; font-family: monospace; width: 100%"
+            />
+            <div style="font-size: 0.68rem; color: #94a3b8; margin-top: 2px">
+              Khách bấm nút sẽ được dẫn thẳng vào link này.
+            </div>
+          </div>
+
+          <div style="margin-bottom: 10px">
+            <label
+              style="
+                font-size: 0.76rem;
+                font-weight: 700;
+                color: #cbd5e1;
+                display: block;
+                margin-bottom: 3px;
+              "
+            >
+              2. Chat ID Kênh / Nhóm (Channel Chat ID):
+            </label>
+            <input
+              type="text"
+              id="tele-chat-id"
+              placeholder="Ví dụ: @ten_kenh_cua_ban hoặc -100xxxxxxxxxx"
+              style="font-size: 0.82rem; font-family: monospace; width: 100%"
+            />
+            <div style="font-size: 0.68rem; color: #94a3b8; margin-top: 2px">
+              Kênh công khai thì điền <b>@ten_kenh</b>. Kênh riêng tư thì điền ID
+              số âm (<b>-100...</b>).
+            </div>
+          </div>
+
+          <div style="margin-bottom: 12px">
+            <label
+              style="
+                font-size: 0.76rem;
+                font-weight: 700;
+                color: #cbd5e1;
+                display: block;
+                margin-bottom: 3px;
+              "
+            >
+              3. Bot Token (lấy từ @BotFather):
+            </label>
+            <input
+              type="text"
+              id="tele-bot-token"
+              placeholder="Ví dụ: 123456789:ABCdefGhIjkLmNoPQR..."
+              style="font-size: 0.82rem; font-family: monospace; width: 100%"
+            />
+          </div>
+
+          <div style="display: flex; gap: 8px; margin-bottom: 10px">
+            <button
+              class="btn btn-tool"
+              id="btn-test-tele"
+              onclick="handleTestTele()"
+              style="flex: 1; padding: 9px; font-size: 0.82rem"
+            >
+              🔔 Bắn Thử 1 Tin
+            </button>
+            <button
+              class="btn btn-primary"
+              id="btn-save-tele"
+              onclick="handleSaveTele()"
+              style="flex: 1; padding: 9px; font-size: 0.82rem"
+            >
+              💾 Lưu Lên Cloud
+            </button>
+          </div>
+
+          <div
+            style="
+              background: rgba(0, 0, 0, 0.3);
+              border-radius: 8px;
+              padding: 8px 10px;
+              font-size: 0.72rem;
+              color: #94a3b8;
+              line-height: 1.45;
+            "
+          >
+            💡 <b>Hướng dẫn 3 bước kết nối:</b><br />
+            1. Mở Telegram tạo Kênh (Channel) → Đặt link mời và dán vào ô số
+            1.<br />
+            2. Thêm Bot của bạn vào Kênh đó làm
+            <b>Quản trị viên (Admin)</b> với quyền Đăng tin.<br />
+            3. Dán <b>@ten_kenh</b> vào ô Chat ID và bấm
+            <b>Bắn Thử 1 Tin</b> để kiểm tra!
+          </div>
         </div>
       </div>
     </div>
@@ -6068,6 +6366,7 @@
         if (m) m.classList.remove("show");
       };
       window.openTeleModal = function () {
+        if (typeof updateTeleModalUI === "function") updateTeleModalUI();
         const m = document.getElementById("tele-modal");
         if (m) m.classList.add("show");
       };
@@ -6182,7 +6481,7 @@
         const rankTotalNote = document.getElementById("analytics-rank-total-note");
         if (rankBarsContainer) {
           const rankCounts = {};
-          Object.keys(RANK_CONFIGS).forEach((k) => (rankCounts[k] = 0));
+          Object.keys(RANK_CONFIG).forEach((k) => (rankCounts[k] = 0));
 
           rankList.forEach((a) => {
             const grp = parseRankGroup(a.rank);
@@ -6193,7 +6492,7 @@
             }
           });
 
-          const activeRankKeys = Object.keys(RANK_CONFIGS).filter(
+          const activeRankKeys = Object.keys(RANK_CONFIG).filter(
             (k) => (rankCounts[k] || 0) > 0,
           );
           if (rankTotalNote) {
@@ -6201,10 +6500,10 @@
           }
 
           let barsHtml = "";
-          Object.keys(RANK_CONFIGS).forEach((key) => {
+          Object.keys(RANK_CONFIG).forEach((key) => {
             const count = rankCounts[key] || 0;
             if (count === 0) return;
-            const cfg = RANK_CONFIGS[key];
+            const cfg = RANK_CONFIG[key];
             const pct =
               rankList.length > 0
                 ? Math.round((count / rankList.length) * 100)
@@ -6723,6 +7022,17 @@
             btnEmergency.style.display = isAdmin ? "inline-flex" : "none";
           }
         }
+        const btnOpenTeleEl = document.getElementById("btn-open-tele");
+        if (btnOpenTeleEl) {
+          if (isAdmin) {
+            btnOpenTeleEl.innerHTML = "<span>⚙️</span> Cấu Hình Tele";
+            btnOpenTeleEl.title = "Cấu hình Bot & Kênh Telegram thông báo chung";
+          } else {
+            btnOpenTeleEl.innerHTML = "<span>📢</span> Kênh Telegram";
+            btnOpenTeleEl.title = "Tham gia Kênh Telegram để nhận thông báo tức thì";
+          }
+        }
+
         updateGreetingUI();
         syncCurrentDevice();
       }
@@ -8585,7 +8895,7 @@
       }
 
       function checkBanStatus(unlockStr, item = null) {
-        if (!unlockStr || !unlockStr.trim()) {
+        if (!unlockStr || typeof unlockStr !== "string" || !unlockStr.trim()) {
           return { isBanned: false, isJustUnbanned: false, desc: "🟢 HOẠT ĐỘNG" };
         }
 
@@ -8634,8 +8944,127 @@
         }
       }
 
+      // ==========================================
+      // HỆ THỐNG THU GỌN / MỞ RỘNG NHÓM RANK (COLLAPSIBLE ACCORDION)
+      // ==========================================
+      function getCollapsedRankGroups() {
+        try {
+          const raw = localStorage.getItem("lq_collapsed_rank_groups");
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed)) return new Set(parsed);
+          }
+        } catch (e) {}
+        return new Set();
+      }
+
+      function saveCollapsedRankGroups(set) {
+        try {
+          localStorage.setItem(
+            "lq_collapsed_rank_groups",
+            JSON.stringify(Array.from(set)),
+          );
+        } catch (e) {}
+      }
+
+      function isRankGroupCollapsed(key) {
+        if (currentSearchQuery) return false;
+        if (activeRankFilter !== "all" && activeRankFilter !== "recent") return false;
+        return getCollapsedRankGroups().has(key);
+      }
+
+      function toggleRankGroupCollapse(key) {
+        const set = getCollapsedRankGroups();
+        if (set.has(key)) {
+          set.delete(key);
+        } else {
+          set.add(key);
+        }
+        saveCollapsedRankGroups(set);
+        playSound("click");
+        renderList();
+      }
+
+      function uncollapseRankGroup(key) {
+        const set = getCollapsedRankGroups();
+        if (set.has(key)) {
+          set.delete(key);
+          saveCollapsedRankGroups(set);
+        }
+      }
+
+      window.toggleRankGroupCollapse = toggleRankGroupCollapse;
+
+      window.toggleAllRankGroupsCollapse = function (e) {
+        if (e) {
+          e.stopPropagation();
+          e.preventDefault();
+        }
+        const set = getCollapsedRankGroups();
+        const allKeys = Object.keys(RANK_CONFIG);
+        const isAllCollapsed = allKeys.every((k) => set.has(k));
+
+        if (isAllCollapsed) {
+          saveCollapsedRankGroups(new Set());
+          showToast("📂 Đã mở rộng toàn bộ nhóm rank!");
+        } else {
+          saveCollapsedRankGroups(new Set(allKeys));
+          showToast("📁 Đã thu gọn toàn bộ nhóm rank!");
+        }
+        playSound("click");
+        renderList();
+      };
+
+      function updateCollapseAllButtonUI() {
+        const btn = document.getElementById("btn-toggle-all-rank-groups");
+        const icon = document.getElementById("icon-toggle-all-groups");
+        const text = document.getElementById("text-toggle-all-groups");
+        if (!btn) return;
+
+        // Chỉ hiển thị nút thu gọn tất cả khi ở kho rank và tab Tất Cả
+        if (currentStorage === "chungsuc" || (activeRankFilter !== "all" && activeRankFilter !== "recent")) {
+          btn.style.display = "none";
+          return;
+        }
+        btn.style.display = "inline-flex";
+
+        const set = getCollapsedRankGroups();
+        const allKeys = Object.keys(RANK_CONFIG);
+        const isAllCollapsed = allKeys.every((k) => set.has(k));
+
+        if (icon) icon.textContent = isAllCollapsed ? "📂" : "📁";
+        if (text) text.textContent = isAllCollapsed ? "Mở rộng hết" : "Thu gọn hết";
+        btn.title = isAllCollapsed
+          ? "Mở rộng toàn bộ các nhóm rank"
+          : "Thu gọn toàn bộ các nhóm rank";
+      }
+
+      function showAddSuccessBanner(newItems, firstNewId, storeLabel) {
+        const banner = document.getElementById("add-success-banner");
+        if (!banner || !newItems || newItems.length === 0) return;
+        const count = newItems.length;
+        const firstUser = newItems[0].username;
+        banner.style.display = "flex";
+        banner.innerHTML = `
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 1.15rem;">✅</span>
+            <div>
+              <span style="font-weight: 800; color: #34d399; font-size: 0.82rem;">Đã thêm ${count} tài khoản vào [${escapeHtml(storeLabel)}]!</span>
+              <span style="font-size: 0.74rem; color: #cbd5e1; font-family: 'JetBrains Mono', monospace; margin-left: 4px;">• ${escapeHtml(firstUser)}${count > 1 ? ` (+${count - 1} nick)` : ""}</span>
+            </div>
+          </div>
+          <button type="button" class="btn-jump-added" onclick="triggerAccountGlowAndScroll('${firstNewId}', true)" title="Cuộn tới nick vừa thêm trong danh sách">
+            👀 Đến vị trí nick vừa thêm ↘
+          </button>
+        `;
+        clearTimeout(banner._hideTimer);
+        banner._hideTimer = setTimeout(() => {
+          if (banner) banner.style.display = "none";
+        }, 12000);
+      }
+
       // CUỘN MƯỢT VÀ PHÁT SÁNG TÀI KHOẢN (TỰ ĐỘNG NHẬN DIỆN MOBILE CARD HOẶC DESKTOP ROW)
-      function triggerAccountGlowAndScroll(targetId) {
+      function triggerAccountGlowAndScroll(targetId, shouldScroll = false) {
         if (!targetId) return;
         setTimeout(() => {
           const rowEl = document.getElementById("acc-row-" + targetId);
@@ -8652,6 +9081,9 @@
               }, 5200);
             }
           });
+
+          // Chỉ cuộn nếu người dùng yêu cầu (tránh làm mất vị trí form nhập khi vừa thêm nick)
+          if (!shouldScroll) return;
 
           // Nhận diện phần tử đang hiển thị: trên mobile (<=820px) ưu tiên mobile card, desktop ưu tiên hàng bảng
           const isMobile = window.innerWidth <= 820;
@@ -8799,7 +9231,7 @@
                 switchAccountStorage(dupCat, true);
               }
               // Cuộn mượt và phát sáng tài khoản đã tồn tại đó để người dùng nhận diện ngay
-              triggerAccountGlowAndScroll(dup.existing.id);
+              triggerAccountGlowAndScroll(dup.existing.id, true);
             } else {
               showNotice({
                 title: "Tài Khoản Đã Tồn Tại",
@@ -8837,12 +9269,21 @@
 
         accounts = [...newItems, ...accounts];
         saveData();
+
+        // Tự động mở bung nhóm rank của các nick vừa thêm nếu nhóm đó đang bị thu gọn
+        if (targetCategory !== "chungsuc") {
+          newItems.forEach((it) => {
+            const grp = parseRankGroup(it.rank);
+            uncollapseRankGroup(grp.key);
+          });
+        }
+
         renderList();
         triggerAutoSync();
 
-        // Cuộn mượt đến tài khoản vừa tạo và kích hoạt hiệu ứng phát sáng
+        // Kích hoạt hiệu ứng phát sáng cho tài khoản mới (không tự cuộn trôi màn hình)
         const firstNewId = newItems[0].id;
-        triggerAccountGlowAndScroll(firstNewId);
+        triggerAccountGlowAndScroll(firstNewId, false);
 
         rawInput.value = "";
         defaultUnlock.value = "";
@@ -8854,6 +9295,9 @@
           targetCategory === "chungsuc"
             ? "Sự Kiện Chung Sức"
             : "Kho Nick Chơi Rank";
+
+        // Hiển thị banner thành công ngay dưới form với nút nhảy đến nick
+        showAddSuccessBanner(newItems, firstNewId, storeLabel);
 
         const now = new Date();
         const hh = String(now.getHours()).padStart(2, "0");
@@ -8874,17 +9318,40 @@
         };
         pushAccountNotification(notiItem);
 
+        // Bắn thông báo tự động vào Kênh Telegram chung (nếu đã cấu hình)
+        try {
+          const teleCfg = getTeleConfig();
+          if (teleCfg.token && teleCfg.chatId) {
+            const firstAcc = newItems[0];
+            const previewText =
+              newItems.length === 1
+                ? `• Nick: <code>${firstAcc.username}</code>${firstAcc.rank ? ` (${firstAcc.rank})` : ""}`
+                : `• Nick đầu: <code>${firstAcc.username}</code> (+${newItems.length - 1} tài khoản khác)`;
+            const teleMsg = `🎮 <b>KHO NICK LQ VỪA CẬP NHẬT TÀI KHOẢN MỚI!</b>\n\n👤 Người thêm: <b>${escapeHtml(getUserName())}</b>\n📦 Khu vực: <b>${escapeHtml(storeLabel)}</b>\n➕ Số lượng: <b>${newItems.length} tài khoản</b>\n${previewText}\n\n👉 <i>Vào web ngay để trải nghiệm nhé!</i>`;
+            sendTelegramMessage(teleCfg.token, teleCfg.chatId, teleMsg);
+          }
+        } catch (e) {
+          console.warn("Lỗi gửi thông báo thêm nick Telegram:", e);
+        }
+
+        const toastAction = {
+          text: "👀 Đến vị trí nick vừa thêm",
+          onClick: () => triggerAccountGlowAndScroll(firstNewId, true),
+        };
+
         if (duplicateItems.length > 0) {
           showCenterToast({
             title: "THÊM THÀNH CÔNG!",
             subtitle: `Đã thêm ${newItems.length} nick vào [${storeLabel}] (bỏ qua ${duplicateItems.length} nick bị trùng)`,
-            duration: 2500,
+            duration: 3500,
+            actionBtn: toastAction,
           });
         } else {
           showCenterToast({
             title: "THÊM TÀI KHOẢN THÀNH CÔNG!",
             subtitle: `Đã thêm ${newItems.length} tài khoản vào [${storeLabel}]`,
-            duration: 2200,
+            duration: 3200,
+            actionBtn: toastAction,
           });
         }
       };
@@ -9206,8 +9673,8 @@
 
         displayArea.innerHTML = "";
 
-        // NẾU CHƯA NHẬP TÊN HỢP LỆ -> KHÓA HỆ THỐNG VÀ ẨN TOÀN BỘ DANH SÁCH TÀI KHOẢN
-        if (!hasCustomUserName()) {
+        // NẾU CHƯA NHẬP TÊN HỢP LỆ (VÀ KHÔNG PHẢI ADMIN) -> KHÓA HỆ THỐNG VÀ ẨN TOÀN BỘ DANH SÁCH TÀI KHOẢN
+        if (!hasCustomUserName() && !isAdmin) {
           displayArea.innerHTML = `
             <div style="text-align: center; padding: 50px 24px; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(12px); border-radius: 16px; border: 1px dashed rgba(56, 189, 248, 0.35); margin: 20px auto; max-width: 580px; box-shadow: 0 16px 36px rgba(0,0,0,0.4);">
               <div style="width: 68px; height: 68px; margin: 0 auto 16px; border-radius: 50%; background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(245, 158, 11, 0.2)); display: flex; align-items: center; justify-content: center; font-size: 2.2rem; border: 1px solid rgba(239, 68, 68, 0.4); animation: gateLockPulse 2s infinite ease-in-out;">
@@ -10041,39 +10508,56 @@
               }
               renderedGroupCount++;
 
+              const isCollapsed = isRankGroupCollapsed(key);
+
               tableHtml += `
-                <tr class="acc-group-header-row" style="background: ${grp.config.bgGradient}; border-left: 3px solid ${grp.config.color}; --rank-accent: ${grp.config.color};">
+                <tr class="acc-group-header-row clickable-group-header ${isCollapsed ? 'is-collapsed' : ''}" onclick="toggleRankGroupCollapse('${key}')" title="${isCollapsed ? 'Click để mở rộng nhóm ' + grp.config.name : 'Click để thu gọn nhóm ' + grp.config.name}" style="background: ${grp.config.bgGradient}; border-left: 3px solid ${grp.config.color}; --rank-accent: ${grp.config.color}; cursor: pointer; user-select: none;">
                   <td colspan="${totalCols}" style="padding: 9px 14px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; position: relative; overflow: hidden;">
                     ${weatherTrackHtml}
                     <div style="display: flex; align-items: center; justify-content: space-between; position: relative; z-index: 4;">
                       <span class="rank-group-title" style="font-weight: 800; font-size: 0.92rem; display: flex; align-items: center; gap: 8px;">
+                        <span class="group-collapse-icon" style="display: inline-block; transition: transform 0.2s ease; font-size: 0.75rem; color: #cbd5e1;">${isCollapsed ? '▶' : '▼'}</span>
                         <span>${grp.config.icon}</span> <span class="rank-title-text">NHÓM RANK:</span> <span class="badge ${grp.config.class}">${grp.config.name}</span>
                       </span>
-                      <span style="font-size: 0.8rem; color: #cbd5e1; font-weight: 700; background: rgba(0,0,0,0.3); padding: 3px 10px; border-radius: 12px;">${grp.items.length} nick</span>
+                      <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 0.72rem; color: #94a3b8; font-weight: 600;">${isCollapsed ? '📁 Đang đóng' : '📂 Đang mở'}</span>
+                        <span style="font-size: 0.8rem; color: #cbd5e1; font-weight: 700; background: rgba(0,0,0,0.3); padding: 3px 10px; border-radius: 12px;">${grp.items.length} nick</span>
+                      </div>
                     </div>
                   </td>
                 </tr>
               `;
 
               const mobileBanner = document.createElement("div");
-              mobileBanner.className = "rank-group-banner";
+              mobileBanner.className = `rank-group-banner clickable-group-banner ${isCollapsed ? 'is-collapsed' : ''}`;
               mobileBanner.style.borderLeftColor = grp.config.color;
               mobileBanner.style.setProperty("--rank-accent", grp.config.color);
               mobileBanner.style.background = grp.config.bgGradient;
+              mobileBanner.style.cursor = "pointer";
+              mobileBanner.style.userSelect = "none";
+              mobileBanner.setAttribute("onclick", `toggleRankGroupCollapse('${key}')`);
+              mobileBanner.title = isCollapsed ? `Click để mở rộng nhóm ${grp.config.name}` : `Click để thu gọn nhóm ${grp.config.name}`;
               mobileBanner.innerHTML = `
                 ${weatherTrackHtml}
                 <div class="rank-group-title" style="position: relative; z-index: 4;">
+                  <span class="group-collapse-icon" style="display: inline-block; transition: transform 0.2s ease; font-size: 0.72rem; color: #cbd5e1; margin-right: 4px;">${isCollapsed ? '▶' : '▼'}</span>
                   <span>${grp.config.icon}</span>
                   <span class="badge ${grp.config.class}">${grp.config.name}</span>
                 </div>
-                <span class="rank-group-count" style="color: #fff; background: rgba(0,0,0,0.3); position: relative; z-index: 4;">${grp.items.length} nick</span>
+                <div style="display: flex; align-items: center; gap: 6px; position: relative; z-index: 4;">
+                  <span style="font-size: 0.68rem; color: #94a3b8; font-weight: 600;">${isCollapsed ? '📁' : '📂'}</span>
+                  <span class="rank-group-count" style="color: #fff; background: rgba(0,0,0,0.3);">${grp.items.length} nick</span>
+                </div>
               `;
               mobileWrapper.appendChild(mobileBanner);
 
-              grp.items.forEach((item) => {
-                tableHtml += renderTableRow(item, false);
-                mobileWrapper.appendChild(renderMobileCard(item, false));
-              });
+              // CHỈ RENDER NICK KHI NHÓM NÀY ĐANG ĐƯỢC MỞ RỘNG
+              if (!isCollapsed) {
+                grp.items.forEach((item) => {
+                  tableHtml += renderTableRow(item, false);
+                  mobileWrapper.appendChild(renderMobileCard(item, false));
+                });
+              }
             });
           }
         }
@@ -10112,6 +10596,7 @@
         displayArea.appendChild(desktopWrapper);
         displayArea.appendChild(mobileWrapper);
         initRowScrollReveal();
+        updateCollapseAllButtonUI();
       }
 
       // COPY TK:MK
@@ -10267,8 +10752,13 @@
         title = "ĐÃ SAO CHÉP",
         subtitle = "",
         duration = 1800,
+        actionBtn = null,
       }) {
         clearTimeout(toastTimer);
+        let actionBtnHtml = "";
+        if (actionBtn && actionBtn.text) {
+          actionBtnHtml = `<button type="button" class="toast-center-action-btn" id="toast-center-action-btn">${escapeHtml(actionBtn.text)}</button>`;
+        }
         toast.innerHTML = `
           <div class="tick-done-circle">
             <svg class="tick-done-svg" viewBox="0 0 52 52">
@@ -10278,8 +10768,19 @@
           </div>
           <div class="toast-center-title">${title}</div>
           ${subtitle ? `<div class="toast-center-sub">${escapeHtml(subtitle)}</div>` : ""}
+          ${actionBtnHtml}
         `;
         toast.classList.add("show");
+        if (actionBtn && typeof actionBtn.onClick === "function") {
+          const btn = document.getElementById("toast-center-action-btn");
+          if (btn) {
+            btn.onclick = (e) => {
+              e.stopPropagation();
+              toast.classList.remove("show");
+              actionBtn.onClick();
+            };
+          }
+        }
         toastTimer = setTimeout(() => {
           toast.classList.remove("show");
         }, duration);
@@ -10307,40 +10808,133 @@
       }
 
       // ==========================================
-      // TÍNH NĂNG GỬI THÔNG BÁO VỀ TELEGRAM
+      // TÍNH NĂNG KÊNH THÔNG BÁO TELEGRAM (CHANNEL & BOT)
       // ==========================================
       const teleModal = document.getElementById("tele-modal");
       const btnOpenTele = document.getElementById("btn-open-tele");
       const btnCloseTele = document.getElementById("btn-close-tele");
-      const teleBotTokenInput = document.getElementById("tele-bot-token");
-      const teleChatIdInput = document.getElementById("tele-chat-id");
-      const btnSaveTele = document.getElementById("btn-save-tele");
-      const btnTestTele = document.getElementById("btn-test-tele");
 
-      const savedTeleConfig = JSON.parse(
-        localStorage.getItem("lq_tele_config") || '{"token":"","chatId":""}',
-      );
-      if (teleBotTokenInput)
-        teleBotTokenInput.value = savedTeleConfig.token || "";
-      if (teleChatIdInput) teleChatIdInput.value = savedTeleConfig.chatId || "";
+      function getTeleConfig() {
+        try {
+          const raw = localStorage.getItem("lq_tele_config");
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            return {
+              token: String(parsed.token || "").trim(),
+              chatId: String(parsed.chatId || "").trim(),
+              channelLink: String(parsed.channelLink || "").trim(),
+            };
+          }
+        } catch (e) {}
+        return { token: "", chatId: "", channelLink: "" };
+      }
+
+      function updateTeleModalUI() {
+        const cfg = getTeleConfig();
+        const tokenInput = document.getElementById("tele-bot-token");
+        const chatIdInput = document.getElementById("tele-chat-id");
+        const linkInput = document.getElementById("tele-channel-link");
+        const adminSection = document.getElementById(
+          "tele-admin-config-section",
+        );
+        const previewEl = document.getElementById("tele-channel-link-preview");
+
+        if (tokenInput) tokenInput.value = cfg.token;
+        if (chatIdInput) chatIdInput.value = cfg.chatId;
+        if (linkInput) linkInput.value = cfg.channelLink;
+
+        if (adminSection) {
+          adminSection.style.display = isAdmin ? "block" : "none";
+        }
+
+        if (previewEl) {
+          if (cfg.channelLink) {
+            previewEl.innerHTML = `🔗 Link: <a href="${escapeHtml(cfg.channelLink)}" target="_blank" rel="noopener noreferrer" style="color: #38bdf8; text-decoration: underline; font-weight: 700;">${escapeHtml(cfg.channelLink)}</a>`;
+            previewEl.style.display = "block";
+          } else {
+            previewEl.innerHTML = isAdmin
+              ? `<span style="color: #facc15;">⚠️ Bạn chưa nhập Link Kênh Telegram ở phần Quản trị bên dưới!</span>`
+              : `<span style="color: #94a3b8;">⏳ Quản trị viên đang thiết lập Kênh thông báo...</span>`;
+            previewEl.style.display = "block";
+          }
+        }
+      }
+
+      window.handleJoinTeleChannel = function () {
+        const cfg = getTeleConfig();
+        const link = (cfg.channelLink || "").trim();
+        if (link) {
+          window.open(link, "_blank");
+          playSound("click");
+          showToast("🚀 Đang mở Kênh Telegram...");
+        } else {
+          showNotice({
+            title: "Chưa Có Link Kênh",
+            message: isAdmin
+              ? "Bạn chưa nhập Link Kênh Telegram! Vui lòng điền link mời kênh (ví dụ: <code>https://t.me/ten_kenh</code>) vào ô bên dưới và bấm Lưu."
+              : "Quản trị viên đang cập nhật kênh Telegram thông báo chung. Bạn vui lòng quay lại sau ít phút nhé!",
+            icon: "📢",
+          });
+        }
+      };
 
       if (teleModal) {
         teleModal.addEventListener("click", (e) => {
-          if (e.target === teleModal) teleModal.classList.remove("show");
+          if (e.target === teleModal) closeTeleModal();
         });
       }
 
-      window.handleSaveTele = function () {
-        const token = teleBotTokenInput.value.trim();
-        const chatId = teleChatIdInput.value.trim();
-        localStorage.setItem(
-          "lq_tele_config",
-          JSON.stringify({ token, chatId }),
-        );
-        showToast("💾 Đã lưu cấu hình Telegram!");
-        window.closeTeleModal();
-        setTimeout(autoCheckUnbannedAccounts, 500);
+      window.handleSaveTele = async function () {
+        const tokenInput = document.getElementById("tele-bot-token");
+        const chatIdInput = document.getElementById("tele-chat-id");
+        const linkInput = document.getElementById("tele-channel-link");
+
+        const token = tokenInput ? tokenInput.value.trim() : "";
+        const chatId = chatIdInput ? chatIdInput.value.trim() : "";
+        const channelLink = linkInput ? linkInput.value.trim() : "";
+
+        const newConfig = {
+          token,
+          chatId,
+          channelLink,
+          updatedAt: Date.now(),
+        };
+
+        localStorage.setItem("lq_tele_config", JSON.stringify(newConfig));
+        updateTeleModalUI();
+        playSound("success");
+        showToast("💾 Đã lưu cấu hình Kênh Telegram!");
+
+        // Đồng bộ lên Firebase Realtime Database
+        try {
+          await fetch(`${FIREBASE_DB_URL}/tele_config.json`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(newConfig),
+          });
+          triggerAutoSync();
+          showToast("☁️ Đã đồng bộ cấu hình Kênh Telegram lên Cloud!");
+        } catch (e) {
+          console.warn("Lỗi lưu tele_config lên Firebase:", e);
+        }
+
+        setTimeout(autoCheckUnbannedAccounts, 600);
       };
+
+      async function syncTeleConfigFromCloud() {
+        try {
+          const res = await fetch(
+            `${FIREBASE_DB_URL}/tele_config.json?t=${Date.now()}`,
+          );
+          if (res.ok) {
+            const data = await res.json();
+            if (data && (data.token || data.channelLink || data.chatId)) {
+              localStorage.setItem("lq_tele_config", JSON.stringify(data));
+              updateTeleModalUI();
+            }
+          }
+        } catch (e) {}
+      }
 
       async function sendTelegramMessage(token, chatId, text) {
         try {
@@ -10365,38 +10959,46 @@
       }
 
       window.handleTestTele = async function () {
-        const token = teleBotTokenInput.value.trim();
-        const chatId = teleChatIdInput.value.trim();
+        const tokenInput = document.getElementById("tele-bot-token");
+        const chatIdInput = document.getElementById("tele-chat-id");
+        const token = tokenInput ? tokenInput.value.trim() : "";
+        const chatId = chatIdInput ? chatIdInput.value.trim() : "";
+
         if (!token || !chatId) {
           showNotice({
             title: "Thiếu Cấu Hình",
-            message: "Vui lòng nhập cả Token Bot và Chat ID trước khi test!",
+            message:
+              "Vui lòng nhập cả Token Bot và Chat ID Kênh/Nhóm trước khi test!",
             icon: "⚠️",
           });
           return;
         }
 
-        if (btnTestTele) {
-          btnTestTele.textContent = "⏳ Đang gửi...";
-          btnTestTele.disabled = true;
+        const btn = document.getElementById("btn-test-tele");
+        if (btn) {
+          btn.textContent = "⏳ Đang gửi...";
+          btn.disabled = true;
         }
 
-        const testMsg = `🔔 <b>devsepa AOV Manager - KẾT NỐI THÀNH CÔNG!</b>\n\nBot thông báo tự động đã sẵn sàng. Bạn sẽ nhận được thông báo khi tài khoản hết hạn BAN!`;
+        const testMsg = `🔔 <b>devsepa AOV Manager - KẾT NỐI KÊNH THÀNH CÔNG!</b>\n\nBot thông báo tự động đã sẵn sàng hoạt động trên Kênh này. Toàn bộ thành viên sẽ nhận được thông báo chung khi có nick mới hoặc khi nick hết hạn BAN!`;
         const success = await sendTelegramMessage(token, chatId, testMsg);
 
-        if (btnTestTele) {
-          btnTestTele.textContent = "🔔 Bắn Thử 1 Tin";
-          btnTestTele.disabled = false;
+        if (btn) {
+          btn.textContent = "🔔 Bắn Thử 1 Tin";
+          btn.disabled = false;
         }
 
         if (success) {
-          showToast("✅ Đã gửi tin nhắn test đến Telegram!");
+          playSound("success");
+          showToast("✅ Đã gửi tin nhắn test vào Kênh thành công!");
         } else {
+          playSound("delete");
           showNotice({
             title: "Gửi Thất Bại",
             message:
-              "Không thể gửi tin nhắn! Hãy chắc chắn bạn đã vào Telegram và bấm <b>/start</b> với Bot trước nhé.",
+              "Không thể gửi tin nhắn vào Kênh! Hãy kiểm tra lại:<br><br>1. Bạn đã thêm Bot vào Kênh/Nhóm và cấp quyền <b>Admin (Đăng tin)</b> chưa?<br>2. Chat ID đã đúng dạng <b>@ten_kenh</b> (nếu kênh công khai) hoặc <b>-100...</b> (nếu kênh riêng tư) chưa?<br>3. Bot Token có chính xác không?",
             icon: "❌",
+            type: "danger",
           });
         }
       };
@@ -10544,6 +11146,21 @@
             }
           }
 
+          if (raw && typeof raw === "object" && raw.teleConfig) {
+            const cloudCfg = raw.teleConfig;
+            if (cloudCfg && (cloudCfg.token || cloudCfg.channelLink || cloudCfg.chatId)) {
+              const currentCfg = getTeleConfig();
+              if (
+                cloudCfg.token !== currentCfg.token ||
+                cloudCfg.chatId !== currentCfg.chatId ||
+                cloudCfg.channelLink !== currentCfg.channelLink
+              ) {
+                localStorage.setItem("lq_tele_config", JSON.stringify(cloudCfg));
+                updateTeleModalUI();
+              }
+            }
+          }
+
           updateCloudUI("🟢", "Đám Mây Tự Động");
           if (!silent)
             showToast(`✅ Đã tải về ${accounts.length} nick từ đám mây!`);
@@ -10577,6 +11194,7 @@
             updatedAt: Date.now(),
             isEmergencyLocked: isEmergencyLocked,
             activities: getNotificationList().slice(0, 30),
+            teleConfig: getTeleConfig(),
           };
 
           const res = await fetch(FIREBASE_ENDPOINT, {
@@ -10698,10 +11316,8 @@
           }, 1200);
         }
 
-        // 2. Gửi thông báo Telegram nếu đã cấu hình bot
-        const config = JSON.parse(
-          localStorage.getItem("lq_tele_config") || '{"token":"","chatId":""}',
-        );
+        // 2. Gửi thông báo Telegram nếu đã cấu hình bot & Kênh
+        const config = getTeleConfig();
         if (!config.token || !config.chatId) return;
 
         const notifiedList = JSON.parse(
@@ -10910,6 +11526,7 @@
       updateAutoBackupUI();
       renderList();
       pullFromCloud(true);
+      syncTeleConfigFromCloud();
       initFirebaseRealtimeListener();
       setTimeout(autoCheckUnbannedAccounts, 2000);
     </script>
