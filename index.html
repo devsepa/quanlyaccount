@@ -482,28 +482,49 @@
         filter: brightness(0.96) !important;
       }
 
-      /* PHÁT SÁNG NICK VỪA TẠO THÀNH CÔNG */
+      /* PHÁT SÁNG NHẤP NHÁY 3-4 LẦN CHO TÀI KHOẢN VỪA TẠO */
       @keyframes rowNewlyAddedGlow {
         0% {
+          background-color: transparent;
+          box-shadow: none;
+        }
+        12% {
           background-color: rgba(16, 185, 129, 0.45);
-          box-shadow: 0 0 28px rgba(16, 185, 129, 0.85), inset 0 0 16px rgba(16, 185, 129, 0.4);
+          box-shadow: 0 0 28px rgba(16, 185, 129, 0.9), inset 0 0 14px rgba(16, 185, 129, 0.45);
         }
-        35% {
-          background-color: rgba(16, 185, 129, 0.3);
-          box-shadow: 0 0 22px rgba(16, 185, 129, 0.65), inset 0 0 12px rgba(16, 185, 129, 0.3);
+        25% {
+          background-color: transparent;
+          box-shadow: none;
         }
-        70% {
-          background-color: rgba(16, 185, 129, 0.18);
-          box-shadow: 0 0 14px rgba(16, 185, 129, 0.4), inset 0 0 8px rgba(16, 185, 129, 0.15);
+        38% {
+          background-color: rgba(16, 185, 129, 0.45);
+          box-shadow: 0 0 28px rgba(16, 185, 129, 0.9), inset 0 0 14px rgba(16, 185, 129, 0.45);
+        }
+        50% {
+          background-color: transparent;
+          box-shadow: none;
+        }
+        63% {
+          background-color: rgba(16, 185, 129, 0.45);
+          box-shadow: 0 0 28px rgba(16, 185, 129, 0.9), inset 0 0 14px rgba(16, 185, 129, 0.45);
+        }
+        75% {
+          background-color: transparent;
+          box-shadow: none;
+        }
+        88% {
+          background-color: rgba(16, 185, 129, 0.35);
+          box-shadow: 0 0 20px rgba(16, 185, 129, 0.65), inset 0 0 10px rgba(16, 185, 129, 0.3);
         }
         100% {
           background-color: transparent;
           box-shadow: none;
         }
       }
+
       .row-newly-added-glow {
-        animation: rowNewlyAddedGlow 3.5s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
-        outline: 2px solid #10b981 !important;
+        animation: rowNewlyAddedGlow 3.6s ease-in-out forwards !important;
+        outline: 2.5px solid #10b981 !important;
         outline-offset: -2px;
       }
 
@@ -1823,38 +1844,126 @@
       /* TOAST THÔNG BÁO HIỆN ĐẠI CÓ TICK XANH & FADE OUT */
       #toast {
         position: fixed;
-        bottom: 30px;
+        top: 50%;
         left: 50%;
-        transform: translate(-50%, 25px) scale(0.9);
-        background: rgba(15, 23, 42, 0.95);
-        border: 1px solid rgba(16, 185, 129, 0.55);
+        transform: translate(-50%, -50%) scale(0.85);
+        background: rgba(15, 23, 42, 0.96);
+        border: 1.5px solid rgba(16, 185, 129, 0.6);
         color: #fff;
-        padding: 10px 22px;
-        border-radius: 30px;
-        font-size: 0.9rem;
-        font-weight: 800;
-        letter-spacing: 0.5px;
+        padding: 24px 34px;
+        border-radius: 20px;
         box-shadow:
-          0 12px 32px rgba(0, 0, 0, 0.65),
-          0 0 24px rgba(16, 185, 129, 0.35);
-        backdrop-filter: blur(14px);
-        -webkit-backdrop-filter: blur(14px);
+          0 24px 60px rgba(0, 0, 0, 0.8),
+          0 0 35px rgba(16, 185, 129, 0.35);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
         opacity: 0;
         pointer-events: none;
         transition:
           transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
           opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1);
-        z-index: 999999;
-        display: inline-flex;
+        z-index: 9999999;
+        display: flex;
+        flex-direction: column;
         align-items: center;
-        gap: 8px;
-        white-space: nowrap;
+        justify-content: center;
+        gap: 10px;
+        text-align: center;
+        min-width: 250px;
+        max-width: 90vw;
+        user-select: none;
       }
 
       #toast.show {
-        transform: translate(-50%, 0) scale(1);
+        transform: translate(-50%, -50%) scale(1);
         opacity: 1;
         pointer-events: auto;
+      }
+
+      /* HIỆU ỨNG ĐỘNG NÚT TICK DONE (ANIMATED CHECKMARK SVG) */
+      .tick-done-circle {
+        width: 58px;
+        height: 58px;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 2px;
+      }
+
+      .tick-done-svg {
+        width: 58px;
+        height: 58px;
+        border-radius: 50%;
+        display: block;
+        stroke-width: 3.5;
+        stroke: #10b981;
+        stroke-miterlimit: 10;
+        animation: tickDoneFill 0.4s ease-in-out 0.4s forwards, tickDoneScale 0.35s ease-in-out 0.8s both;
+      }
+
+      .tick-done-circle-bg {
+        stroke-dasharray: 166;
+        stroke-dashoffset: 166;
+        stroke-width: 3.5;
+        stroke-miterlimit: 10;
+        stroke: #10b981;
+        fill: none;
+        animation: tickDoneStroke 0.55s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+      }
+
+      .tick-done-check {
+        transform-origin: 50% 50%;
+        stroke-dasharray: 48;
+        stroke-dashoffset: 48;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        animation: tickDoneStrokeCheck 0.38s cubic-bezier(0.65, 0, 0.45, 1) 0.42s forwards;
+      }
+
+      @keyframes tickDoneStroke {
+        100% { stroke-dashoffset: 0; }
+      }
+
+      @keyframes tickDoneStrokeCheck {
+        100% { stroke-dashoffset: 0; }
+      }
+
+      @keyframes tickDoneScale {
+        0%, 100% { transform: none; }
+        50% { transform: scale3d(1.15, 1.15, 1); }
+      }
+
+      @keyframes tickDoneFill {
+        100% {
+          box-shadow: inset 0 0 0 35px rgba(16, 185, 129, 0.16);
+        }
+      }
+
+      .toast-center-title {
+        font-size: 1.12rem;
+        font-weight: 900;
+        color: #ffffff;
+        letter-spacing: 0.6px;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+      }
+
+      .toast-center-sub {
+        font-size: 0.85rem;
+        color: #a7f3d0;
+        font-weight: 700;
+        max-width: 300px;
+        line-height: 1.4;
+      }
+
+      .toast-msg-body {
+        font-size: 0.95rem;
+        font-weight: 800;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        justify-content: center;
       }
 
       /* DẤU TICK XANH XÁC MINH (VERIFIED BADGE) Ở TIÊU ĐỀ */
@@ -3436,7 +3545,11 @@
         defaultRank.value = "";
         if (defaultUyTin) defaultUyTin.value = "";
         playSound("success");
-        showToast(`✅ Đã thêm ${newItems.length} tài khoản!`);
+        showCenterToast({
+          title: "THÊM TÀI KHOẢN THÀNH CÔNG!",
+          subtitle: `Đã thêm ${newItems.length} tài khoản vào hệ thống`,
+          duration: 2200,
+        });
       };
 
       function saveData() {
@@ -4329,10 +4442,11 @@
           navigator.clipboard
             .writeText(textToCopy)
             .then(() =>
-              showToast(
-                `<span style="color: #34d399; font-size: 1.15rem;">✅</span> <span style="color: #ffffff; font-weight: 800; letter-spacing: 0.5px;">ĐÃ SAO CHÉP</span>`,
-                1800,
-              ),
+              showCenterToast({
+                title: "ĐÃ SAO CHÉP",
+                subtitle: item.username,
+                duration: 1600,
+              }),
             );
         } else {
           const temp = document.createElement("textarea");
@@ -4341,10 +4455,11 @@
           temp.select();
           document.execCommand("copy");
           document.body.removeChild(temp);
-          showToast(
-            `<span style="color: #34d399; font-size: 1.15rem;">✅</span> <span style="color: #ffffff; font-weight: 800; letter-spacing: 0.5px;">ĐÃ SAO CHÉP</span>`,
-            1800,
-          );
+          showCenterToast({
+            title: "ĐÃ SAO CHÉP",
+            subtitle: item.username,
+            duration: 1600,
+          });
         }
       };
 
@@ -4403,11 +4518,37 @@
         });
       };
 
-      // TOAST MƯỢT MÀ
+      // TOAST THÔNG BÁO HIỆN ĐẠI
       let toastTimer;
+      function showCenterToast({
+        title = "ĐÃ SAO CHÉP",
+        subtitle = "",
+        duration = 1800,
+      }) {
+        clearTimeout(toastTimer);
+        toast.innerHTML = `
+          <div class="tick-done-circle">
+            <svg class="tick-done-svg" viewBox="0 0 52 52">
+              <circle class="tick-done-circle-bg" cx="26" cy="26" r="24" fill="none"/>
+              <path class="tick-done-check" fill="none" d="M14.5 27.2l7.5 7.5 16-16.5"/>
+            </svg>
+          </div>
+          <div class="toast-center-title">${title}</div>
+          ${subtitle ? `<div class="toast-center-sub">${escapeHtml(subtitle)}</div>` : ""}
+        `;
+        toast.classList.add("show");
+        toastTimer = setTimeout(() => {
+          toast.classList.remove("show");
+        }, duration);
+      }
+
       function showToast(msg, duration = 2000) {
         clearTimeout(toastTimer);
-        toast.innerHTML = msg;
+        if (typeof msg === "string" && !msg.includes("tick-done-circle")) {
+          toast.innerHTML = `<div class="toast-msg-body">${msg}</div>`;
+        } else {
+          toast.innerHTML = msg;
+        }
         toast.classList.add("show");
         toastTimer = setTimeout(() => {
           toast.classList.remove("show");
