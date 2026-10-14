@@ -719,10 +719,9 @@
         align-items: end;
       }
 
-      /* KHI Ở CHẾ ĐỘ SỰ KIỆN CHUNG SỨC: ẨN HOÀN TOÀN RANK, UY TÍN VÀ MỞ BAN */
+      /* KHI Ở CHẾ ĐỘ SỰ KIỆN CHUNG SỨC: FORM CÂN ĐỐI, THẨM MỸ, KHÔNG BỊ TRỐNG */
       .add-form-grid.mode-chungsuc {
-        grid-template-columns: minmax(280px, 480px) auto !important;
-        justify-content: start;
+        grid-template-columns: 1fr auto !important;
         align-items: end;
         gap: 14px;
       }
@@ -733,22 +732,58 @@
         display: none !important;
       }
 
-      /* THU NHỎ CHIỀU RỘNG & MỞ RỘNG CHIỀU DÀI DỌC ĐỂ NHẬP 3-4 TÀI KHOẢN CÙNG LÚC */
+      .field-label-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 5px;
+      }
+
+      .btn-paste-inline {
+        display: none;
+        align-items: center;
+        gap: 5px;
+        padding: 3px 10px;
+        background: linear-gradient(135deg, rgba(168, 85, 247, 0.25), rgba(56, 189, 248, 0.25));
+        border: 1px solid rgba(168, 85, 247, 0.45);
+        color: #e9d5ff;
+        border-radius: 6px;
+        font-size: 0.74rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.18s ease;
+      }
+
+      .btn-paste-inline:hover {
+        background: linear-gradient(135deg, #a855f7, #38bdf8);
+        color: #ffffff;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(168, 85, 247, 0.4);
+      }
+
+      /* Trong mode Chung Sức: hiện nút Dán Nhanh trên nhãn, ẩn nút đè trong textarea */
+      .add-form-grid.mode-chungsuc .btn-paste-inline {
+        display: inline-flex !important;
+      }
+
+      .add-form-grid.mode-chungsuc .btn-paste-fast {
+        display: none !important;
+      }
+
       .add-form-grid.mode-chungsuc .textarea-paste-box textarea {
-        min-height: 98px;
-        height: 98px;
+        min-height: 82px;
+        height: 82px;
+        padding: 9px 12px !important;
         line-height: 1.45;
         font-size: 0.88rem;
+        font-family: 'JetBrains Mono', monospace;
       }
 
       .add-form-grid.mode-chungsuc #btn-add {
-        height: 98px !important;
-        min-width: 170px;
-        font-size: 0.92rem !important;
-        border-radius: 12px !important;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        height: 48px !important;
+        min-width: 175px;
+        font-size: 0.88rem !important;
+        border-radius: 10px !important;
         padding: 0 20px !important;
       }
 
@@ -757,7 +792,6 @@
           grid-template-columns: 1fr !important;
         }
         .add-form-grid.mode-chungsuc #btn-add {
-          height: 48px !important;
           width: 100% !important;
         }
       }
@@ -4035,7 +4069,19 @@
               </div>
             </div>
             <div>
-              <label>Dán tk:mk hoặc tk|mk:</label>
+              <div class="field-label-row">
+                <label style="margin-bottom: 0;">Dán tk:mk hoặc tk|mk:</label>
+                <button
+                  type="button"
+                  class="btn-paste-inline"
+                  id="btn-quick-paste-inline"
+                  onclick="handleQuickPaste()"
+                  title="Dán nhanh nội dung từ khay nhớ tạm clipboard"
+                >
+                  <span>📋</span>
+                  <span>Dán Nhanh</span>
+                </button>
+              </div>
               <div class="textarea-paste-box">
                 <textarea
                   id="rawInput"
@@ -7294,6 +7340,7 @@
       // HIỂN THỊ DANH SÁCH
       function renderList() {
         const fRank = activeRankFilter;
+        const isChungSuc = currentStorage === "chungsuc";
 
         // 1. CẬP NHẬT SỐ LƯỢNG TRÊN 2 TAB KHO TÀI KHOẢN
         const rankTotal = accounts.filter(
@@ -7676,8 +7723,6 @@
         const sortedGroupKeys = ["BK", "KC", "TA", "CT", "DCT", "KHAC"];
 
         let globalIndex = 0;
-
-        const isChungSuc = currentStorage === "chungsuc";
         const totalCols = isChungSuc ? (isAdmin ? 8 : 6) : (isAdmin ? 11 : 9);
 
         const desktopWrapper = document.createElement("div");
