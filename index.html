@@ -8415,7 +8415,7 @@
           const getRes = await fetch(`${FIREBASE_DB_URL}/devices/${deviceId}.json?t=${Date.now()}`);
           if (getRes.ok) {
             const remoteData = await getRes.json();
-            if (remoteData && remoteData.status) {
+            if (remoteData) {
               // BỎ DUYỆT THỦ CÔNG: Nếu thiết bị trước đó là pending thì tự động thăng cấp thành approved luôn
               if (remoteData.status === "pending") {
                 currentDeviceStatus = "approved";
@@ -8424,8 +8424,30 @@
                   headers: { "Content-Type": "application/json" },
                   body: JSON.stringify("approved"),
                 });
-              } else {
+              } else if (remoteData.status) {
                 currentDeviceStatus = remoteData.status;
+              }
+
+              // KIỂM TRA TƯỚC QUYỀN ADMIN (REVOKE ADMIN BỞI CHỦ SỞ HỮU)
+              if (
+                isAdmin &&
+                (remoteData.adminRevoked === true || remoteData.isAdmin === false)
+              ) {
+                isAdmin = false;
+                localStorage.setItem("lq_is_admin", "false");
+                localStorage.removeItem("lq_admin_session_time");
+                isGlobalPasswordMasked = true;
+                singlePasswordVisible = {};
+                updateAdminUI();
+                updatePassToggleUI();
+                renderList();
+                showNotice({
+                  title: "Thu Hồi Quyền Quản Trị",
+                  message:
+                    "Quyền Quản Trị trên thiết bị này đã bị <b>Chủ sở hữu thu hồi</b>!<br>Hệ thống đã tự động chuyển bạn về lại chế độ <b>Khách</b>.",
+                  icon: "🔒",
+                  type: "danger",
+                });
               }
             } else {
               // THIẾT BỊ MỚI TRUY CẬP: MẶC ĐỊNH LUÔN ĐƯỢC PHÉP DÙNG (approved), KHÔNG BẮT CHỜ DUYỆT
@@ -8458,7 +8480,7 @@
             }
           }
 
-          // Cập nhật lại ping time và tên người dùng nếu có thay đổi
+          // Cập nhật lại ping time, tên người dùng và quyền Admin nếu có thay đổi
           if (currentDeviceStatus) {
             await fetch(`${FIREBASE_DB_URL}/devices/${deviceId}/lastActive.json`, {
               method: "PUT",
@@ -8469,6 +8491,11 @@
               method: "PUT",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify(userName)
+            });
+            await fetch(`${FIREBASE_DB_URL}/devices/${deviceId}/isAdmin.json`, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(isAdmin)
             });
           }
 
@@ -8586,24 +8613,32 @@
           });
 
           if (statEl) {
-            const blockedN = devices.filter(d => d.status === "blocked").length;
-            statEl.textContent = `${devices.length} thiết bị kết nối (${blockedN > 0 ? `${blockedN} bị chặn` : "Mọi thiết bị đều được phép"})`;
+            const adminCount = devices.filter((d) => d.isAdmin === true).length;
+            const blockedN = devices.filter((d) => d.status === "blocked").length;
+            statEl.textContent = `${devices.length} thiết bị (${adminCount} Quản trị viên${blockedN > 0 ? `, ${blockedN} bị chặn` : ""})`;
           }
 
           let html = `<div style="display: flex; flex-direction: column; gap: 8px;">`;
-          devices.forEach(d => {
+          devices.forEach((d) => {
             const isMe = d.id === getOrCreateDeviceId();
             const isBlocked = d.status === "blocked";
+            const isDevAdmin = d.isAdmin === true;
+
+            const adminBadge = isDevAdmin
+              ? `<span style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.45); padding: 2px 7px; border-radius: 6px; font-size: 0.7rem; font-weight: 800; display: inline-flex; align-items: center; gap: 3px;" title="Thiết bị này đã nhập mã PIN Quản Trị thành công">👑 QUẢN TRỊ</span>`
+              : `<span style="background: rgba(148, 163, 184, 0.1); color: #94a3b8; border: 1px solid rgba(148, 163, 184, 0.2); padding: 2px 6px; border-radius: 6px; font-size: 0.7rem; font-weight: 600;">👤 Khách</span>`;
+
             const statusBadge = isBlocked
               ? `<span style="background: rgba(239,68,68,0.2); color: #fca5a5; border: 1px solid rgba(239,68,68,0.4); padding: 2px 7px; border-radius: 6px; font-size: 0.7rem; font-weight: 800;">🚫 ĐÃ BỊ CHẶN</span>`
               : `<span style="background: rgba(16,185,129,0.2); color: #34d399; border: 1px solid rgba(16,185,129,0.4); padding: 2px 7px; border-radius: 6px; font-size: 0.7rem; font-weight: 800;">🟢 ĐƯỢC PHÉP</span>`;
 
             html += `
-              <div style="background: rgba(15,23,42,0.9); border: 1px solid ${isBlocked ? "rgba(239,68,68,0.35)" : "rgba(255,255,255,0.08)"}; border-radius: 10px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;">
+              <div style="background: rgba(15,23,42,0.9); border: 1px solid ${isDevAdmin ? "rgba(245, 158, 11, 0.3)" : isBlocked ? "rgba(239,68,68,0.35)" : "rgba(255,255,255,0.08)"}; border-radius: 10px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;">
                 <div style="flex: 1; min-width: 180px;">
-                  <div style="display: flex; align-items: center; gap: 7px; margin-bottom: 3px;">
+                  <div style="display: flex; align-items: center; gap: 7px; margin-bottom: 3px; flex-wrap: wrap;">
                     <b style="font-size: 0.88rem; color: #fff;">${escapeHtml(d.userName || "Khách")}</b>
                     ${isMe ? `<span style="font-size: 0.68rem; color: #a5b4fc; background: rgba(99,102,241,0.2); padding: 1px 5px; border-radius: 4px;">(Máy này)</span>` : ""}
+                    ${adminBadge}
                     ${statusBadge}
                   </div>
                   <div style="font-size: 0.74rem; color: #94a3b8; display: flex; gap: 8px; flex-wrap: wrap;">
@@ -8612,16 +8647,29 @@
                   </div>
                 </div>
 
-                <div style="display: flex; gap: 6px;">
-                  ${isBlocked ? `
+                <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+                  ${
+                    isDevAdmin && !isMe
+                      ? `
+                    <button onclick="revokeDeviceAdmin('${d.id}', '${escapeHtml(d.userName || "Khách")}')" class="btn" style="background: rgba(245, 158, 11, 0.18); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.45); padding: 5px 9px; font-size: 0.72rem; font-weight: 700; border-radius: 6px;" title="Tước quyền Quản Trị của thiết bị này, chuyển về lại tài khoản Khách">
+                      ⚡ Thu Hồi Admin
+                    </button>
+                  `
+                      : ""
+                  }
+                  ${
+                    isBlocked
+                      ? `
                     <button onclick="setDeviceStatus('${d.id}', 'approved')" class="btn" style="background: rgba(16,185,129,0.2); color: #34d399; border: 1px solid rgba(16,185,129,0.4); padding: 5px 9px; font-size: 0.72rem; font-weight: 700; border-radius: 6px;" title="Gỡ chặn, cho phép thiết bị này truy cập">
                       🔓 Bỏ Chặn
                     </button>
-                  ` : `
+                  `
+                      : `
                     <button onclick="setDeviceStatus('${d.id}', 'blocked')" class="btn" style="background: rgba(239,68,68,0.15); color: #fca5a5; border: 1px solid rgba(239,68,68,0.3); padding: 5px 9px; font-size: 0.72rem; font-weight: 700; border-radius: 6px;" title="Chặn không cho thiết bị này truy cập nữa">
                       🚫 Chặn
                     </button>
-                  `}
+                  `
+                  }
                   <button onclick="removeDevice('${d.id}')" class="btn" style="background: rgba(255,255,255,0.06); color: #94a3b8; border: 1px solid rgba(255,255,255,0.1); padding: 5px 8px; font-size: 0.72rem; border-radius: 6px;" title="Xóa thiết bị khỏi danh sách">
                     🗑️
                   </button>
@@ -8633,6 +8681,35 @@
           container.innerHTML = html;
         } catch (err) {
           container.innerHTML = `<div style="text-align: center; color: #f43f5e; padding: 20px;">Lỗi tải dữ liệu thiết bị!</div>`;
+        }
+      };
+
+      // TƯỚC QUYỀN QUẢN TRỊ VIÊN CỦA THIẾT BỊ KHÁC
+      window.revokeDeviceAdmin = async function (id, userName) {
+        if (
+          !confirm(
+            `Bạn có chắc chắn muốn THU HỒI quyền Quản Trị của [${userName || "thiết bị này"}] không?\n\nThiết bị này sẽ bị tước quyền Quản Trị ngay lập tức và chuyển về chế độ Khách!`,
+          )
+        )
+          return;
+
+        try {
+          await fetch(`${FIREBASE_DB_URL}/devices/${id}/isAdmin.json`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(false),
+          });
+          await fetch(`${FIREBASE_DB_URL}/devices/${id}/adminRevoked.json`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(true),
+          });
+
+          playSound("delete");
+          showToast(`⚡ Đã thu hồi quyền Quản Trị của [${userName || "thiết bị"}]!`);
+          refreshDeviceList();
+        } catch (e) {
+          showToast("❌ Lỗi khi thu hồi quyền Quản Trị!");
         }
       };
 
@@ -9367,6 +9444,19 @@
           renderList();
           playSound("success");
           showToast("👑 Mở khóa Quản Trị thành công (Phiên 12h)!");
+
+          // Cập nhật trạng thái Admin của thiết bị lên Firebase & xóa cờ adminRevoked
+          const curDevId = getOrCreateDeviceId();
+          fetch(`${FIREBASE_DB_URL}/devices/${curDevId}/isAdmin.json`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(true),
+          }).catch(() => {});
+          fetch(`${FIREBASE_DB_URL}/devices/${curDevId}/adminRevoked.json`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(false),
+          }).catch(() => {});
         } else {
           playSound("delete");
           showNotice({
@@ -13134,6 +13224,33 @@
         });
       }
 
+      // LẮNG NGHE REALTIME TRẠNG THÁI THIẾT BỊ TỪ FIREBASE (NHẬN TÍN HIỆU TƯỚC ADMIN / CHẶN TỨC THÌ)
+      function initDeviceRealtimeListener() {
+        try {
+          if (typeof EventSource !== "undefined") {
+            const devId = getOrCreateDeviceId();
+            const esDev = new EventSource(`${FIREBASE_DB_URL}/devices/${devId}.json`);
+            const handleDevEvent = (e) => {
+              try {
+                if (!e.data || e.data === "null") return;
+                const data = JSON.parse(e.data);
+                if (data && typeof data === "object") {
+                  if (data.adminRevoked === true || data.isAdmin === false) {
+                    if (isAdmin) syncCurrentDevice();
+                  } else if (data.status) {
+                    syncCurrentDevice();
+                  }
+                }
+              } catch (err) {}
+            };
+            esDev.addEventListener("put", handleDevEvent);
+            esDev.addEventListener("patch", handleDevEvent);
+          }
+        } catch (err) {
+          console.warn("Device realtime listener error:", err);
+        }
+      }
+
       // KHỞI CHẠY
       updateGreetingUI();
       updateNotiBadge();
@@ -13158,6 +13275,7 @@
       syncTeleConfigFromCloud();
       syncAdminPinFromCloud();
       initFirebaseRealtimeListener();
+      initDeviceRealtimeListener();
       setTimeout(autoCheckUnbannedAccounts, 2000);
     </script>
   </body>
