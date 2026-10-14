@@ -82,6 +82,8 @@
         flex-direction: column;
         -webkit-overflow-scrolling: touch;
         overscroll-behavior-y: contain;
+        overflow-x: hidden;
+        max-width: 100vw;
       }
 
       /* THANH CUỘN MƯỢT MÀ, TINH TẾ CHUẨN ESPORTS */
@@ -110,6 +112,7 @@
         flex: 1 0 auto;
         display: flex;
         flex-direction: column;
+        box-sizing: border-box;
       }
 
       #display-area {
@@ -123,9 +126,9 @@
         grid-template-columns: 1fr auto 1fr;
         align-items: center;
         gap: 20px;
-        margin-top: 6px;
-        margin-bottom: 28px;
-        padding: 10px 0 22px;
+        margin-top: 8px;
+        margin-bottom: 42px;
+        padding: 12px 0 24px;
         background: transparent;
         border: none;
         border-bottom: 1px solid rgba(255, 255, 255, 0.08);
@@ -140,35 +143,30 @@
         gap: 8px;
       }
 
-      /* PHẦN TRUNG TÂM THƯƠNG HIỆU: TO RÕ, NỔI BẬT VƯỢT TRỘI SO VỚI 2 VẾ */
+      /* PHẦN TRUNG TÂM THƯƠNG HIỆU: XẾP DỌC CĂN GIỮA (LOGO TRÊN -> TÊN devsepa -> SỐ LƯỢNG NICK) */
       .header-brand {
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 16px;
-        text-align: left;
-        padding: 9px 24px;
-        background: radial-gradient(circle at 50% 50%, rgba(56, 189, 248, 0.12) 0%, rgba(15, 23, 42, 0.55) 100%);
-        border: 1.5px solid rgba(56, 189, 248, 0.32);
-        border-radius: 22px;
-        box-shadow:
-          0 4px 26px rgba(0, 0, 0, 0.45),
-          0 0 24px rgba(56, 189, 248, 0.16);
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
-        transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+        gap: 6px;
+        text-align: center;
+        padding: 4px 8px;
+        background: transparent;
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
       }
       .header-brand:hover {
-        border-color: rgba(56, 189, 248, 0.55);
-        box-shadow:
-          0 6px 32px rgba(0, 0, 0, 0.5),
-          0 0 32px rgba(56, 189, 248, 0.28);
         transform: translateY(-1px);
       }
 
       .logo-box {
-        width: 60px;
-        height: 60px;
+        width: 58px;
+        height: 58px;
         border-radius: 50%;
         background: #020617;
         color: #fff;
@@ -184,6 +182,7 @@
         overflow: hidden;
         border: 2.2px solid #38bdf8;
         transition: transform 0.25s ease, box-shadow 0.25s ease;
+        margin: 0 auto;
       }
       .logo-box:hover {
         transform: scale(1.08);
@@ -199,6 +198,16 @@
         display: block;
       }
 
+      .header-brand-info {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        gap: 4px;
+        width: 100%;
+      }
+
       header h1 {
         font-size: 1.5rem;
         font-weight: 900;
@@ -206,10 +215,13 @@
         line-height: 1.25;
         display: inline-flex;
         align-items: center;
+        justify-content: center;
         min-height: 34px;
         white-space: nowrap;
         letter-spacing: 0.3px;
         text-shadow: 0 2px 12px rgba(0, 0, 0, 0.7);
+        text-align: center;
+        margin: 0;
       }
 
       .typewriter-cursor {
@@ -235,15 +247,18 @@
       .header-sub {
         font-size: 0.92rem;
         color: var(--text-sub);
-        margin-top: 4px;
+        margin-top: 2px;
         display: flex;
         align-items: center;
+        justify-content: center;
         gap: 8px;
+        width: 100%;
       }
 
       .header-sub .stats-badge {
         display: inline-flex;
         align-items: center;
+        justify-content: center;
         gap: 10px;
         font-size: 0.92rem;
         background: rgba(2, 6, 23, 0.65);
@@ -387,53 +402,357 @@
         box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
       }
 
-      /* KHU VỰC NHẬP NICK (TONE TÍM INDIGO RIÊNG BIỆT DỄ PHÂN BIỆT) */
-      .add-box {
-        background: linear-gradient(160deg, rgba(30, 20, 65, 0.65) 0%, rgba(15, 23, 42, 0.75) 100%);
-        border: 1px solid rgba(168, 85, 247, 0.32);
-        border-left: 4px solid #a855f7;
-        border-radius: 14px;
-        margin-bottom: 20px;
-        overflow: hidden;
-        box-shadow: 0 4px 20px rgba(168, 85, 247, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-        transition: border-color 0.2s ease, box-shadow 0.2s ease;
-      }
-      .add-box:hover {
-        border-color: rgba(168, 85, 247, 0.45);
-        border-left-color: #c084fc;
-        box-shadow: 0 6px 24px rgba(168, 85, 247, 0.12);
+      /* ========================================================
+         HAMBURGER OPTION MENU (MENU 3 GẠCH GỌN GÀNG HIỆN ĐẠI)
+         ======================================================== */
+      .header-menu-container {
+        position: relative;
+        display: inline-block;
       }
 
-      .add-box-header {
-        padding: 10px 16px;
-        background: linear-gradient(90deg, rgba(168, 85, 247, 0.18) 0%, rgba(15, 23, 42, 0.4) 100%);
+      .btn-hamburger-menu {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 14px;
+        font-size: 0.84rem;
+        font-weight: 800;
+        border-radius: 11px;
+        background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.7));
+        border: 1.5px solid rgba(56, 189, 248, 0.35);
+        color: #f1f5f9;
+        cursor: pointer;
+        position: relative;
+        transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        user-select: none;
+      }
+
+      .btn-hamburger-menu:hover,
+      .btn-hamburger-menu.is-active {
+        background: linear-gradient(135deg, rgba(14, 165, 233, 0.25), rgba(99, 102, 241, 0.3));
+        border-color: #38bdf8;
+        color: #fff;
+        box-shadow: 0 0 18px rgba(56, 189, 248, 0.45);
+        transform: translateY(-1px);
+      }
+
+      .hamburger-bars {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 3.5px;
+        width: 16px;
+        height: 14px;
+      }
+
+      .hamburger-bars span {
+        display: block;
+        width: 100%;
+        height: 2px;
+        background-color: #38bdf8;
+        border-radius: 2px;
+        transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .btn-hamburger-menu.is-active .hamburger-bars span:nth-child(1) {
+        transform: translateY(5.5px) rotate(45deg);
+      }
+      .btn-hamburger-menu.is-active .hamburger-bars span:nth-child(2) {
+        opacity: 0;
+        transform: scaleX(0);
+      }
+      .btn-hamburger-menu.is-active .hamburger-bars span:nth-child(3) {
+        transform: translateY(-5.5px) rotate(-45deg);
+      }
+
+      .menu-notify-dot {
+        position: absolute;
+        top: -3px;
+        right: -3px;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #f43f5e;
+        border: 2px solid #0f172a;
+        box-shadow: 0 0 8px #f43f5e;
+        animation: timerDotPulse 1.4s infinite;
+      }
+
+      /* DROPDOWN FLYOUT PANEL */
+      .option-menu-dropdown {
+        position: absolute;
+        top: calc(100% + 8px);
+        right: 0;
+        width: 320px;
+        max-width: 92vw;
+        background: rgba(15, 23, 42, 0.96);
+        border: 1.5px solid rgba(56, 189, 248, 0.35);
+        border-radius: 16px;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(56, 189, 248, 0.15);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        padding: 12px;
+        display: none;
+        flex-direction: column;
+        gap: 6px;
+        z-index: 999999;
+        opacity: 0;
+        transform: translateY(-8px) scale(0.96);
+        transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.22s ease;
+      }
+
+      .option-menu-dropdown.show {
+        display: flex;
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+
+      .option-menu-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 4px 6px 10px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        margin-bottom: 4px;
+      }
+
+      .option-menu-title {
+        font-size: 0.86rem;
+        font-weight: 800;
+        color: #38bdf8;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        letter-spacing: 0.3px;
+      }
+
+      .option-menu-close {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #94a3b8;
+        border-radius: 6px;
+        width: 22px;
+        height: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        cursor: pointer;
+        transition: all 0.18s ease;
+      }
+
+      .option-menu-close:hover {
+        background: rgba(239, 68, 68, 0.2);
+        color: #fff;
+        border-color: #ef4444;
+      }
+
+      .option-menu-list {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .option-menu-item {
+        width: 100%;
+        padding: 10px 12px;
+        border-radius: 11px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        color: #f1f5f9;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        text-align: left;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        box-sizing: border-box;
+      }
+
+      .option-menu-item:hover {
+        background: rgba(56, 189, 248, 0.12);
+        border-color: rgba(56, 189, 248, 0.35);
+        transform: translateX(3px);
+      }
+
+      .option-item-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.15rem;
+        flex-shrink: 0;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .opt-icon-analytics {
+        background: rgba(168, 85, 247, 0.15);
+        border-color: rgba(168, 85, 247, 0.35);
+      }
+
+      .opt-icon-cloud {
+        background: rgba(16, 185, 129, 0.15);
+        border-color: rgba(16, 185, 129, 0.35);
+      }
+
+      .opt-icon-tele {
+        background: rgba(14, 165, 233, 0.15);
+        border-color: rgba(14, 165, 233, 0.35);
+      }
+
+      .opt-icon-devices {
+        background: rgba(234, 179, 8, 0.15);
+        border-color: rgba(234, 179, 8, 0.35);
+      }
+
+      .opt-icon-emergency {
+        background: rgba(239, 68, 68, 0.18);
+        border-color: rgba(239, 68, 68, 0.4);
+      }
+
+      .option-item-content {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .option-item-title {
+        font-size: 0.86rem;
+        font-weight: 800;
+        color: #fff;
+        line-height: 1.3;
+      }
+
+      .option-item-sub {
+        font-size: 0.72rem;
+        color: #94a3b8;
+        margin-top: 2px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .option-item-arrow {
+        font-size: 1.15rem;
+        color: #64748b;
+        font-weight: 700;
+        transition: transform 0.2s ease, color 0.2s ease;
+      }
+
+      .option-menu-item:hover .option-item-arrow {
+        color: #38bdf8;
+        transform: translateX(2px);
+      }
+
+      .option-menu-item.btn-emergency.is-locked {
+        background: rgba(239, 68, 68, 0.16) !important;
+        border-color: rgba(239, 68, 68, 0.4) !important;
+      }
+      .option-menu-item.btn-emergency.is-locked .option-item-title {
+        color: #fca5a5 !important;
+      }
+
+      /* ========================================================
+         KHU VỰC 1: QUẢN TRỊ & THÊM TÀI KHOẢN (VÒNG KHUNG DUY NHẤT)
+         ======================================================== */
+      .add-box,
+      .add-box.admin-unified-card {
+        background: linear-gradient(
+          160deg,
+          rgba(30, 20, 65, 0.6) 0%,
+          rgba(15, 23, 42, 0.85) 100%
+        );
+        border: 1px solid rgba(168, 85, 247, 0.32);
+        border-radius: 18px;
+        margin: 16px 0 20px;
+        overflow: hidden;
+        box-shadow:
+          0 10px 30px rgba(0, 0, 0, 0.45),
+          0 0 24px rgba(168, 85, 247, 0.08),
+          inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        transition:
+          border-color 0.25s ease,
+          box-shadow 0.25s ease;
+      }
+      .add-box:hover,
+      .add-box.admin-unified-card:hover {
+        border-color: rgba(168, 85, 247, 0.48);
+        box-shadow:
+          0 12px 36px rgba(0, 0, 0, 0.5),
+          0 0 28px rgba(168, 85, 247, 0.15);
+      }
+
+      .admin-card-header {
+        padding: 13px 18px;
+        background: linear-gradient(
+          90deg,
+          rgba(99, 102, 241, 0.14) 0%,
+          rgba(15, 23, 42, 0.5) 100%
+        );
         display: flex;
         justify-content: space-between;
         align-items: center;
+        gap: 12px;
         cursor: pointer;
         user-select: none;
-        border-bottom: 1px solid rgba(168, 85, 247, 0.2);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
       }
 
-      .add-box-title {
+      .admin-card-title-group {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 12px;
         flex-wrap: wrap;
       }
 
-      .add-box-badge {
-        font-size: 0.8rem;
-        font-weight: 800;
-        color: #e9d5ff;
-        letter-spacing: 0.5px;
-        text-shadow: 0 0 10px rgba(192, 132, 252, 0.35);
+      .admin-card-text {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
       }
 
-      .add-box-hint {
-        font-size: 0.72rem;
-        color: #c4b5fd;
-        opacity: 0.85;
+      .admin-card-title {
+        font-size: 0.94rem;
+        font-weight: 900;
+        color: #ffffff;
+        letter-spacing: 0.3px;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .admin-card-subtitle {
+        font-size: 0.74rem;
+        color: #94a3b8;
+        margin: 0;
+        font-weight: 500;
+      }
+
+      .btn-card-collapse {
+        background: rgba(30, 41, 59, 0.65);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 9px;
+        padding: 6px 14px;
+        color: #cbd5e1;
+        font-size: 0.78rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+      .btn-card-collapse:hover {
+        background: rgba(51, 65, 85, 0.8);
+        border-color: rgba(56, 189, 248, 0.4);
+        color: #ffffff;
+        transform: translateY(-1px);
       }
 
       .collapse-arrow {
@@ -667,22 +986,106 @@
         border-color: rgba(245, 158, 11, 0.6);
       }
 
-      .storage-radio-label {
+      /* KHỐI 2 NÚT LỰA CHỌN KHO THÊM NICK (RANK / SK CHUNG SỨC) */
+      /* HÀNG ĐIỀU KHIỂN: CHỌN KHO & DÁN NHANH TRÊN FORM THÊM ACC */
+      .add-control-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 14px;
+      }
+
+      .add-target-selector {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .add-target-label {
+        font-size: 0.84rem;
+        font-weight: 800;
+        color: #cbd5e1;
+        letter-spacing: 0.2px;
+      }
+
+      .add-target-pill-group {
+        display: inline-flex;
+        align-items: center;
+        background: rgba(2, 6, 23, 0.85);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 3px;
+        border-radius: 12px;
+        gap: 4px;
+      }
+
+      .btn-target-pill {
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        font-size: 0.76rem;
+        padding: 6px 14px;
+        border-radius: 9px;
+        font-size: 0.8rem;
         font-weight: 700;
-        color: #cbd5e1;
+        color: #94a3b8;
+        background: transparent;
+        border: 1px solid transparent;
         cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         user-select: none;
+        white-space: nowrap;
+      }
+      .btn-target-pill:hover {
+        color: #ffffff;
       }
 
-      .storage-radio-label input[type="radio"] {
-        accent-color: #a855f7;
-        width: 14px;
-        height: 14px;
+      /* Nút Kho Rank được chọn */
+      .btn-target-pill#btn-add-store-rank.active {
+        background: rgba(6, 182, 212, 0.2);
+        border-color: rgba(6, 182, 212, 0.45);
+        color: #22d3ee;
+        font-weight: 800;
+        box-shadow: 0 2px 10px rgba(6, 182, 212, 0.2);
+      }
+
+      /* Nút Chung Sức được chọn */
+      .btn-target-pill#btn-add-store-chungsuc.active {
+        background: rgba(245, 158, 11, 0.2);
+        border-color: rgba(245, 158, 11, 0.45);
+        color: #fbbf24;
+        font-weight: 800;
+        box-shadow: 0 2px 10px rgba(245, 158, 11, 0.2);
+      }
+
+      /* NÚT DÁN NHANH TỪ CLIPBOARD (MÀU TÍM GỌN GÀNG) */
+      .btn-quick-paste-purple {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 7px 16px;
+        border-radius: 10px;
+        background: rgba(147, 51, 234, 0.18);
+        border: 1px solid rgba(168, 85, 247, 0.4);
+        color: #d8b4fe;
+        font-size: 0.82rem;
+        font-weight: 800;
+        letter-spacing: 0.2px;
         cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        white-space: nowrap;
+        user-select: none;
+      }
+      .btn-quick-paste-purple:hover {
+        background: rgba(147, 51, 234, 0.32);
+        border-color: #c084fc;
+        color: #ffffff;
+        box-shadow: 0 4px 16px rgba(168, 85, 247, 0.35);
+        transform: translateY(-1px);
+      }
+      .btn-quick-paste-purple:active {
+        transform: scale(0.96);
       }
 
       .badge-chungsuc-tag {
@@ -704,7 +1107,7 @@
       }
 
       .add-box-content {
-        padding: 14px 16px;
+        padding: 16px 18px 18px;
         display: block;
       }
 
@@ -712,18 +1115,51 @@
         display: none;
       }
 
+      /* BỐ CỤC FORM THÊM NICK MỚI (PHẲNG, THOÁNG ĐÃNG) */
       .add-form-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .field-wrap-textarea {
+        width: 100%;
+      }
+
+      .field-wrap-textarea textarea {
+        width: 100%;
+        min-height: 72px;
+        padding: 11px 14px !important;
+        border-radius: 12px;
+        font-size: 0.88rem;
+        line-height: 1.5;
+        font-family: "JetBrains Mono", monospace;
+        background: rgba(2, 6, 23, 0.85);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #f1f5f9;
+        resize: vertical;
+        transition: all 0.2s ease;
+        box-sizing: border-box;
+      }
+      .field-wrap-textarea textarea:focus {
+        border-color: #38bdf8;
+        box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.25);
+        background: rgba(2, 6, 23, 0.95);
+        outline: none;
+      }
+
+      /* HÀNG CÁC TRƯỜNG PHỤ: MỞ BAN, RANK, UY TÍN & NÚT SUBMIT */
+      .add-fields-row {
         display: grid;
-        grid-template-columns: 2fr 0.85fr 0.85fr 0.65fr auto;
+        grid-template-columns: 1fr 1fr 0.8fr auto;
         gap: 12px;
         align-items: end;
       }
 
-      /* KHI Ở CHẾ ĐỘ SỰ KIỆN CHUNG SỨC: FORM CÂN ĐỐI, THẨM MỸ, KHÔNG BỊ TRỐNG */
-      .add-form-grid.mode-chungsuc {
-        grid-template-columns: 1fr auto !important;
-        align-items: end;
-        gap: 14px;
+      /* KHI Ở CHẾ ĐỘ SỰ KIỆN CHUNG SỨC: CHỈ CÒN TEXTAREA VÀ NÚT SUBMIT PHẢI */
+      .add-form-grid.mode-chungsuc .add-fields-row {
+        display: flex;
+        justify-content: flex-end;
       }
 
       .add-form-grid.mode-chungsuc #field-wrap-unlock,
@@ -732,67 +1168,84 @@
         display: none !important;
       }
 
-      .field-label-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
+      .add-form-grid.mode-chungsuc #btn-add {
+        height: 44px !important;
+        min-width: 220px;
+        font-size: 0.88rem !important;
+        border-radius: 11px !important;
+        padding: 0 22px !important;
+        background: linear-gradient(180deg, #f59e0b 0%, #d97706 50%, #b45309 100%) !important;
+        box-shadow: 0 4px 0 #78350f, 0 8px 20px rgba(245, 158, 11, 0.45) !important;
+      }
+
+      .add-fields-row label {
+        font-size: 0.76rem;
+        font-weight: 700;
+        color: #cbd5e1;
+        display: block;
         margin-bottom: 5px;
       }
 
-      .btn-paste-inline {
-        display: none;
-        align-items: center;
-        gap: 5px;
-        padding: 3px 10px;
-        background: linear-gradient(135deg, rgba(168, 85, 247, 0.25), rgba(56, 189, 248, 0.25));
-        border: 1px solid rgba(168, 85, 247, 0.45);
-        color: #e9d5ff;
-        border-radius: 6px;
-        font-size: 0.74rem;
-        font-weight: 700;
-        cursor: pointer;
-        transition: all 0.18s ease;
-      }
-
-      .btn-paste-inline:hover {
-        background: linear-gradient(135deg, #a855f7, #38bdf8);
+      .add-fields-row input {
+        height: 40px;
+        background: rgba(2, 6, 23, 0.85);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 9px;
+        padding: 0 12px;
         color: #ffffff;
-        transform: translateY(-1px);
-        box-shadow: 0 2px 8px rgba(168, 85, 247, 0.4);
+        font-size: 0.84rem;
+        width: 100%;
+        box-sizing: border-box;
+        transition: all 0.2s ease;
       }
 
-      /* Trong mode Chung Sức: hiện nút Dán Nhanh trên nhãn, ẩn nút đè trong textarea */
-      .add-form-grid.mode-chungsuc .btn-paste-inline {
-        display: inline-flex !important;
+      .add-fields-row input:focus {
+        border-color: #38bdf8;
+        box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.25);
+        background: rgba(2, 6, 23, 0.95);
+        outline: none;
       }
 
-      .add-form-grid.mode-chungsuc .btn-paste-fast {
-        display: none !important;
-      }
-
-      .add-form-grid.mode-chungsuc .textarea-paste-box textarea {
-        min-height: 82px;
-        height: 82px;
-        padding: 9px 12px !important;
-        line-height: 1.45;
-        font-size: 0.88rem;
-        font-family: 'JetBrains Mono', monospace;
-      }
-
-      .add-form-grid.mode-chungsuc #btn-add {
-        height: 48px !important;
-        min-width: 175px;
-        font-size: 0.88rem !important;
-        border-radius: 10px !important;
-        padding: 0 20px !important;
-      }
-
-      @media (max-width: 640px) {
-        .add-form-grid.mode-chungsuc {
-          grid-template-columns: 1fr !important;
+      @media (max-width: 768px) {
+        .admin-card-header {
+          padding: 12px 14px;
         }
-        .add-form-grid.mode-chungsuc #btn-add {
+        .add-box-content {
+          padding: 14px 14px 16px;
+        }
+        .add-control-row {
+          flex-direction: column;
+          align-items: stretch;
+          gap: 10px;
+        }
+        .add-target-selector {
+          justify-content: space-between;
+          width: 100%;
+        }
+        .add-target-pill-group {
+          flex: 1;
+        }
+        .btn-target-pill {
+          flex: 1;
+          justify-content: center;
+          padding: 6px 10px;
+          font-size: 0.76rem;
+        }
+        .btn-quick-paste-purple {
+          width: 100%;
+          justify-content: center;
+          padding: 9px 12px;
+        }
+        .add-fields-row {
+          grid-template-columns: 1fr 1fr;
+          gap: 10px;
+        }
+        .field-wrap-action {
+          grid-column: 1 / -1;
+        }
+        #btn-add {
           width: 100% !important;
+          height: 44px !important;
         }
       }
 
@@ -2342,6 +2795,15 @@
 
         body {
           padding: 10px 8px 0;
+          max-width: 100vw;
+          overflow-x: hidden;
+        }
+
+        .app-layout {
+          width: 100%;
+          max-width: 100%;
+          overflow-x: hidden;
+          box-sizing: border-box;
         }
 
         .desktop-table-wrap {
@@ -2357,129 +2819,222 @@
         }
 
         header {
-          display: flex;
-          padding: 10px 0 18px;
-          flex-direction: column;
-          align-items: stretch;
-          gap: 12px;
-          background: transparent;
-          border: none;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-          margin-top: 4px;
-          margin-bottom: 24px;
-          box-shadow: none;
+          display: grid !important;
+          grid-template-columns: 1fr 1fr !important;
+          grid-template-areas:
+            "left action"
+            "brand brand" !important;
+          padding: 10px 0 18px !important;
+          align-items: center !important;
+          gap: 14px 0 !important;
+          background: transparent !important;
+          border: none !important;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+          margin-top: 6px !important;
+          margin-bottom: 28px !important;
+          box-shadow: none !important;
+          width: 100% !important;
+          box-sizing: border-box !important;
         }
 
         .header-left {
-          width: 100%;
+          grid-area: left !important;
+          width: 100% !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: flex-start !important;
+          gap: 8px !important;
         }
         .header-left .btn {
-          width: 100%;
-          justify-content: center;
+          width: auto !important;
+          padding: 8px 12px !important;
+          font-size: 0.8rem !important;
+          justify-content: center !important;
         }
 
         .header-action-group {
-          width: 100%;
-          display: flex;
-          gap: 8px;
-        }
-        .header-action-group .btn {
-          flex: 1;
-          justify-content: center;
+          grid-area: action !important;
+          width: 100% !important;
+          display: flex !important;
+          justify-content: flex-end !important;
+          align-items: center !important;
+          gap: 8px !important;
+          margin-top: 0 !important;
         }
 
-        /* KHỐI BRAND HERO TRÊN MOBILE: TO, NỔI BẬT & ĐẲNG CẤP */
+        /* KHỐI BRAND HERO TRÊN MOBILE: XẾP DỌC CĂN GIỮA CHUẨN XÁC 100% MÀN HÌNH */
         .header-brand {
-          width: 100%;
-          padding: 12px 14px;
-          background: linear-gradient(135deg, rgba(14, 165, 233, 0.15) 0%, rgba(15, 23, 42, 0.9) 100%);
-          border: 1px solid rgba(56, 189, 248, 0.32);
-          border-radius: 14px;
-          box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4), inset 0 0 16px rgba(56, 189, 248, 0.08);
-          display: flex;
-          align-items: center;
-          gap: 14px;
+          grid-area: brand !important;
+          grid-column: 1 / -1 !important;
+          width: 100% !important;
+          max-width: 100% !important;
+          box-sizing: border-box !important;
+          padding: 6px 0 !important;
+          margin: 0 auto !important;
+          background: transparent !important;
+          border: none !important;
+          border-radius: 0 !important;
+          box-shadow: none !important;
+          display: flex !important;
+          flex-direction: column !important;
+          align-items: center !important;
+          justify-content: center !important;
+          gap: 7px !important;
+          text-align: center !important;
+          overflow: visible !important;
+        }
+
+        .header-brand-info,
+        .header-brand > div:last-child {
+          min-width: 0 !important;
+          width: 100% !important;
+          display: flex !important;
+          flex-direction: column !important;
+          align-items: center !important;
+          justify-content: center !important;
+          text-align: center !important;
+          gap: 4px !important;
+          overflow: visible !important;
+          margin: 0 auto !important;
         }
 
         .header-brand .logo-box {
-          width: 56px;
-          height: 56px;
-          border-radius: 50%;
-          border: 2px solid #38bdf8;
-          box-shadow: 0 0 16px rgba(56, 189, 248, 0.5), 0 4px 12px rgba(0, 0, 0, 0.5);
-          flex-shrink: 0;
+          width: 48px !important;
+          height: 48px !important;
+          border-radius: 50% !important;
+          border: 2px solid #38bdf8 !important;
+          box-shadow:
+            0 0 14px rgba(56, 189, 248, 0.5),
+            0 2px 8px rgba(0, 0, 0, 0.5) !important;
+          flex-shrink: 0 !important;
+          margin: 0 auto !important;
         }
 
         .header-brand h1 {
-          font-size: 1.32rem;
-          font-weight: 900;
-          letter-spacing: 0.3px;
-          display: flex;
-          align-items: center;
-          flex-wrap: wrap;
-          gap: 6px;
-          line-height: 1.25;
+          font-size: 1.12rem !important;
+          font-weight: 900 !important;
+          letter-spacing: 0.2px !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          flex-wrap: nowrap !important;
+          gap: 4px !important;
+          line-height: 1.25 !important;
+          min-height: auto !important;
+          max-width: 100% !important;
+          white-space: nowrap !important;
+          text-align: center !important;
+          margin: 0 auto !important;
         }
 
-        .header-brand h1 span {
-          font-size: 0.88rem !important;
+        .header-brand h1 #brand-typewriter-text {
+          font-size: 1.12rem !important;
+          font-weight: 900 !important;
+          color: #ffffff !important;
+        }
+
+        .header-brand h1 #brand-typewriter-text span {
+          font-size: 0.92rem !important;
           color: #38bdf8 !important;
           font-weight: 800 !important;
-          text-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+          text-shadow: 0 0 10px rgba(56, 189, 248, 0.4) !important;
+        }
+
+        .header-brand h1 .typewriter-cursor {
+          font-size: 1.15rem !important;
+          margin-left: 2px !important;
+        }
+
+        .header-brand .verified-tick-badge {
+          margin-left: 3px !important;
+          width: 20px !important;
+          height: 20px !important;
+          box-shadow: 0 0 10px rgba(14, 165, 233, 0.7) !important;
+          flex-shrink: 0 !important;
         }
 
         .header-sub {
-          margin-top: 5px;
+          margin-top: 3px !important;
+          width: 100% !important;
+          max-width: 100% !important;
+          display: flex !important;
+          justify-content: center !important;
+          align-items: center !important;
+          margin-left: auto !important;
+          margin-right: auto !important;
         }
 
         .header-sub .stats-badge {
           display: inline-flex !important;
-          align-items: center;
-          gap: 8px !important;
-          font-size: 0.88rem !important;
-          background: rgba(2, 6, 23, 0.7);
-          padding: 4px 10px;
-          border-radius: 12px;
-          border: 1px solid rgba(255, 255, 255, 0.1);
+          flex-wrap: wrap !important;
+          align-items: center !important;
+          justify-content: center !important;
+          gap: 4px 10px !important;
+          font-size: 0.78rem !important;
+          background: rgba(2, 6, 23, 0.7) !important;
+          padding: 4px 14px !important;
+          border-radius: 999px !important;
+          border: 1px solid rgba(255, 255, 255, 0.12) !important;
+          max-width: 100% !important;
+          box-sizing: border-box !important;
+          text-align: center !important;
+          margin: 0 auto !important;
+          width: fit-content !important;
         }
 
         .header-sub #stat-count {
-          font-size: 0.92rem;
-          font-weight: 800;
-          color: #fff;
+          font-size: 0.82rem !important;
+          font-weight: 800 !important;
+          color: #fff !important;
+          white-space: nowrap !important;
         }
 
         .header-sub #stat-active {
-          font-size: 0.88rem;
-          font-weight: 800;
-          color: #34d399;
-          text-shadow: 0 0 8px rgba(16, 185, 129, 0.45);
-          display: inline-flex;
-          align-items: center;
+          font-size: 0.78rem !important;
+          font-weight: 800 !important;
+          color: #34d399 !important;
+          text-shadow: 0 0 8px rgba(16, 185, 129, 0.45) !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          white-space: nowrap !important;
         }
 
         .header-sub #stat-ban {
-          font-size: 0.88rem;
-          font-weight: 800;
-          color: #fb7185;
-          text-shadow: 0 0 8px rgba(244, 63, 94, 0.45);
-          display: inline-flex;
-          align-items: center;
+          font-size: 0.78rem !important;
+          font-weight: 800 !important;
+          color: #fb7185 !important;
+          text-shadow: 0 0 8px rgba(244, 63, 94, 0.45) !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          white-space: nowrap !important;
         }
 
-        .header-action-group {
-          width: 100%;
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 8px;
-          margin-top: 0;
+        /* TỐI ƯU Ô NHẬP & NÚT DÁN NHANH TRÊN MOBILE */
+        .textarea-paste-box {
+          position: relative !important;
+          width: 100% !important;
+          max-width: 100% !important;
         }
 
-        .header-action-group .btn {
-          padding: 9px 10px;
-          font-size: 0.82rem;
-          justify-content: center;
-          border-radius: 10px;
+        .textarea-paste-box textarea {
+          padding-right: 105px !important;
+          font-size: 0.85rem !important;
+          box-sizing: border-box !important;
+          max-width: 100% !important;
+        }
+
+        .btn-paste-fast {
+          right: 5px !important;
+          top: 5px !important;
+          height: 30px !important;
+          padding: 0 10px !important;
+          font-size: 0.78rem !important;
+          gap: 4px !important;
+        }
+
+        .option-menu-dropdown {
+          width: 295px !important;
+          right: 0 !important;
         }
 
         .toolbar {
@@ -4680,6 +5235,133 @@
         background: rgba(255, 255, 255, 0.03);
       }
 
+      .analytics-filter-chip {
+        background: transparent;
+        border: none;
+        color: #94a3b8;
+        padding: 5px 12px;
+        border-radius: 6px;
+        font-size: 0.74rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.18s ease;
+      }
+      .analytics-filter-chip:hover {
+        color: #fff;
+        background: rgba(255, 255, 255, 0.08);
+      }
+      .analytics-filter-chip.active {
+        background: linear-gradient(135deg, #0284c7, #38bdf8);
+        color: #fff;
+        box-shadow: 0 2px 10px rgba(14, 165, 233, 0.4);
+      }
+
+      /* BIỂU ĐỒ CỘT THEO NGÀY (DAILY BAR CHART) */
+      .daily-chart-container {
+        display: flex;
+        align-items: flex-end;
+        gap: 12px;
+        height: 165px;
+        padding: 16px 12px 10px;
+        background: rgba(0, 0, 0, 0.28);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 12px;
+        overflow-x: auto;
+      }
+      .daily-chart-col {
+        flex: 1;
+        min-width: 44px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        height: 100%;
+        justify-content: flex-end;
+        cursor: pointer;
+        transition: transform 0.2s ease;
+      }
+      .daily-chart-col:hover {
+        transform: translateY(-3px);
+      }
+      .daily-chart-val {
+        font-size: 0.72rem;
+        font-weight: 800;
+        color: #38bdf8;
+      }
+      .daily-chart-bar-wrap {
+        width: 100%;
+        max-width: 32px;
+        height: 100%;
+        display: flex;
+        align-items: flex-end;
+        background: rgba(255, 255, 255, 0.04);
+        border-radius: 6px;
+        overflow: hidden;
+      }
+      .daily-chart-bar-fill {
+        width: 100%;
+        border-radius: 6px;
+        background: linear-gradient(180deg, #38bdf8 0%, #6366f1 100%);
+        transition: height 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        min-height: 4px;
+      }
+      .daily-chart-col.is-today .daily-chart-bar-fill {
+        background: linear-gradient(180deg, #34d399 0%, #059669 100%);
+        box-shadow: 0 0 12px rgba(52, 211, 153, 0.4);
+      }
+      .daily-chart-label {
+        font-size: 0.7rem;
+        color: #94a3b8;
+        font-weight: 700;
+        white-space: nowrap;
+      }
+      .daily-chart-col.is-today .daily-chart-label {
+        color: #34d399;
+        font-weight: 900;
+      }
+
+      /* THẺ CHỈ SỐ NHANH HÔM NAY */
+      .daily-pulse-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+      }
+      .daily-pulse-card {
+        background: rgba(15, 23, 42, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        padding: 12px 14px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .daily-pulse-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+      }
+      .daily-pulse-val {
+        font-size: 1.25rem;
+        font-weight: 900;
+        color: #fff;
+        line-height: 1.1;
+      }
+      .daily-pulse-lbl {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #cbd5e1;
+        margin-top: 3px;
+      }
+      .daily-pulse-sub {
+        font-size: 0.68rem;
+        color: #94a3b8;
+        margin-top: 2px;
+      }
+
       @media (max-width: 768px) {
         .modal-card-analytics {
           width: 96vw;
@@ -4687,6 +5369,10 @@
         }
         .analytics-kpi-grid {
           grid-template-columns: 1fr 1fr;
+          gap: 8px;
+        }
+        .daily-pulse-grid {
+          grid-template-columns: 1fr;
           gap: 8px;
         }
         .analytics-header {
@@ -4886,22 +5572,6 @@
               <div class="noti-flyout-list" id="noti-flyout-list"></div>
             </div>
           </div>
-          <button
-            class="btn btn-emergency"
-            id="btn-toggle-emergency"
-            onclick="toggleEmergencyLock()"
-            title="Kích hoạt khóa khẩn cấp (chặn toàn bộ quyền sao chép)"
-            style="
-              padding: 8px 13px;
-              font-size: 0.82rem;
-              font-weight: 700;
-              gap: 6px;
-              display: none;
-            "
-          >
-            <span id="emergency-icon">🚨</span>
-            <span id="emergency-text">Khóa Khẩn Cấp</span>
-          </button>
         </div>
 
         <div class="header-brand">
@@ -4934,8 +5604,8 @@
               >🔔</span
             >
           </div>
-          <div>
-            <h1 id="brand-typewriter-wrap" style="display: inline-flex; align-items: center;" title="devsepa">
+          <div class="header-brand-info">
+            <h1 id="brand-typewriter-wrap" title="devsepa">
               <span id="brand-typewriter-text"
                 >devsepa
                 <span
@@ -4954,42 +5624,144 @@
           </div>
         </div>
 
-        <!-- BẢNG NÚT THAO TÁC (ĐÁM MÂY & TELEGRAM NẰM BÊN PHẢI) -->
+        <!-- BẢNG NÚT MENU 3 GẠCH (DỒN TOÀN BỘ CHỨC NĂNG VÀO ĐÂY) -->
         <div class="header-action-group">
-          <button
-            class="btn btn-analytics"
-            id="btn-open-analytics"
-            onclick="openAnalyticsModal()"
-            title="Xem bảng thống kê & phân tích dữ liệu toàn diện"
-          >
-            <span id="analytics-icon">📊</span>
-            <span>Thống Kê</span>
-          </button>
-          <button
-            class="btn btn-cloud"
-            id="btn-open-cloud"
-            onclick="openCloudModal()"
-          >
-            <span id="cloud-status-icon">🟢</span>
-            <span id="cloud-btn-text">Đám Mây Tự Động</span>
-          </button>
-          <button
-            class="btn btn-tele"
-            id="btn-open-tele"
-            onclick="openTeleModal()"
-          >
-            <span>✈️</span> Telegram Bot
-          </button>
-          <button
-            class="btn btn-device-mgr"
-            id="btn-open-devices"
-            onclick="openDeviceModal()"
-            title="Quản lý và phê duyệt các thiết bị đang truy cập"
-            style="display: none;"
-          >
-            <span>📱</span> Thiết Bị
-            <span id="device-pending-badge" class="device-pending-counter" style="display: none;">0</span>
-          </button>
+          <div class="header-menu-container">
+            <button
+              type="button"
+              class="btn btn-hamburger-menu"
+              id="btn-toggle-menu"
+              onclick="toggleOptionMenu(event)"
+              title="Mở danh mục chức năng (Thống kê, Đám mây, Telegram, Thiết bị...)"
+            >
+              <span class="hamburger-bars" aria-hidden="true">
+                <span></span>
+                <span></span>
+                <span></span>
+              </span>
+              <span class="menu-btn-text">Menu</span>
+              <span id="menu-notify-dot" class="menu-notify-dot" style="display: none"></span>
+            </button>
+
+            <!-- DROPDOWN FLYOUT MENU CHỨC NĂNG -->
+            <div
+              class="option-menu-dropdown"
+              id="option-menu-dropdown"
+              onclick="event.stopPropagation()"
+            >
+              <div class="option-menu-header">
+                <div class="option-menu-title">
+                  <span>⚙️</span>
+                  <span>Danh Mục Chức Năng</span>
+                </div>
+                <button
+                  type="button"
+                  class="option-menu-close"
+                  onclick="closeOptionMenu()"
+                  title="Đóng menu"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div class="option-menu-list">
+                <!-- 1. THỐNG KÊ & BÁO CÁO -->
+                <button
+                  type="button"
+                  class="option-menu-item btn-analytics"
+                  id="btn-open-analytics"
+                  onclick="openAnalyticsModal(); closeOptionMenu();"
+                  title="Xem bảng thống kê & phân tích dữ liệu toàn diện"
+                >
+                  <div class="option-item-icon opt-icon-analytics">
+                    <span id="analytics-icon">📊</span>
+                  </div>
+                  <div class="option-item-content">
+                    <div class="option-item-title">Thống Kê &amp; Báo Cáo</div>
+                    <div class="option-item-sub">Phân tích dữ liệu &amp; biến động theo ngày</div>
+                  </div>
+                  <span class="option-item-arrow">›</span>
+                </button>
+
+                <!-- 2. ĐÁM MÂY TỰ ĐỘNG -->
+                <button
+                  type="button"
+                  class="option-menu-item btn-cloud"
+                  id="btn-open-cloud"
+                  onclick="openCloudModal(); closeOptionMenu();"
+                  title="Cấu hình & đồng bộ dữ liệu Realtime Firebase"
+                >
+                  <div class="option-item-icon opt-icon-cloud">
+                    <span id="cloud-status-icon">🟢</span>
+                  </div>
+                  <div class="option-item-content">
+                    <div class="option-item-title" id="cloud-btn-text">Đám Mây Tự Động</div>
+                    <div class="option-item-sub">Đồng bộ dữ liệu Realtime Firebase</div>
+                  </div>
+                  <span class="option-item-arrow">›</span>
+                </button>
+
+                <!-- 3. KÊNH TELEGRAM / CẤU HÌNH BOT -->
+                <button
+                  type="button"
+                  class="option-menu-item btn-tele"
+                  id="btn-open-tele"
+                  onclick="openTeleModal(); closeOptionMenu();"
+                  title="Kênh Telegram thông báo chung"
+                >
+                  <div class="option-item-icon opt-icon-tele">
+                    <span>✈️</span>
+                  </div>
+                  <div class="option-item-content">
+                    <div class="option-item-title" id="tele-btn-menu-title">Telegram Bot &amp; Kênh</div>
+                    <div class="option-item-sub" id="tele-btn-menu-sub">Nhận thông báo mở BAN &amp; thêm nick</div>
+                  </div>
+                  <span class="option-item-arrow">›</span>
+                </button>
+
+                <!-- 4. QUẢN LÝ THIẾT BỊ (ADMIN) -->
+                <button
+                  type="button"
+                  class="option-menu-item btn-device-mgr"
+                  id="btn-open-devices"
+                  onclick="openDeviceModal(); closeOptionMenu();"
+                  title="Quản lý và phê duyệt các thiết bị đang truy cập"
+                  style="display: none"
+                >
+                  <div class="option-item-icon opt-icon-devices">
+                    <span>📱</span>
+                  </div>
+                  <div class="option-item-content">
+                    <div class="option-item-title" style="display: flex; align-items: center; gap: 6px;">
+                      <span>Quản Lý Thiết Bị</span>
+                      <span id="device-pending-badge" class="device-pending-counter" style="display: none">0</span>
+                    </div>
+                    <div class="option-item-sub">Phê duyệt &amp; phân quyền máy truy cập</div>
+                  </div>
+                  <span class="option-item-arrow">›</span>
+                </button>
+
+                <!-- 5. KHÓA KHẨN CẤP (ADMIN) -->
+                <button
+                  type="button"
+                  class="option-menu-item btn-emergency"
+                  id="btn-toggle-emergency"
+                  onclick="toggleEmergencyLock(); closeOptionMenu();"
+                  title="Kích hoạt khóa khẩn cấp (chặn toàn bộ quyền sao chép)"
+                  style="display: none"
+                >
+                  <div class="option-item-icon opt-icon-emergency">
+                    <span id="emergency-icon">🚨</span>
+                  </div>
+                  <div class="option-item-content">
+                    <div class="option-item-title" id="emergency-text">Khóa Khẩn Cấp</div>
+                    <div class="option-item-sub">Chặn toàn bộ quyền sao chép tài khoản</div>
+                  </div>
+                  <span class="option-item-arrow">›</span>
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
 
         <input
@@ -5027,131 +5799,132 @@
       </div>
 
       <!-- ========================================================
-           PHÂN KHU 1: QUẢN TRỊ & THÊM TÀI KHOẢN (CHỈ HIỆN KHI LÀ ADMIN)
+           KHU VỰC 1: QUẢN TRỊ & THÊM TÀI KHOẢN (VÒNG KHUNG DUY NHẤT)
            ======================================================== -->
-      <div class="zone-divider-header zone-admin-divider" id="zone-admin-divider" style="display: none;">
-        <div class="zone-divider-left">
-          <span class="zone-badge zone-badge-admin">KHU VỰC 1</span>
-          <span class="zone-title-text">⚙️ QUẢN TRỊ & THÊM TÀI KHOẢN</span>
+      <div class="add-box admin-unified-card" id="input-container" style="display: none">
+        <!-- HEADER CỦA CARD (TÍCH HỢP TIÊU ĐỀ KHU VỰC 1 & NÚT THU GỌN) -->
+        <div class="admin-card-header" id="collapse-toggle" onclick="toggleInputBox()">
+          <div class="admin-card-title-group">
+            <span class="zone-badge zone-badge-admin">KHU VỰC 1</span>
+            <div class="admin-card-text">
+              <h3 class="admin-card-title">⚙️ QUẢN TRỊ &amp; THÊM TÀI KHOẢN</h3>
+              <p class="admin-card-subtitle">Dành cho Quản trị viên nhập nick nhanh và cấu hình dữ liệu</p>
+            </div>
+          </div>
+          <button type="button" class="btn-card-collapse" id="collapse-arrow-btn">
+            <span id="collapse-arrow">▲ Thu gọn</span>
+          </button>
         </div>
-        <div class="zone-desc-text">Dành cho Quản trị viên nhập nick mới và cấu hình hệ thống</div>
-      </div>
 
-      <!-- KHUNG NHẬP LIỆU GỌN GÀNG (MODERN SLATE) -->
-      <div class="add-box" id="input-container">
-        <div
-          class="add-box-header"
-          id="collapse-toggle"
-          onclick="toggleInputBox()"
-        >
-          <div class="add-box-title">
-            <span class="add-box-badge">➕ THÊM TÀI KHOẢN MỚI</span>
-            <span class="add-box-hint">(Dán danh sách tk:mk bên dưới)</span>
-          </div>
-          <span id="collapse-arrow" class="collapse-arrow">▲ Thu gọn</span>
-        </div>
+        <!-- THÂN FORM BÊN TRONG -->
         <div class="add-box-content" id="collapse-content">
+          <!-- HÀNG ĐIỀU KHIỂN: CHỌN KHO THÊM NICK & DÁN NHANH -->
+          <div class="add-control-row">
+            <div class="add-target-selector">
+              <span class="add-target-label">Đang thêm vào:</span>
+              <div class="add-target-pill-group">
+                <button
+                  type="button"
+                  class="btn-target-pill active"
+                  id="btn-add-store-rank"
+                  onclick="handleTargetStorageChange('rank')"
+                  title="Chọn thêm tài khoản vào Kho Nick Chơi Rank"
+                >
+                  <span class="pill-icon">🎮</span>
+                  <span>Nick Chơi Rank</span>
+                </button>
+                <button
+                  type="button"
+                  class="btn-target-pill"
+                  id="btn-add-store-chungsuc"
+                  onclick="handleTargetStorageChange('chungsuc')"
+                  title="Chọn thêm tài khoản vào Sự Kiện Chung Sức"
+                >
+                  <span class="pill-icon">🤝</span>
+                  <span>SK Chung Sức</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- NÚT DÁN NHANH TỪ CLIPBOARD NẰM NGAY HÀNG TRÊN CÙNG -->
+            <button
+              type="button"
+              class="btn-quick-paste-purple"
+              id="btn-quick-paste"
+              onclick="handleQuickPaste()"
+              title="Dán nhanh nội dung từ khay nhớ tạm clipboard"
+            >
+              <span>📋</span>
+              <span>Dán Nhanh Từ Clipboard</span>
+            </button>
+          </div>
+
+          <!-- KHUNG TEXTAREA VÀ CÁC TRƯỜNG PHỤ -->
           <div class="add-form-grid" id="add-form-grid">
-            <div style="grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 10px; background: rgba(0, 0, 0, 0.28); padding: 7px 12px; border-radius: 9px; border: 1px solid rgba(168, 85, 247, 0.22); flex-wrap: wrap; margin-bottom: 2px;">
-              <span style="font-size: 0.78rem; font-weight: 800; color: #e9d5ff;">📁 Phân loại kho lưu trữ:</span>
-              <div style="display: flex; gap: 12px; align-items: center;">
-                <label class="storage-radio-label">
-                  <input type="radio" name="targetStorage" value="rank" id="radio-store-rank" checked onchange="handleTargetStorageChange('rank')">
-                  <span>🎮 Kho Nick Chơi Rank</span>
-                </label>
-                <label class="storage-radio-label">
-                  <input type="radio" name="targetStorage" value="chungsuc" id="radio-store-chungsuc" onchange="handleTargetStorageChange('chungsuc')">
-                  <span style="color: #fde68a;">🤝 Sự Kiện Chung Sức</span>
-                </label>
-              </div>
+            <div class="field-wrap-textarea">
+              <textarea
+                id="rawInput"
+                placeholder="Dán 1 hoặc nhiều tài khoản cùng lúc (Mỗi dòng 1 nick dạng: tk:mk hoặc tk|mk)..."
+              ></textarea>
             </div>
-            <div>
-              <div class="field-label-row">
-                <label style="margin-bottom: 0;">Dán tk:mk hoặc tk|mk:</label>
+            <div class="add-fields-row" id="add-fields-row">
+              <div id="field-wrap-unlock">
+                <label>Ngày mở BAN (dd/MM):</label>
+                <input
+                  type="text"
+                  id="defaultUnlock"
+                  inputmode="numeric"
+                  pattern="[0-9/]*"
+                  placeholder="Ví dụ: 25/10"
+                  maxlength="5"
+                  oninput="formatDateOnlyNumbers(this)"
+                />
+              </div>
+              <div id="field-wrap-rank">
+                <label>Rank (chọn nhanh hoặc gõ):</label>
+                <input
+                  type="text"
+                  id="defaultRank"
+                  placeholder="BK, KC, TA, CT, DCT..."
+                  maxlength="15"
+                  style="text-transform: uppercase"
+                />
+              </div>
+              <div id="field-wrap-uytin">
+                <label>Uy Tín:</label>
+                <input
+                  type="text"
+                  id="defaultUyTin"
+                  inputmode="numeric"
+                  pattern="[0-9]*"
+                  placeholder="100 (tùy chọn)"
+                  maxlength="3"
+                  oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                />
+              </div>
+              <div class="field-wrap-action">
+                <label style="opacity: 0">Thao tác</label>
                 <button
-                  type="button"
-                  class="btn-paste-inline"
-                  id="btn-quick-paste-inline"
-                  onclick="handleQuickPaste()"
-                  title="Dán nhanh nội dung từ khay nhớ tạm clipboard"
+                  class="btn btn-primary"
+                  id="btn-add"
+                  onclick="handleAddAccount()"
+                  style="height: 40px; width: 100%; padding: 0 16px"
                 >
-                  <span>📋</span>
-                  <span>Dán Nhanh</span>
+                  <span class="btn-snow-track">
+                    <span class="btn-snow-drop s1">❄</span>
+                    <span class="btn-snow-drop s2">·</span>
+                    <span class="btn-snow-drop s3">❄</span>
+                    <span class="btn-snow-drop s4">·</span>
+                    <span class="btn-snow-drop s5">❄</span>
+                    <span class="btn-snow-drop s6">·</span>
+                    <span class="btn-snow-drop s7">❄</span>
+                  </span>
+                  <span class="btn-text-glossy">➕ THÊM TÀI KHOẢN</span>
                 </button>
               </div>
-              <div class="textarea-paste-box">
-                <textarea
-                  id="rawInput"
-                  placeholder="a97truong:x1n3mdung (bấm Dán Nhanh để điền ngay)"
-                ></textarea>
-                <button
-                  type="button"
-                  class="btn-paste-fast"
-                  id="btn-quick-paste"
-                  onclick="handleQuickPaste()"
-                  title="Dán nhanh nội dung từ khay nhớ tạm clipboard"
-                >
-                  <span class="btn-paste-icon">📋</span>
-                  <span>Dán Nhanh</span>
-                </button>
-              </div>
-            </div>
-            <div id="field-wrap-unlock">
-              <label>Ngày mở BAN (dd/MM):</label>
-              <input
-                type="text"
-                id="defaultUnlock"
-                inputmode="numeric"
-                pattern="[0-9/]*"
-                placeholder="Ví dụ: 25/10"
-                maxlength="5"
-                oninput="formatDateOnlyNumbers(this)"
-              />
-            </div>
-            <div id="field-wrap-rank">
-              <label>Rank (chọn nhanh hoặc gõ):</label>
-              <input
-                type="text"
-                id="defaultRank"
-                placeholder="BK, KC, TA, CT, DCT..."
-                maxlength="15"
-                style="text-transform: uppercase"
-              />
-            </div>
-            <div id="field-wrap-uytin">
-              <label>Uy Tín:</label>
-              <input
-                type="text"
-                id="defaultUyTin"
-                inputmode="numeric"
-                pattern="[0-9]*"
-                placeholder="100 (tùy chọn)"
-                maxlength="3"
-                oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-              />
-            </div>
-            <div>
-              <label style="opacity: 0">Thao tác</label>
-              <button
-                class="btn btn-primary"
-                id="btn-add"
-                onclick="handleAddAccount()"
-                style="height: 40px; width: 100%; padding: 0 16px"
-              >
-                <span class="btn-snow-track">
-                  <span class="btn-snow-drop s1">❄</span>
-                  <span class="btn-snow-drop s2">·</span>
-                  <span class="btn-snow-drop s3">❄</span>
-                  <span class="btn-snow-drop s4">·</span>
-                  <span class="btn-snow-drop s5">❄</span>
-                  <span class="btn-snow-drop s6">·</span>
-                  <span class="btn-snow-drop s7">❄</span>
-                </span>
-                <span class="btn-text-glossy">➕ THÊM TÀI KHOẢN</span>
-              </button>
             </div>
           </div>
-          <div id="add-success-banner" style="display: none;"></div>
+          <div id="add-success-banner" style="display: none"></div>
         </div>
       </div>
 
@@ -6172,36 +6945,135 @@
             </div>
           </div>
 
-          <!-- THANH CHỌN TAB NỘI DUNG -->
-          <div class="analytics-tab-bar">
-            <button
-              type="button"
-              class="analytics-tab-btn active"
-              id="analytics-tab-btn-regions"
-              onclick="switchAnalyticsTab('regions')"
-            >
-              <span>🌐</span> <span>Phân Bổ Khu Vực & Rank</span>
-            </button>
-            <button
-              type="button"
-              class="analytics-tab-btn"
-              id="analytics-tab-btn-creation"
-              onclick="switchAnalyticsTab('creation')"
-            >
-              <span>➕</span> <span>Thêm Mới & Đóng Góp</span>
-            </button>
-            <button
-              type="button"
-              class="analytics-tab-btn"
-              id="analytics-tab-btn-usage"
-              onclick="switchAnalyticsTab('usage')"
-            >
-              <span>🔥</span> <span>Sử Dụng & Acc Nổi Bật</span>
-            </button>
+          <!-- THANH CHỌN TAB NỘI DUNG & BỘ LỌC THỜI GIAN -->
+          <div class="analytics-tab-bar" style="display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;">
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <button
+                type="button"
+                class="analytics-tab-btn active"
+                id="analytics-tab-btn-daily"
+                onclick="switchAnalyticsTab('daily')"
+              >
+                <span>📅</span> <span>Biến Động Theo Ngày</span>
+              </button>
+              <button
+                type="button"
+                class="analytics-tab-btn"
+                id="analytics-tab-btn-regions"
+                onclick="switchAnalyticsTab('regions')"
+              >
+                <span>🌐</span> <span>Phân Bổ Khu Vực & Rank</span>
+              </button>
+              <button
+                type="button"
+                class="analytics-tab-btn"
+                id="analytics-tab-btn-creation"
+                onclick="switchAnalyticsTab('creation')"
+              >
+                <span>➕</span> <span>Thêm Mới & Đóng Góp</span>
+              </button>
+              <button
+                type="button"
+                class="analytics-tab-btn"
+                id="analytics-tab-btn-usage"
+                onclick="switchAnalyticsTab('usage')"
+              >
+                <span>🔥</span> <span>Sử Dụng & Acc Nổi Bật</span>
+              </button>
+            </div>
+
+            <!-- BỘ LỌC KHUNG THỜI GIAN QUẢN TRỊ -->
+            <div class="analytics-time-filter" style="display: inline-flex; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 2px;">
+              <button type="button" class="analytics-filter-chip active" data-range="all" onclick="setAnalyticsTimeRange('all')" title="Thống kê toàn bộ dữ liệu">Toàn bộ</button>
+              <button type="button" class="analytics-filter-chip" data-range="today" onclick="setAnalyticsTimeRange('today')" title="Chỉ thống kê hôm nay">Hôm nay</button>
+              <button type="button" class="analytics-filter-chip" data-range="7d" onclick="setAnalyticsTimeRange('7d')" title="Thống kê 7 ngày gần nhất">7 ngày</button>
+              <button type="button" class="analytics-filter-chip" data-range="30d" onclick="setAnalyticsTimeRange('30d')" title="Thống kê 30 ngày gần nhất">30 ngày</button>
+            </div>
+          </div>
+
+          <!-- TAB 0: BIẾN ĐỘNG & THỐNG KÊ THEO NGÀY (DAILY OPERATIONS) -->
+          <div id="analytics-panel-daily" class="analytics-tab-panel">
+            <div style="display: flex; flex-direction: column; gap: 14px;">
+              
+              <!-- Khối 1: 3 Thẻ Chỉ Số Hoạt Động Hôm Nay -->
+              <div class="daily-pulse-grid" id="analytics-daily-pulse-grid">
+                <!-- Render bằng JS -->
+              </div>
+
+              <!-- Khối 2: Biểu Đồ Xu Hướng 7 Ngày Gần Nhất -->
+              <div class="analytics-section-card">
+                <div class="analytics-section-header">
+                  <div class="analytics-section-title">
+                    <span>📊</span> <span>Xu Hướng Thêm Mới 7 Ngày Gần Nhất</span>
+                  </div>
+                  <span style="font-size: 0.74rem; color: #38bdf8;" id="analytics-chart-subtitle">Cột xanh lá là hôm nay • Nhấp cột để xem chi tiết</span>
+                </div>
+                <div class="daily-chart-container" id="analytics-daily-chart-container">
+                  <!-- Render bằng JS -->
+                </div>
+              </div>
+
+              <!-- Khối 3: Sổ Cái Biến Động Theo Ngày (Bảng Nhật Ký Quản Trị) -->
+              <div class="analytics-section-card">
+                <div class="analytics-section-header">
+                  <div class="analytics-section-title">
+                    <span>📑</span> <span>Sổ Cái Hoạt Động &amp; Biến Động Từng Ngày</span>
+                  </div>
+                  <span style="font-size: 0.74rem; color: #94a3b8;" id="analytics-ledger-total-days">0 ngày ghi nhận</span>
+                </div>
+                <div class="analytics-table-wrap">
+                  <table class="analytics-table">
+                    <thead>
+                      <tr>
+                        <th style="width: 130px;">Ngày</th>
+                        <th style="width: 150px;">Nick Mới Thêm</th>
+                        <th>Phân Bổ Kho</th>
+                        <th>Người Thêm Chính</th>
+                        <th style="text-align: right; width: 95px;">Lượt Dùng</th>
+                        <th style="text-align: center; width: 110px;">Thao Tác</th>
+                      </tr>
+                    </thead>
+                    <tbody id="analytics-daily-ledger-tbody">
+                      <!-- Render bằng JS -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Khối 4: Chi Tiết Danh Sách Nick Của Ngày Đang Chọn (Inspector) -->
+              <div class="analytics-section-card" id="analytics-daily-detail-card" style="display: none;">
+                <div class="analytics-section-header">
+                  <div class="analytics-section-title" id="analytics-daily-detail-title">
+                    <span>🔍</span> <span>Chi Tiết Nick Thêm Ngày</span>
+                  </div>
+                  <button type="button" class="btn btn-tool" onclick="document.getElementById('analytics-daily-detail-card').style.display='none'" style="padding: 4px 10px; font-size: 0.72rem;">✕ Đóng chi tiết</button>
+                </div>
+                <div class="analytics-table-wrap">
+                  <table class="analytics-table">
+                    <thead>
+                      <tr>
+                        <th style="width: 40px;">#</th>
+                        <th>Tài Khoản</th>
+                        <th>Mật Khẩu</th>
+                        <th>Rank</th>
+                        <th>Uy Tín</th>
+                        <th>Người Thêm</th>
+                        <th>Giờ Thêm</th>
+                        <th>Trạng Thái</th>
+                      </tr>
+                    </thead>
+                    <tbody id="analytics-daily-detail-tbody">
+                      <!-- Render bằng JS -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+            </div>
           </div>
 
           <!-- TAB 1: PHÂN BỔ KHU VỰC & NHÓM RANK -->
-          <div id="analytics-panel-regions" class="analytics-tab-panel">
+          <div id="analytics-panel-regions" class="analytics-tab-panel" style="display: none;">
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
               <!-- Cột 1: Phân bổ theo Nhóm Rank & Kho Nick -->
               <div class="analytics-section-card">
@@ -6393,9 +7265,49 @@
       }
 
       // ==========================================
+      // ĐIỀU KHIỂN MENU 3 GẠCH (HAMBURGER OPTION MENU)
+      // ==========================================
+      window.toggleOptionMenu = function (e) {
+        if (e) e.stopPropagation();
+        const dropdown = document.getElementById("option-menu-dropdown");
+        const btn = document.getElementById("btn-toggle-menu");
+        if (!dropdown) return;
+        const isShow = dropdown.classList.toggle("show");
+        if (btn) btn.classList.toggle("is-active", isShow);
+        if (isShow) {
+          playSound("click");
+          if (typeof window.closeNotiFlyout === "function") window.closeNotiFlyout();
+        }
+      };
+
+      window.closeOptionMenu = function () {
+        const dropdown = document.getElementById("option-menu-dropdown");
+        const btn = document.getElementById("btn-toggle-menu");
+        if (dropdown) dropdown.classList.remove("show");
+        if (btn) btn.classList.remove("is-active");
+      };
+
+      document.addEventListener("click", (e) => {
+        const dropdown = document.getElementById("option-menu-dropdown");
+        const btn = document.getElementById("btn-toggle-menu");
+        if (dropdown && dropdown.classList.contains("show")) {
+          if (!dropdown.contains(e.target) && (!btn || !btn.contains(e.target))) {
+            window.closeOptionMenu();
+          }
+        }
+      });
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          window.closeOptionMenu();
+        }
+      });
+
+      // ==========================================
       // ĐIỀU KHIỂN & PHÂN TÍCH SỐ LIỆU ANALYTICS DASHBOARD
       // ==========================================
-      let currentAnalyticsTab = "regions";
+      let currentAnalyticsTab = "daily";
+      let currentAnalyticsTimeRange = "all"; // "all" | "today" | "7d" | "30d"
 
       window.openAnalyticsModal = function () {
         const m = document.getElementById("analytics-modal");
@@ -6418,7 +7330,7 @@
 
       window.switchAnalyticsTab = function (tabKey) {
         currentAnalyticsTab = tabKey;
-        const tabs = ["regions", "creation", "usage"];
+        const tabs = ["daily", "regions", "creation", "usage"];
         tabs.forEach((key) => {
           const btn = document.getElementById(`analytics-tab-btn-${key}`);
           const panel = document.getElementById(`analytics-panel-${key}`);
@@ -6428,11 +7340,146 @@
         playSound("click");
       };
 
+      window.setAnalyticsTimeRange = function (range) {
+        currentAnalyticsTimeRange = range;
+        document.querySelectorAll(".analytics-filter-chip").forEach((el) => {
+          el.classList.toggle("active", el.getAttribute("data-range") === range);
+        });
+        renderAnalyticsData();
+        playSound("click");
+      };
+
+      // Helper trích xuất thông tin ngày tạo của tài khoản
+      function getAccountDateInfo(item) {
+        if (!item) return null;
+        let ts = null;
+        if (item.createdTimestamp && Number(item.createdTimestamp) > 1600000000000) {
+          ts = Number(item.createdTimestamp);
+        } else if (item.id) {
+          const rawTs = parseInt(String(item.id).slice(0, 13), 10);
+          if (!isNaN(rawTs) && rawTs > 1600000000000 && rawTs < 2500000000000) {
+            ts = rawTs;
+          }
+        }
+
+        if (ts) {
+          const d = new Date(ts);
+          const dd = String(d.getDate()).padStart(2, "0");
+          const mm = String(d.getMonth() + 1).padStart(2, "0");
+          const yyyy = d.getFullYear();
+          const dateKey = `${dd}/${mm}`;
+          const fullDateKey = `${yyyy}-${mm}-${dd}`;
+          const displayDate = `${dd}/${mm}/${yyyy}`;
+          const timeStr = `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+          return { timestamp: ts, dateKey, fullDateKey, displayDate, timeStr, dateObj: d };
+        }
+
+        if (item.createdAt && typeof item.createdAt === "string") {
+          const m = item.createdAt.match(/(\d{1,2})\/(\d{1,2})(?:\/(\d{4}))?/);
+          if (m) {
+            const dd = m[1].padStart(2, "0");
+            const mm = m[2].padStart(2, "0");
+            const yyyy = m[3] || String(new Date().getFullYear());
+            const dateKey = `${dd}/${mm}`;
+            const fullDateKey = `${yyyy}-${mm}-${dd}`;
+            const parsedTs = new Date(Number(yyyy), Number(mm) - 1, Number(dd)).getTime();
+            return {
+              timestamp: parsedTs,
+              dateKey,
+              fullDateKey,
+              displayDate: `${dd}/${mm}/${yyyy}`,
+              timeStr: "",
+              dateObj: new Date(parsedTs),
+            };
+          }
+        }
+
+        return {
+          timestamp: 0,
+          dateKey: "Trước đó",
+          fullDateKey: "0000-00-00",
+          displayDate: "Trước đó / Ban đầu",
+          timeStr: "",
+          dateObj: new Date(0),
+        };
+      }
+
+      window.inspectDailyAccounts = function (targetDateKey) {
+        const detailCard = document.getElementById("analytics-daily-detail-card");
+        const detailTitle = document.getElementById("analytics-daily-detail-title");
+        const detailTbody = document.getElementById("analytics-daily-detail-tbody");
+        if (!detailCard || !detailTbody) return;
+
+        const matchedAccounts = accounts.filter((a) => {
+          const dInfo = getAccountDateInfo(a);
+          return dInfo && (dInfo.dateKey === targetDateKey || dInfo.fullDateKey === targetDateKey);
+        });
+
+        if (detailTitle) {
+          detailTitle.innerHTML = `<span>🔍</span> <span>Chi Tiết ${matchedAccounts.length} Nick Thêm Ngày <b>${escapeHtml(targetDateKey)}</b></span>`;
+        }
+
+        let html = "";
+        matchedAccounts.forEach((a, idx) => {
+          const dInfo = getAccountDateInfo(a);
+          const banInfo = checkBanStatus(a.unlockDate, a);
+          const isBanned = banInfo.isBanned;
+          const rankGrp = parseRankGroup(a.rank);
+          const isCs = a.category === "chungsuc";
+          const passDisplay = isAdmin && !isGlobalPasswordMasked ? escapeHtml(a.password) : "••••••••";
+
+          html += `
+            <tr>
+              <td style="font-weight: 800; color: #94a3b8;">${idx + 1}</td>
+              <td><b style="color: #fff; font-family: monospace;">${escapeHtml(a.username)}</b></td>
+              <td><span style="color: #94a3b8; font-family: monospace; letter-spacing: 1px;">${passDisplay}</span></td>
+              <td><span style="color: ${isCs ? "#fbbf24" : rankGrp.color}; font-weight: 700;">${isCs ? "🤝 Chung Sức" : rankGrp.name}</span></td>
+              <td style="font-weight: 800; color: #38bdf8;">${escapeHtml(a.uyTin || "--")}</td>
+              <td><span style="color: #c7d2fe;">👤 ${escapeHtml(a.createdBy || "Khách")}</span></td>
+              <td style="color: #94a3b8; font-size: 0.76rem;">${escapeHtml(dInfo.timeStr || "--:--")}</td>
+              <td>${isBanned ? `<span class="badge badge-banned">${banInfo.desc}</span>` : `<span class="badge badge-active">🟢 Hoạt động</span>`}</td>
+            </tr>
+          `;
+        });
+
+        if (!html) {
+          html = `<tr><td colspan="8" style="text-align:center; color:#94a3b8; padding:20px;">Không tìm thấy tài khoản nào của ngày này.</td></tr>`;
+        }
+
+        detailTbody.innerHTML = html;
+        detailCard.style.display = "block";
+        detailCard.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        playSound("click");
+      };
+
       function renderAnalyticsData() {
-        const total = accounts.length;
-        const rankList = accounts.filter((a) => a.category !== "chungsuc");
-        const chungSucList = accounts.filter((a) => a.category === "chungsuc");
-        const totalUsage = accounts.reduce(
+        const now = Date.now();
+        const todayStr = getTodayFormatted();
+        const tomorrowStr = getTomorrowFormatted();
+
+        // 1. LỌC DỮ LIỆU THEO PHẠM VI THỜI GIAN ĐÃ CHỌN (ALL / TODAY / 7D / 30D)
+        let scopedAccounts = [...accounts];
+        if (currentAnalyticsTimeRange === "today") {
+          scopedAccounts = accounts.filter((a) => {
+            const dInfo = getAccountDateInfo(a);
+            return dInfo && dInfo.dateKey === todayStr;
+          });
+        } else if (currentAnalyticsTimeRange === "7d") {
+          scopedAccounts = accounts.filter((a) => {
+            const dInfo = getAccountDateInfo(a);
+            return dInfo && dInfo.timestamp > 0 && now - dInfo.timestamp <= 7 * 86400 * 1000;
+          });
+        } else if (currentAnalyticsTimeRange === "30d") {
+          scopedAccounts = accounts.filter((a) => {
+            const dInfo = getAccountDateInfo(a);
+            return dInfo && dInfo.timestamp > 0 && now - dInfo.timestamp <= 30 * 86400 * 1000;
+          });
+        }
+
+        const total = scopedAccounts.length;
+        const rankList = scopedAccounts.filter((a) => a.category !== "chungsuc");
+        const chungSucList = scopedAccounts.filter((a) => a.category === "chungsuc");
+        const totalUsage = scopedAccounts.reduce(
           (sum, a) => sum + (Number(a.useCount) || 0),
           0,
         );
@@ -6440,16 +7487,17 @@
 
         let activeCount = 0;
         let banCount = 0;
-        accounts.forEach((a) => {
+        scopedAccounts.forEach((a) => {
           const ban = checkBanStatus(a.unlockDate, a);
           if (ban.isBanned) banCount++;
           else activeCount++;
         });
-        const activeRate = total > 0 ? Math.round((activeCount / total) * 100) : 100;
+        const activeRate =
+          total > 0 ? Math.round((activeCount / total) * 100) : 100;
 
         // Tổng hợp người thêm nick (Contributors)
         const contributorMap = new Map();
-        accounts.forEach((a) => {
+        scopedAccounts.forEach((a) => {
           const creator = (a.createdBy || "").trim() || "Khách / Không rõ";
           contributorMap.set(creator, (contributorMap.get(creator) || 0) + 1);
         });
@@ -6463,9 +7511,18 @@
         const kpiRate = document.getElementById("analytics-kpi-rate");
         const kpiRateSub = document.getElementById("analytics-kpi-rate-sub");
 
+        const rangeLabel =
+          currentAnalyticsTimeRange === "today"
+            ? "hôm nay"
+            : currentAnalyticsTimeRange === "7d"
+              ? "7 ngày qua"
+              : currentAnalyticsTimeRange === "30d"
+                ? "30 ngày qua"
+                : "toàn kho";
+
         if (kpiTotal) kpiTotal.textContent = total;
         if (kpiTotalSub)
-          kpiTotalSub.textContent = `${rankList.length} rank • ${chungSucList.length} chung sức`;
+          kpiTotalSub.textContent = `${rankList.length} rank • ${chungSucList.length} chung sức (${rangeLabel})`;
         if (kpiUsage) kpiUsage.textContent = totalUsage.toLocaleString();
         if (kpiUsageSub) kpiUsageSub.textContent = `~${avgUsage} lượt/nick tb`;
         if (kpiContributors) kpiContributors.textContent = contributorMap.size;
@@ -6473,7 +7530,241 @@
         if (kpiRateSub)
           kpiRateSub.textContent = `${activeCount} sẵn sàng • ${banCount} ban`;
 
-        // 2. RENDER TAB 1: PHÂN BỔ THEO RANK & KHU VỰC KHO
+        // ==========================================
+        // 2. RENDER TAB 0: BIẾN ĐỘNG & THỐNG KÊ THEO NGÀY
+        // ==========================================
+        // Khởi tạo map cho 7 ngày gần nhất (đảm bảo biểu đồ luôn đủ 7 cột liên tục)
+        const dailyMap = new Map();
+        for (let i = 6; i >= 0; i--) {
+          const d = new Date();
+          d.setDate(d.getDate() - i);
+          const dd = String(d.getDate()).padStart(2, "0");
+          const mm = String(d.getMonth() + 1).padStart(2, "0");
+          const key = `${dd}/${mm}`;
+          dailyMap.set(key, {
+            dateKey: key,
+            fullDate: `${dd}/${mm}/${d.getFullYear()}`,
+            isToday: i === 0,
+            isYesterday: i === 1,
+            dayLabel: i === 0 ? "Hôm nay" : i === 1 ? "Hôm qua" : `${dd}/${mm}`,
+            accounts: [],
+            rankCount: 0,
+            chungSucCount: 0,
+            usageCount: 0,
+            contributors: new Map(),
+            timestamp: d.getTime(),
+          });
+        }
+
+        // Gom toàn bộ tài khoản vào từng ngày tương ứng
+        accounts.forEach((a) => {
+          const dInfo = getAccountDateInfo(a);
+          if (!dInfo) return;
+          let entry = dailyMap.get(dInfo.dateKey);
+          if (!entry) {
+            entry = {
+              dateKey: dInfo.dateKey,
+              fullDate: dInfo.displayDate,
+              isToday: dInfo.dateKey === todayStr,
+              isYesterday: false,
+              dayLabel: dInfo.dateKey,
+              accounts: [],
+              rankCount: 0,
+              chungSucCount: 0,
+              usageCount: 0,
+              contributors: new Map(),
+              timestamp: dInfo.timestamp,
+            };
+            dailyMap.set(dInfo.dateKey, entry);
+          }
+          entry.accounts.push(a);
+          if (a.category === "chungsuc") entry.chungSucCount++;
+          else entry.rankCount++;
+
+          const creator = (a.createdBy || "Khách").trim();
+          entry.contributors.set(
+            creator,
+            (entry.contributors.get(creator) || 0) + 1,
+          );
+
+          if (a.lastUsed && a.lastUsed.includes(dInfo.dateKey)) {
+            entry.usageCount += Number(a.useCount) || 1;
+          }
+        });
+
+        // Đếm nick mở ban hôm nay và ngày mai
+        const todayUnbannedCount = accounts.filter((a) => {
+          if (!a.unlockDate) return false;
+          return a.unlockDate.trim() === todayStr;
+        }).length;
+
+        const tomorrowUnbanCount = accounts.filter((a) => {
+          if (!a.unlockDate) return false;
+          return a.unlockDate.trim() === tomorrowStr;
+        }).length;
+
+        // A. Render 3 Thẻ Pulse Hoạt Động Hôm Nay
+        const pulseGrid = document.getElementById("analytics-daily-pulse-grid");
+        if (pulseGrid) {
+          const todayEntry = dailyMap.get(todayStr) || {
+            accounts: [],
+            rankCount: 0,
+            chungSucCount: 0,
+            usageCount: 0,
+          };
+          pulseGrid.innerHTML = `
+            <div class="daily-pulse-card">
+              <div class="daily-pulse-icon" style="background: rgba(14, 165, 233, 0.15); color: #38bdf8;">📥</div>
+              <div>
+                <div class="daily-pulse-val" style="color: #38bdf8;">+${todayEntry.accounts.length} nick</div>
+                <div class="daily-pulse-lbl">Thêm Mới Hôm Nay</div>
+                <div class="daily-pulse-sub">${todayEntry.rankCount} rank • ${todayEntry.chungSucCount} chung sức</div>
+              </div>
+            </div>
+
+            <div class="daily-pulse-card">
+              <div class="daily-pulse-icon" style="background: rgba(244, 63, 94, 0.15); color: #fb7185;">⚡</div>
+              <div>
+                <div class="daily-pulse-val" style="color: #fb7185;">${todayEntry.usageCount} lượt</div>
+                <div class="daily-pulse-lbl">Sao Chép / Dùng Hôm Nay</div>
+                <div class="daily-pulse-sub">Toàn kho: ${totalUsage} lượt</div>
+              </div>
+            </div>
+
+            <div class="daily-pulse-card">
+              <div class="daily-pulse-icon" style="background: rgba(16, 185, 129, 0.15); color: #34d399;">🔓</div>
+              <div>
+                <div class="daily-pulse-val" style="color: #34d399;">${todayUnbannedCount} nick</div>
+                <div class="daily-pulse-lbl">Mở BAN Hôm Nay (${todayStr})</div>
+                <div class="daily-pulse-sub">Ngày mai (${tomorrowStr}): ${tomorrowUnbanCount} nick sắp mở</div>
+              </div>
+            </div>
+          `;
+        }
+
+        // B. Render Biểu Đồ Cột 7 Ngày Gần Nhất
+        const chartContainer = document.getElementById("analytics-daily-chart-container");
+        if (chartContainer) {
+          const chartDays = [];
+          for (let i = 6; i >= 0; i--) {
+            const d = new Date();
+            d.setDate(d.getDate() - i);
+            const dd = String(d.getDate()).padStart(2, "0");
+            const mm = String(d.getMonth() + 1).padStart(2, "0");
+            const key = `${dd}/${mm}`;
+            const entry = dailyMap.get(key) || { accounts: [] };
+            chartDays.push({
+              key,
+              isToday: i === 0,
+              label: i === 0 ? "Hôm nay" : `${dd}/${mm}`,
+              count: entry.accounts.length,
+            });
+          }
+
+          const maxDayCount = Math.max(1, ...chartDays.map((d) => d.count));
+
+          let chartHtml = "";
+          chartDays.forEach((cd) => {
+            const heightPct = Math.max(8, Math.round((cd.count / maxDayCount) * 100));
+            chartHtml += `
+              <div class="daily-chart-col ${cd.isToday ? "is-today" : ""}" onclick="inspectDailyAccounts('${cd.key}')" title="Ngày ${cd.key}: thêm ${cd.count} nick (Nhấp để xem chi tiết)">
+                <span class="daily-chart-val">${cd.count > 0 ? `+${cd.count}` : "0"}</span>
+                <div class="daily-chart-bar-wrap">
+                  <div class="daily-chart-bar-fill" style="height: ${heightPct}%;"></div>
+                </div>
+                <span class="daily-chart-label">${cd.label}</span>
+              </div>
+            `;
+          });
+          chartContainer.innerHTML = chartHtml;
+        }
+
+        // C. Render Sổ Cái Hoạt Động Theo Ngày (Ledger Table)
+        const ledgerTbody = document.getElementById("analytics-daily-ledger-tbody");
+        const ledgerTotalDays = document.getElementById("analytics-ledger-total-days");
+        if (ledgerTbody) {
+          // Lấy tất cả các ngày có tài khoản, sắp xếp mới nhất lên đầu
+          const sortedDays = Array.from(dailyMap.values())
+            .filter((entry) => entry.accounts.length > 0 || entry.isToday)
+            .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+          if (ledgerTotalDays) {
+            ledgerTotalDays.textContent = `${sortedDays.length} ngày có hoạt động`;
+          }
+
+          let ledgerHtml = "";
+          const maxCountAll = Math.max(1, ...sortedDays.map((d) => d.accounts.length));
+
+          sortedDays.forEach((entry) => {
+            const count = entry.accounts.length;
+            const barWidth = Math.max(10, Math.round((count / maxCountAll) * 100));
+
+            // Tìm người thêm nhiều nhất trong ngày đó
+            let topCreator = "Chưa có";
+            let topCreatorCount = 0;
+            entry.contributors.forEach((cCount, cName) => {
+              if (cCount > topCreatorCount) {
+                topCreatorCount = cCount;
+                topCreator = cName;
+              }
+            });
+
+            const dayTag = entry.isToday
+              ? `<span style="background: rgba(16,185,129,0.2); color:#34d399; font-weight:800; font-size:0.68rem; padding:2px 6px; border-radius:4px; margin-left:6px;">HÔM NAY</span>`
+              : entry.isYesterday
+                ? `<span style="background: rgba(14,165,233,0.18); color:#38bdf8; font-weight:700; font-size:0.68rem; padding:2px 6px; border-radius:4px; margin-left:6px;">HÔM QUA</span>`
+                : "";
+
+            ledgerHtml += `
+              <tr>
+                <td>
+                  <div style="font-weight: 800; color: ${entry.isToday ? "#34d399" : "#fff"}; display: flex; align-items: center;">
+                    ${entry.dateKey} ${dayTag}
+                  </div>
+                  <div style="font-size: 0.7rem; color: #94a3b8; margin-top: 2px;">${entry.fullDate}</div>
+                </td>
+                <td>
+                  <div style="font-weight: 800; color: #38bdf8; font-size: 0.88rem; margin-bottom: 4px;">+${count} nick</div>
+                  <div style="height: 6px; background: rgba(255,255,255,0.06); border-radius: 3px; overflow: hidden; width: 100px;">
+                    <div style="height: 100%; width: ${barWidth}%; background: ${entry.isToday ? "#10b981" : "#0284c7"}; border-radius: 3px;"></div>
+                  </div>
+                </td>
+                <td>
+                  <span style="color: #7dd3fc; font-weight: 700;">${entry.rankCount} rank</span>
+                  <span style="color: #94a3b8;"> • </span>
+                  <span style="color: #fbbf24; font-weight: 700;">${entry.chungSucCount} chung sức</span>
+                </td>
+                <td>
+                  <span style="color: #c7d2fe; font-weight: 700;">👤 ${escapeHtml(topCreator)}</span>
+                  ${topCreatorCount > 0 ? `<span style="font-size: 0.72rem; color: #94a3b8;"> (${topCreatorCount} nick)</span>` : ""}
+                </td>
+                <td style="text-align: right; font-weight: 800; color: ${entry.usageCount > 0 ? "#fb7185" : "#64748b"};">
+                  ${entry.usageCount > 0 ? `⚡ ${entry.usageCount}` : "0"}
+                </td>
+                <td style="text-align: center;">
+                  ${
+                    count > 0
+                      ? `
+                    <button type="button" class="btn btn-tool" onclick="inspectDailyAccounts('${entry.dateKey}')" style="padding: 4px 10px; font-size: 0.74rem;" title="Xem danh sách ${count} nick thêm ngày ${entry.dateKey}">
+                      👁️ Xem (${count})
+                    </button>
+                  `
+                      : `<span style="color:#64748b; font-size:0.75rem;">--</span>`
+                  }
+                </td>
+              </tr>
+            `;
+          });
+
+          if (!ledgerHtml) {
+            ledgerHtml = `<tr><td colspan="6" style="text-align:center; color:#94a3b8; padding:20px;">Chưa có dữ liệu theo ngày.</td></tr>`;
+          }
+          ledgerTbody.innerHTML = ledgerHtml;
+        }
+
+        // ==========================================
+        // 3. RENDER TAB 1: PHÂN BỔ THEO RANK & KHU VỰC KHO
+        // ==========================================
         const rankBarsContainer = document.getElementById(
           "analytics-rank-bars-container",
         );
@@ -6495,7 +7786,7 @@
             (k) => (rankCounts[k] || 0) > 0,
           );
           if (rankTotalNote) {
-            rankTotalNote.textContent = `${activeRankKeys.length} nhóm rank đang có`;
+            rankTotalNote.textContent = `${activeRankKeys.length} nhóm rank đang có (${rangeLabel})`;
           }
 
           let barsHtml = "";
@@ -6596,7 +7887,9 @@
           `;
         }
 
-        // 3. RENDER TAB 2: THỐNG KÊ THÊM MỚI & ĐÓNG GÓP
+        // ==========================================
+        // 4. RENDER TAB 2: THỐNG KÊ THÊM MỚI & ĐÓNG GÓP
+        // ==========================================
         const contributorsTbody = document.getElementById(
           "analytics-contributors-tbody",
         );
@@ -6608,7 +7901,7 @@
             (a, b) => b[1] - a[1],
           );
           if (totalContributorsCount) {
-            totalContributorsCount.textContent = `${sortedContributors.length} người đóng góp`;
+            totalContributorsCount.textContent = `${sortedContributors.length} người đóng góp (${rangeLabel})`;
           }
 
           let tbodyHtml = "";
@@ -6694,12 +7987,14 @@
           recentAddsContainer.innerHTML = logsHtml;
         }
 
-        // 4. RENDER TAB 3: TẦN SUẤT SỬ DỤNG & TOP ACC
+        // ==========================================
+        // 5. RENDER TAB 3: TẦN SUẤT SỬ DỤNG & TOP ACC
+        // ==========================================
         const hotAccountsTbody = document.getElementById(
           "analytics-hot-accounts-tbody",
         );
         if (hotAccountsTbody) {
-          const sortedHot = [...accounts]
+          const sortedHot = [...scopedAccounts]
             .sort((a, b) => (b.useCount || 0) - (a.useCount || 0))
             .slice(0, 10);
 
@@ -6741,7 +8036,7 @@
         );
         if (topUsersTbody) {
           const userUsageMap = new Map();
-          accounts.forEach((a) => {
+          scopedAccounts.forEach((a) => {
             if (a.lastUsedBy && a.lastUsedBy.trim()) {
               const u = a.lastUsedBy.trim();
               userUsageMap.set(u, (userUsageMap.get(u) || 0) + (a.useCount || 1));
@@ -6998,17 +8293,17 @@
             isAdmin && !isEmergencyLocked ? "flex" : "none";
         }
         if (btnOpenDevices) {
-          btnOpenDevices.style.display = isAdmin ? "inline-flex" : "none";
+          btnOpenDevices.style.display = isAdmin ? "flex" : "none";
         }
 
         if (btnEmergency) {
           if (isEmergencyLocked) {
-            btnEmergency.style.display = "inline-flex";
+            btnEmergency.style.display = "flex";
             btnEmergency.classList.add("is-locked");
             if (emergencyIcon)
               emergencyIcon.textContent = isAdmin ? "🔓" : "🔒";
             if (emergencyText)
-              emergencyText.textContent = isAdmin ? "Mở Khóa" : "Đã Khóa";
+              emergencyText.textContent = isAdmin ? "Mở Khóa Khẩn Cấp" : "Đang Khóa Khẩn Cấp";
             btnEmergency.title = isAdmin
               ? "Hệ thống đang khóa khẩn cấp! Nhấp để mở khóa"
               : "Hệ thống đang khóa khẩn cấp bởi Admin";
@@ -7018,17 +8313,37 @@
             if (emergencyText) emergencyText.textContent = "Khóa Khẩn Cấp";
             btnEmergency.title =
               "Kích hoạt khóa khẩn cấp (chặn toàn bộ quyền sao chép)";
-            btnEmergency.style.display = isAdmin ? "inline-flex" : "none";
+            btnEmergency.style.display = isAdmin ? "flex" : "none";
           }
         }
+
         const btnOpenTeleEl = document.getElementById("btn-open-tele");
         if (btnOpenTeleEl) {
-          if (isAdmin) {
-            btnOpenTeleEl.innerHTML = "<span>⚙️</span> Cấu Hình Tele";
-            btnOpenTeleEl.title = "Cấu hình Bot & Kênh Telegram thông báo chung";
-          } else {
-            btnOpenTeleEl.innerHTML = "<span>📢</span> Kênh Telegram";
-            btnOpenTeleEl.title = "Tham gia Kênh Telegram để nhận thông báo tức thì";
+          const teleTitle = document.getElementById("tele-btn-menu-title");
+          const teleSub = document.getElementById("tele-btn-menu-sub");
+          if (teleTitle && teleSub) {
+            if (isAdmin) {
+              teleTitle.textContent = "Cấu Hình Telegram Bot";
+              teleSub.textContent = "Cấu hình token, kênh & gửi tin tự động";
+              btnOpenTeleEl.title = "Cấu hình Bot & Kênh Telegram thông báo chung";
+            } else {
+              teleTitle.textContent = "Kênh Telegram Nhận Thông Báo";
+              teleSub.textContent = "Tham gia kênh nhận thông báo mở BAN & thêm nick";
+              btnOpenTeleEl.title = "Tham gia Kênh Telegram để nhận thông báo tức thì";
+            }
+          }
+        }
+
+        // Cập nhật chấm thông báo trên nút Menu 3 gạch
+        const menuNotifyDot = document.getElementById("menu-notify-dot");
+        if (menuNotifyDot) {
+          const badgeEl = document.getElementById("device-pending-badge");
+          const hasPending = badgeEl && badgeEl.style.display !== "none" && parseInt(badgeEl.textContent || "0", 10) > 0;
+          menuNotifyDot.style.display = (hasPending || isEmergencyLocked) ? "inline-block" : "none";
+          if (isEmergencyLocked) {
+            menuNotifyDot.style.background = "#f43f5e";
+          } else if (hasPending) {
+            menuNotifyDot.style.background = "#eab308";
           }
         }
 
@@ -7220,6 +8535,15 @@
           if (badge) {
             badge.textContent = pendingCount;
             badge.style.display = pendingCount > 0 ? "inline-block" : "none";
+          }
+          const menuNotifyDot = document.getElementById("menu-notify-dot");
+          if (menuNotifyDot) {
+            menuNotifyDot.style.display = (pendingCount > 0 || isEmergencyLocked) ? "inline-block" : "none";
+            if (isEmergencyLocked) {
+              menuNotifyDot.style.background = "#f43f5e";
+            } else if (pendingCount > 0) {
+              menuNotifyDot.style.background = "#eab308";
+            }
           }
         } catch (e) {}
       }
@@ -8414,6 +9738,7 @@
       // QUẢN LÝ KHO TÀI KHOẢN (RANK & SỰ KIỆN CHUNG SỨC)
       // ==========================================
       let currentStorage = localStorage.getItem("lq_current_storage") || "rank"; // "rank" hoặc "chungsuc"
+      let currentAddStorage = currentStorage || "rank"; // Kho được chọn trong form thêm nick
 
       function updateAddFormMode(storageType) {
         const formGrid = document.getElementById("add-form-grid");
@@ -8442,16 +9767,26 @@
         const zoneDesc = document.querySelector(
           "#zone-player-divider .zone-desc-text",
         );
-        const radioRank = document.getElementById("radio-store-rank");
-        const radioChungSuc = document.getElementById("radio-store-chungsuc");
 
         if (tabRank) tabRank.classList.toggle("active", currentStorage === "rank");
         if (tabChungSuc)
           tabChungSuc.classList.toggle("active", currentStorage === "chungsuc");
 
-        if (radioRank && radioChungSuc) {
-          if (currentStorage === "chungsuc") radioChungSuc.checked = true;
-          else radioRank.checked = true;
+        // Đồng bộ 2 nút chọn kho trong form thêm nick
+        currentAddStorage = currentStorage;
+        const btnAddRank = document.getElementById("btn-add-store-rank");
+        const btnAddChungSuc = document.getElementById("btn-add-store-chungsuc");
+        if (btnAddRank)
+          btnAddRank.classList.toggle("active", currentAddStorage === "rank");
+        if (btnAddChungSuc)
+          btnAddChungSuc.classList.toggle("active", currentAddStorage === "chungsuc");
+
+        const btnAddEl = document.getElementById("btn-add");
+        const btnAddText = btnAddEl ? btnAddEl.querySelector(".btn-text-glossy") : null;
+        if (btnAddText) {
+          btnAddText.textContent = currentAddStorage === "chungsuc"
+            ? "🤝 THÊM VÀO CHUNG SỨC"
+            : "➕ THÊM TÀI KHOẢN";
         }
 
         // Cập nhật ẩn/hiện trường Rank, Uy Tín, Mở BAN theo kho hiện tại
@@ -8486,12 +9821,26 @@
       };
 
       window.handleTargetStorageChange = function (type) {
-        const radio = document.querySelector(
-          `input[name="targetStorage"][value="${type}"]`,
-        );
-        if (radio) radio.checked = true;
-        // Cập nhật hiển thị/ẩn Rank & Uy Tín ngay khi người dùng chọn radio
-        updateAddFormMode(type);
+        currentAddStorage = type === "chungsuc" ? "chungsuc" : "rank";
+
+        const btnAddRank = document.getElementById("btn-add-store-rank");
+        const btnAddChungSuc = document.getElementById("btn-add-store-chungsuc");
+        if (btnAddRank)
+          btnAddRank.classList.toggle("active", currentAddStorage === "rank");
+        if (btnAddChungSuc)
+          btnAddChungSuc.classList.toggle("active", currentAddStorage === "chungsuc");
+
+        const btnAddEl = document.getElementById("btn-add");
+        const btnAddText = btnAddEl ? btnAddEl.querySelector(".btn-text-glossy") : null;
+        if (btnAddText) {
+          btnAddText.textContent = currentAddStorage === "chungsuc"
+            ? "🤝 THÊM VÀO CHUNG SỨC"
+            : "➕ THÊM TÀI KHOẢN";
+        }
+
+        // Cập nhật hiển thị/ẩn Rank & Uy Tín ngay khi người dùng chọn nút
+        updateAddFormMode(currentAddStorage);
+        playSound("click");
       };
 
       // DÁN NHANH TỪ BỘ NHỚ TẠM CLIPBOARD (NÚT PASTE)
@@ -9120,12 +10469,7 @@
         const newItems = [];
         const duplicateItems = [];
         const todayStr = getTodayFormatted();
-        const targetRadio = document.querySelector(
-          'input[name="targetStorage"]:checked',
-        );
-        const targetCategory = targetRadio
-          ? targetRadio.value
-          : currentStorage || "rank";
+        const targetCategory = currentAddStorage || currentStorage || "rank";
         const unlockVal =
           targetCategory === "chungsuc" ? "" : defaultUnlock.value.trim();
         const rankVal =
@@ -11353,6 +12697,52 @@
         return new Date(targetYear, month - 1, day, hour, min, 0).getTime();
       }
 
+      // HÀM LÀM PHẲNG DỮ LIỆU TELE_NOTIFIED NẾU BỊ LỒNG DO DẤU GẠCH CHÉO TRƯỚC ĐÂY
+      function flattenTeleNotifiedObject(obj, prefix = "") {
+        let out = {};
+        if (!obj || typeof obj !== "object") return out;
+        for (const k of Object.keys(obj)) {
+          const val = obj[k];
+          const combined = prefix ? `${prefix}_${k}` : k;
+          if (val && typeof val === "object" && !Array.isArray(val)) {
+            Object.assign(out, flattenTeleNotifiedObject(val, combined));
+          } else {
+            out[combined] = val;
+          }
+        }
+        return out;
+      }
+
+      function getTeleNotifiedKey(username, unlockDate, stage) {
+        const cleanUser = String(username || "").trim().toLowerCase().replace(/[^a-z0-9_]/g, "");
+        const cleanDate = String(unlockDate || "").trim().replace(/[^0-9]/g, "_");
+        return `tele_${cleanUser}_${cleanDate}_${stage}`;
+      }
+
+      function isTeleAccountNotified(acc, stage, allNotified, todayStr) {
+        if (!acc || !acc.username) return true;
+        const cleanUser = String(acc.username).trim().toLowerCase().replace(/[^a-z0-9_]/g, "");
+        const cleanDate = String(acc.unlockDate || "").trim().replace(/[^0-9]/g, "_");
+        const stdKey = `tele_${cleanUser}_${cleanDate}_${stage}`;
+
+        // 1. Kiểm tra key chuẩn
+        if (allNotified[stdKey]) return true;
+
+        // 2. Kiểm tra key cũ hoặc dữ liệu Firebase đã lưu
+        const dateTag = todayStr.replace(/[^0-9]/g, "_");
+        for (const k of Object.keys(allNotified)) {
+          const kLower = k.toLowerCase();
+          if (
+            kLower.includes(cleanUser) &&
+            kLower.includes(stage) &&
+            (kLower.includes(cleanDate) || kLower.includes(dateTag))
+          ) {
+            return true;
+          }
+        }
+        return false;
+      }
+
       let isCheckingTeleUnban = false;
       async function autoCheckUnbannedAccounts() {
         if (isCheckingTeleUnban) return;
@@ -11380,6 +12770,12 @@
         // 2. CHỈ QUẢN TRỊ VIÊN MỚI ĐƯỢC PHÉP BẮN THÔNG BÁO TELEGRAM (CHỐNG DUPLICATE / SPAM TỪ NHIỀU THIẾT BỊ KHÁCH)
         if (!isAdmin) return;
 
+        // COOLDOWN CHỐNG SPAM KHI F5 / RELOAD TRANG: TỐI THIỂU 45 GIÂY GIỮA 2 LẦN QUÉT TELEGRAM
+        const nowMs = Date.now();
+        const lastCheckMs = Number(localStorage.getItem("lq_tele_last_check_ms") || 0);
+        if (nowMs - lastCheckMs < 45000) return;
+        localStorage.setItem("lq_tele_last_check_ms", nowMs.toString());
+
         const config = getTeleConfig();
         if (!config.token || !config.chatId) return;
 
@@ -11395,12 +12791,14 @@
           try {
             const res = await fetch(`${FIREBASE_DB_URL}/tele_notified.json?t=${Date.now()}`);
             if (res.ok) {
-              cloudNotified = (await res.json()) || {};
+              const rawCloud = await res.json();
+              if (rawCloud && typeof rawCloud === "object") {
+                cloudNotified = flattenTeleNotifiedObject(rawCloud);
+              }
             }
           } catch (e) {}
 
           const allNotified = { ...localNotified, ...cloudNotified };
-          const nowMs = Date.now();
           const today = getTodayFormatted();
           const tomorrow = getTomorrowFormatted();
 
@@ -11434,10 +12832,11 @@
             if (diffHours <= 0) {
               const status = checkBanStatus(a.unlockDate, a);
               if (status.isJustUnbanned) {
-                const key = `${a.id}_${a.unlockDate}_today`;
-                if (!allNotified[key]) {
+                if (!isTeleAccountNotified(a, "today", allNotified, today)) {
                   unbannedTodayList.push(a);
+                  const key = getTeleNotifiedKey(a.username, a.unlockDate, "today");
                   newNotifiedKeys[key] = today;
+                  allNotified[key] = today;
                 }
               }
               return;
@@ -11445,27 +12844,34 @@
 
             // Mốc 2: TRƯỚC 6 TIẾNG (0 < diffHours <= 6)
             if (diffHours > 0 && diffHours <= 6) {
-              const key = `${a.id}_${a.unlockDate}_6h`;
-              if (!allNotified[key]) {
+              if (!isTeleAccountNotified(a, "6h", allNotified, today)) {
                 warn6hList.push({
                   ...a,
                   remainingHours: Math.max(1, Math.round(diffHours)),
                 });
+                const key = getTeleNotifiedKey(a.username, a.unlockDate, "6h");
                 newNotifiedKeys[key] = today;
+                allNotified[key] = today;
               }
               return;
             }
 
             // Mốc 3: TRƯỚC 1 NGÀY (6 < diffHours <= 24)
             if (diffHours > 6 && diffHours <= 24) {
-              const key = `${a.id}_${a.unlockDate}_1day`;
-              if (!allNotified[key]) {
+              if (!isTeleAccountNotified(a, "1day", allNotified, today)) {
                 warn1DayList.push(a);
+                const key = getTeleNotifiedKey(a.username, a.unlockDate, "1day");
                 newNotifiedKeys[key] = today;
+                allNotified[key] = today;
               }
               return;
             }
           });
+
+          // GHI NHỚ NGAY VÀO LOCALSTORAGE TRƯỚC KHI GỬI (CHỐNG RACE-CONDITION HOÀN TOÀN)
+          if (Object.keys(newNotifiedKeys).length > 0) {
+            localStorage.setItem("lq_tele_notified_today", JSON.stringify(allNotified));
+          }
 
           // Gửi Mốc 1: VỪA MỞ BAN HÔM NAY
           if (unbannedTodayList.length > 0) {
@@ -11503,10 +12909,8 @@
             await sendTelegramMessage(config.token, config.chatId, msg);
           }
 
-          // Đồng bộ lại nhật ký đã thông báo vào cả LocalStorage & Firebase Cloud
+          // Đồng bộ lại nhật ký đã thông báo lên Firebase Cloud (Key sạch không chứa dấu /)
           if (Object.keys(newNotifiedKeys).length > 0) {
-            const updated = { ...allNotified, ...newNotifiedKeys };
-            localStorage.setItem("lq_tele_notified_today", JSON.stringify(updated));
             try {
               await fetch(`${FIREBASE_DB_URL}/tele_notified.json`, {
                 method: "PATCH",
