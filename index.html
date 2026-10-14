@@ -5736,7 +5736,7 @@
                       <span>Quản Lý Thiết Bị</span>
                       <span id="device-pending-badge" class="device-pending-counter" style="display: none">0</span>
                     </div>
-                    <div class="option-item-sub">Phê duyệt &amp; phân quyền máy truy cập</div>
+                    <div class="option-item-sub">Quản lý chặn &amp; xóa thiết bị truy cập</div>
                   </div>
                   <span class="option-item-arrow">›</span>
                 </button>
@@ -6790,7 +6790,7 @@
             line-height: 1.45;
           "
         >
-          Danh sách thiết bị kết nối vào hệ thống. Bạn có quyền <b>Cho phép dùng</b> hoặc <b>Chặn truy cập</b> tức thì.
+          Danh sách thiết bị kết nối vào hệ thống. Mọi thiết bị mới mặc định <b>được phép sử dụng ngay</b>. Bạn có quyền <b>Chặn</b> hoặc <b>Xóa</b> thiết bị bất kỳ lúc nào.
         </p>
 
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
@@ -6820,13 +6820,13 @@
       </div>
     </div>
 
-    <!-- MÀN HÌNH CHỜ PHÊ DUYỆT THIẾT BỊ (CHO NGƯỜI DÙNG MỚI) -->
+    <!-- MÀN HÌNH THÔNG BÁO KHI THIẾT BỊ BỊ ADMIN CHẶN -->
     <div id="device-gate-overlay" class="device-gate-overlay">
       <div class="device-gate-card">
-        <div class="device-gate-icon" id="device-gate-icon">⏳</div>
-        <div class="device-gate-title" id="device-gate-title">Thiết Bị Đang Chờ Duyệt</div>
+        <div class="device-gate-icon" id="device-gate-icon">🚫</div>
+        <div class="device-gate-title" id="device-gate-title">Thiết Bị Đã Bị Chặn</div>
         <div class="device-gate-desc" id="device-gate-desc">
-          Thiết bị của bạn đang chờ Quản trị viên (Admin) phê duyệt để xem và sử dụng danh sách tài khoản.
+          Thiết bị của bạn đã bị Quản trị viên (Admin) <b>chặn quyền truy cập</b> vào kho tài khoản.
         </div>
 
         <div class="device-info-pill">
@@ -6840,12 +6840,12 @@
           </div>
           <div>
             <span>Trạng thái:</span>
-            <b style="color: #facc15;" id="gate-device-status">Chờ phê duyệt</b>
+            <b style="color: #f43f5e;" id="gate-device-status">Đã bị chặn</b>
           </div>
         </div>
 
         <div style="font-size: 0.78rem; color: #94a3b8; line-height: 1.45; margin-bottom: 16px;">
-          💡 Hãy liên hệ <b>Nguyễn Chí Duy (@devsepa)</b> để được duyệt vào hệ thống nhanh chóng!
+          💡 Vui lòng liên hệ <b>Nguyễn Chí Duy (@devsepa)</b> nếu bạn cần mở lại quyền truy cập!
         </div>
 
         <a
@@ -6855,7 +6855,7 @@
           class="btn btn-primary"
           style="display: inline-flex; width: 100%; justify-content: center; padding: 11px 16px; font-size: 0.88rem; font-weight: 800; text-decoration: none;"
         >
-          ✈️ Nhắn Tin Xin Cấp Quyền (@devsepa)
+          ✈️ Nhắn Tin Hỗ Trợ (@devsepa)
         </a>
       </div>
     </div>
@@ -8337,13 +8337,9 @@
         // Cập nhật chấm thông báo trên nút Menu 3 gạch
         const menuNotifyDot = document.getElementById("menu-notify-dot");
         if (menuNotifyDot) {
-          const badgeEl = document.getElementById("device-pending-badge");
-          const hasPending = badgeEl && badgeEl.style.display !== "none" && parseInt(badgeEl.textContent || "0", 10) > 0;
-          menuNotifyDot.style.display = (hasPending || isEmergencyLocked) ? "inline-block" : "none";
+          menuNotifyDot.style.display = isEmergencyLocked ? "inline-block" : "none";
           if (isEmergencyLocked) {
             menuNotifyDot.style.background = "#f43f5e";
-          } else if (hasPending) {
-            menuNotifyDot.style.background = "#eab308";
           }
         }
 
@@ -8420,12 +8416,22 @@
           if (getRes.ok) {
             const remoteData = await getRes.json();
             if (remoteData && remoteData.status) {
-              currentDeviceStatus = remoteData.status;
+              // BỎ DUYỆT THỦ CÔNG: Nếu thiết bị trước đó là pending thì tự động thăng cấp thành approved luôn
+              if (remoteData.status === "pending") {
+                currentDeviceStatus = "approved";
+                await fetch(`${FIREBASE_DB_URL}/devices/${deviceId}/status.json`, {
+                  method: "PUT",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify("approved"),
+                });
+              } else {
+                currentDeviceStatus = remoteData.status;
+              }
             } else {
-              // THIẾT BỊ MỚI:
-              // Kiểm tra xem TÊN NGƯỜI DÙNG này đã từng được Admin phê duyệt trước đó chưa
-              let inheritedStatus = isAdmin ? "approved" : "pending";
-              if (!isAdmin && hasCustomUserName()) {
+              // THIẾT BỊ MỚI TRUY CẬP: MẶC ĐỊNH LUÔN ĐƯỢC PHÉP DÙNG (approved), KHÔNG BẮT CHỜ DUYỆT
+              // Chỉ bị chặn nếu tên người dùng này đã từng bị Admin đánh dấu chặn trước đó
+              let inheritedStatus = "approved";
+              if (hasCustomUserName()) {
                 try {
                   const allRes = await fetch(`${FIREBASE_DB_URL}/devices.json?t=${Date.now()}`);
                   if (allRes.ok) {
@@ -8436,9 +8442,6 @@
                       );
                       if (userRecords.some(d => d.status === "blocked")) {
                         inheritedStatus = "blocked";
-                      } else if (userRecords.some(d => d.status === "approved")) {
-                        // ĐÃ TỪNG ĐƯỢC DUYỆT TRƯỚC ĐÓ -> TỰ ĐỘNG DUYỆT THIẾT BỊ MỚI NÀY LUÔN, KHÔNG CẦN DUYỆT LẠI!
-                        inheritedStatus = "approved";
                       }
                     }
                   }
@@ -8469,10 +8472,10 @@
             });
           }
 
-          // 2. Áp dụng quyền cho màn hình hiện tại
+          // 2. Áp dụng quyền cho màn hình hiện tại (chỉ chặn khi status === "blocked")
           applyDeviceGateUI(currentDeviceStatus, userName, deviceInfo);
 
-          // 3. Nếu là Admin, cập nhật số thiết bị chờ duyệt lên badge
+          // 3. Nếu là Admin, cập nhật số thiết bị bị chặn lên badge
           if (isAdmin) {
             fetchPendingDeviceCount();
           }
@@ -8493,32 +8496,24 @@
         if (userEl) userEl.textContent = userName || "Khách";
         if (devEl) devEl.textContent = deviceInfo;
 
-        if (isAdmin || status === "approved") {
+        // Nếu là Admin hoặc thiết bị KHÔNG bị chặn -> Đóng màn hình gate ngay lập tức
+        if (isAdmin || status !== "blocked") {
           if (overlay) overlay.classList.remove("show");
           return;
         }
 
         if (!overlay) return;
 
-        if (status === "blocked") {
-          overlay.classList.add("show");
-          if (iconEl) iconEl.textContent = "🚫";
-          if (titleEl) titleEl.textContent = "Thiết Bị Bị Chặn";
-          if (descEl) descEl.innerHTML = "Thiết bị của bạn đã bị Quản trị viên <b>từ chối hoặc khóa quyền truy cập</b> vào kho tài khoản.";
-          if (statusEl) {
-            statusEl.textContent = "🚫 Đã bị chặn";
-            statusEl.style.color = "#f43f5e";
-          }
-        } else {
-          // pending
-          overlay.classList.add("show");
-          if (iconEl) iconEl.textContent = "⏳";
-          if (titleEl) titleEl.textContent = "Thiết Bị Đang Chờ Phê Duyệt";
-          if (descEl) descEl.innerHTML = "Thiết bị của bạn đang chờ Quản trị viên phê duyệt. Sau khi được duyệt, hệ thống sẽ <b>tự động mở khóa ngay lập tức</b>!";
-          if (statusEl) {
-            statusEl.textContent = "⏳ Chờ Quản trị viên duyệt";
-            statusEl.style.color = "#facc15";
-          }
+        // Chỉ hiển thị màn hình khóa khi Admin chủ động bấm CHẶN thiết bị này
+        overlay.classList.add("show");
+        if (iconEl) iconEl.textContent = "🚫";
+        if (titleEl) titleEl.textContent = "Thiết Bị Đã Bị Chặn";
+        if (descEl)
+          descEl.innerHTML =
+            "Thiết bị của bạn đã bị Quản trị viên (Admin) <b>chặn quyền truy cập</b> vào kho tài khoản.";
+        if (statusEl) {
+          statusEl.textContent = "🚫 Đã bị chặn";
+          statusEl.style.color = "#f43f5e";
         }
       }
 
@@ -8530,20 +8525,11 @@
           const data = await res.json();
           if (!data) return;
           const list = Object.values(data);
-          const pendingCount = list.filter(d => d && d.status === "pending").length;
+          const blockedCount = list.filter(d => d && d.status === "blocked").length;
           const badge = document.getElementById("device-pending-badge");
           if (badge) {
-            badge.textContent = pendingCount;
-            badge.style.display = pendingCount > 0 ? "inline-block" : "none";
-          }
-          const menuNotifyDot = document.getElementById("menu-notify-dot");
-          if (menuNotifyDot) {
-            menuNotifyDot.style.display = (pendingCount > 0 || isEmergencyLocked) ? "inline-block" : "none";
-            if (isEmergencyLocked) {
-              menuNotifyDot.style.background = "#f43f5e";
-            } else if (pendingCount > 0) {
-              menuNotifyDot.style.background = "#eab308";
-            }
+            badge.textContent = blockedCount > 0 ? `🚫 ${blockedCount}` : "";
+            badge.style.display = blockedCount > 0 ? "inline-block" : "none";
           }
         } catch (e) {}
       }
@@ -8578,30 +8564,42 @@
             return;
           }
 
-          const devices = Object.keys(raw).map(k => ({ ...raw[k], id: k }));
-          // Sắp xếp: pending lên đầu, sau đó theo timestamp mới nhất
+          const devices = Object.keys(raw).map(k => {
+            const dev = { ...raw[k], id: k };
+            // Tự động nâng cấp các thiết bị pending cũ thành approved
+            if (dev.status === "pending") {
+              dev.status = "approved";
+              fetch(`${FIREBASE_DB_URL}/devices/${k}/status.json`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify("approved"),
+              }).catch(() => {});
+            }
+            return dev;
+          });
+
+          // Sắp xếp: thiết bị bị blocked lên đầu để admin dễ thấy, sau đó theo timestamp mới nhất
           devices.sort((a, b) => {
-            if (a.status === "pending" && b.status !== "pending") return -1;
-            if (b.status === "pending" && a.status !== "pending") return 1;
+            if (a.status === "blocked" && b.status !== "blocked") return -1;
+            if (b.status === "blocked" && a.status !== "blocked") return 1;
             return (b.timestamp || 0) - (a.timestamp || 0);
           });
 
           if (statEl) {
-            const pendingN = devices.filter(d => d.status === "pending").length;
-            statEl.textContent = `${devices.length} thiết bị (${pendingN} chờ duyệt)`;
+            const blockedN = devices.filter(d => d.status === "blocked").length;
+            statEl.textContent = `${devices.length} thiết bị kết nối (${blockedN > 0 ? `${blockedN} bị chặn` : "Mọi thiết bị đều được phép"})`;
           }
 
           let html = `<div style="display: flex; flex-direction: column; gap: 8px;">`;
           devices.forEach(d => {
             const isMe = d.id === getOrCreateDeviceId();
-            const statusBadge = d.status === "approved"
-              ? `<span style="background: rgba(16,185,129,0.2); color: #34d399; border: 1px solid rgba(16,185,129,0.4); padding: 2px 7px; border-radius: 6px; font-size: 0.7rem; font-weight: 800;">ĐÃ DUYỆT</span>`
-              : (d.status === "blocked"
-                ? `<span style="background: rgba(239,68,68,0.2); color: #fca5a5; border: 1px solid rgba(239,68,68,0.4); padding: 2px 7px; border-radius: 6px; font-size: 0.7rem; font-weight: 800;">ĐÃ CHẶN</span>`
-                : `<span style="background: rgba(234,179,8,0.2); color: #facc15; border: 1px solid rgba(234,179,8,0.4); padding: 2px 7px; border-radius: 6px; font-size: 0.7rem; font-weight: 800;">⏳ CHỜ DUYỆT</span>`);
+            const isBlocked = d.status === "blocked";
+            const statusBadge = isBlocked
+              ? `<span style="background: rgba(239,68,68,0.2); color: #fca5a5; border: 1px solid rgba(239,68,68,0.4); padding: 2px 7px; border-radius: 6px; font-size: 0.7rem; font-weight: 800;">🚫 ĐÃ BỊ CHẶN</span>`
+              : `<span style="background: rgba(16,185,129,0.2); color: #34d399; border: 1px solid rgba(16,185,129,0.4); padding: 2px 7px; border-radius: 6px; font-size: 0.7rem; font-weight: 800;">🟢 ĐƯỢC PHÉP</span>`;
 
             html += `
-              <div style="background: rgba(15,23,42,0.9); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;">
+              <div style="background: rgba(15,23,42,0.9); border: 1px solid ${isBlocked ? "rgba(239,68,68,0.35)" : "rgba(255,255,255,0.08)"}; border-radius: 10px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;">
                 <div style="flex: 1; min-width: 180px;">
                   <div style="display: flex; align-items: center; gap: 7px; margin-bottom: 3px;">
                     <b style="font-size: 0.88rem; color: #fff;">${escapeHtml(d.userName || "Khách")}</b>
@@ -8615,12 +8613,12 @@
                 </div>
 
                 <div style="display: flex; gap: 6px;">
-                  ${d.status !== "approved" ? `
-                    <button onclick="setDeviceStatus('${d.id}', 'approved')" class="btn" style="background: rgba(16,185,129,0.2); color: #34d399; border: 1px solid rgba(16,185,129,0.4); padding: 5px 9px; font-size: 0.72rem; font-weight: 700; border-radius: 6px;" title="Cho phép thiết bị này sử dụng tài khoản">
-                      ✅ Cho Phép
+                  ${isBlocked ? `
+                    <button onclick="setDeviceStatus('${d.id}', 'approved')" class="btn" style="background: rgba(16,185,129,0.2); color: #34d399; border: 1px solid rgba(16,185,129,0.4); padding: 5px 9px; font-size: 0.72rem; font-weight: 700; border-radius: 6px;" title="Gỡ chặn, cho phép thiết bị này truy cập">
+                      🔓 Bỏ Chặn
                     </button>
                   ` : `
-                    <button onclick="setDeviceStatus('${d.id}', 'blocked')" class="btn" style="background: rgba(239,68,68,0.15); color: #fca5a5; border: 1px solid rgba(239,68,68,0.3); padding: 5px 9px; font-size: 0.72rem; font-weight: 700; border-radius: 6px;" title="Chặn không cho thiết bị này sử dụng nữa">
+                    <button onclick="setDeviceStatus('${d.id}', 'blocked')" class="btn" style="background: rgba(239,68,68,0.15); color: #fca5a5; border: 1px solid rgba(239,68,68,0.3); padding: 5px 9px; font-size: 0.72rem; font-weight: 700; border-radius: 6px;" title="Chặn không cho thiết bị này truy cập nữa">
                       🚫 Chặn
                     </button>
                   `}
@@ -8679,7 +8677,7 @@
           }
 
           playSound("click");
-          showToast(newStatus === "approved" ? `✅ Đã phê duyệt cho [${targetUserName || "thiết bị"}]!` : `🚫 Đã chặn [${targetUserName || "thiết bị"}]!`);
+          showToast(newStatus === "approved" ? `🔓 Đã bỏ chặn cho [${targetUserName || "thiết bị"}]!` : `🚫 Đã chặn [${targetUserName || "thiết bị"}]!`);
           refreshDeviceList();
           fetchPendingDeviceCount();
         } catch (e) {
