@@ -42,6 +42,7 @@
       }
 
       html {
+        height: 100%;
         scroll-behavior: auto;
         -webkit-text-size-adjust: 100%;
       }
@@ -76,6 +77,7 @@
         color: var(--text-main);
         padding: 22px 18px 0;
         min-height: 100vh;
+        min-height: 100dvh;
         display: flex;
         flex-direction: column;
         -webkit-overflow-scrolling: touch;
@@ -105,13 +107,14 @@
         width: 100%;
         max-width: 1650px;
         margin: 0 auto;
-        flex: 1;
+        flex: 1 0 auto;
         display: flex;
         flex-direction: column;
       }
 
       #display-area {
         flex: 1 0 auto;
+        min-height: 48vh;
       }
 
       /* TOPBAR HEADER (KHÔNG ĐÓNG KHUNG, THOÁNG ĐÃNG TRÊN VÀ DƯỚI) */
@@ -1502,6 +1505,43 @@
         justify-content: center;
         gap: 6px;
         vertical-align: middle;
+      }
+
+      /* HUY HIỆU & HIỆU ỨNG TÀI KHOẢN VỪA MỞ BAN */
+      .badge-just-unbanned {
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.28) 0%, rgba(56, 189, 248, 0.22) 100%);
+        color: #6ee7b7;
+        border: 1.5px solid #10b981;
+        box-shadow: 0 0 10px rgba(16, 185, 129, 0.45);
+        font-weight: 800;
+        letter-spacing: 0.3px;
+        animation: justUnbanGlow 2.4s ease-in-out infinite;
+        cursor: pointer;
+      }
+
+      @keyframes justUnbanGlow {
+        0%, 100% {
+          box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+          filter: brightness(1);
+        }
+        50% {
+          box-shadow: 0 0 16px rgba(16, 185, 129, 0.8), 0 0 22px rgba(56, 189, 248, 0.5);
+          filter: brightness(1.15);
+        }
+      }
+
+      .acc-table tr.is-just-unbanned {
+        background: rgba(16, 185, 129, 0.08) !important;
+      }
+      .acc-table tr.is-just-unbanned:hover {
+        background: rgba(16, 185, 129, 0.14) !important;
+      }
+      .acc-table tr.is-just-unbanned td:first-child {
+        border-left: 4px solid #10b981 !important;
+      }
+      .m-row-card.is-just-unbanned {
+        border-left: 4px solid #10b981 !important;
+        background: rgba(16, 185, 129, 0.08) !important;
       }
 
       /* CHẤM XANH NHẤP NHÁY PHÁT SÁNG (PULSING ACTIVE DOT) */
@@ -2959,7 +2999,7 @@
          FOOTER HIỆN ĐẠI, THOÁNG ĐÃNG (KHÔNG ĐÓNG KHUNG CARD)
          ======================================================== */
       .app-footer {
-        margin-top: auto;
+        margin-top: auto !important;
         position: relative;
         background: linear-gradient(180deg, rgba(15, 23, 42, 0.25) 0%, rgba(2, 6, 23, 0.85) 100%);
         border-top: 1px solid rgba(255, 255, 255, 0.08);
@@ -3162,15 +3202,170 @@
         }
       }
 
-      @keyframes gateLockPulse {
-        0%, 100% {
-          transform: scale(1);
-          box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
-        }
-        50% {
-          transform: scale(1.08);
-          box-shadow: 0 0 20px 4px rgba(239, 68, 68, 0.25);
-        }
+      /* ========================================================
+         BANNER PHÂN CHIA KHU VỰC TRỰC QUAN (ZONE DIVIDERS)
+         ======================================================== */
+      .zone-divider-header {
+        margin: 18px 0 10px;
+        padding: 9px 14px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        user-select: none;
+      }
+      .zone-admin-divider {
+        background: linear-gradient(90deg, rgba(99, 102, 241, 0.16) 0%, rgba(15, 23, 42, 0.6) 100%);
+        border: 1px dashed rgba(99, 102, 241, 0.45);
+        border-left: 4px solid #6366f1;
+      }
+      .zone-player-divider {
+        background: linear-gradient(90deg, rgba(16, 185, 129, 0.15) 0%, rgba(15, 23, 42, 0.6) 100%);
+        border: 1px solid rgba(16, 185, 129, 0.35);
+        border-left: 4px solid #10b981;
+      }
+      .zone-divider-left {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        flex-wrap: wrap;
+      }
+      .zone-badge {
+        font-size: 0.68rem;
+        font-weight: 800;
+        padding: 3px 8px;
+        border-radius: 6px;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        display: inline-flex;
+        align-items: center;
+        line-height: 1;
+      }
+      .zone-badge-admin {
+        background: rgba(99, 102, 241, 0.25);
+        color: #a5b4fc;
+        border: 1px solid rgba(99, 102, 241, 0.4);
+      }
+      .zone-badge-player {
+        background: rgba(16, 185, 129, 0.22);
+        color: #34d399;
+        border: 1px solid rgba(16, 185, 129, 0.45);
+      }
+      .zone-title-text {
+        font-size: 0.86rem;
+        font-weight: 800;
+        letter-spacing: 0.3px;
+        color: #ffffff;
+      }
+      .zone-desc-text {
+        font-size: 0.74rem;
+        color: #94a3b8;
+      }
+
+      /* QUẢN LÝ THIẾT BỊ (DEVICE MANAGEMENT CSS) */
+      .btn-device-mgr {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(56, 189, 248, 0.12);
+        border: 1px solid rgba(56, 189, 248, 0.35);
+        color: #38bdf8;
+        padding: 8px 12px;
+        border-radius: 8px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .btn-device-mgr:hover {
+        background: rgba(56, 189, 248, 0.22);
+        border-color: #38bdf8;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(56, 189, 248, 0.25);
+      }
+      .device-pending-counter {
+        background: #ef4444;
+        color: #fff;
+        font-size: 0.65rem;
+        font-weight: 800;
+        padding: 2px 6px;
+        border-radius: 999px;
+        line-height: 1;
+        animation: gateLockPulse 2s infinite;
+      }
+
+      /* MÀN HÌNH CHỜ PHÊ DUYỆT THIẾT BỊ (DEVICE WAITING OVERLAY) */
+      .device-gate-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(9, 13, 22, 0.94);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        z-index: 99999;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+      .device-gate-overlay.show {
+        display: flex;
+      }
+      .device-gate-card {
+        background: #0f172a;
+        border: 1.5px solid rgba(99, 102, 241, 0.4);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+        border-radius: 18px;
+        max-width: 480px;
+        width: 100%;
+        padding: 28px 24px;
+        text-align: center;
+        position: relative;
+        animation: welcomeZoomIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .device-gate-icon {
+        width: 64px;
+        height: 64px;
+        margin: 0 auto 16px;
+        border-radius: 16px;
+        background: rgba(99, 102, 241, 0.15);
+        border: 1px solid rgba(99, 102, 241, 0.35);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+      }
+      .device-gate-title {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: #ffffff;
+        margin-bottom: 8px;
+      }
+      .device-gate-desc {
+        font-size: 0.85rem;
+        color: #94a3b8;
+        line-height: 1.5;
+        margin-bottom: 18px;
+      }
+      .device-info-pill {
+        background: rgba(15, 23, 42, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        padding: 10px 14px;
+        font-size: 0.8rem;
+        color: #cbd5e1;
+        margin-bottom: 20px;
+        text-align: left;
+      }
+      .device-info-pill div {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 4px;
+      }
+      .device-info-pill div:last-child {
+        margin-bottom: 0;
       }
     </style>
   </head>
@@ -3419,6 +3614,16 @@
           >
             <span>✈️</span> Telegram Bot
           </button>
+          <button
+            class="btn btn-device-mgr"
+            id="btn-open-devices"
+            onclick="openDeviceModal()"
+            title="Quản lý và phê duyệt các thiết bị đang truy cập"
+            style="display: none;"
+          >
+            <span>📱</span> Thiết Bị
+            <span id="device-pending-badge" class="device-pending-counter" style="display: none;">0</span>
+          </button>
         </div>
 
         <input
@@ -3455,6 +3660,17 @@
         </button>
       </div>
 
+      <!-- ========================================================
+           PHÂN KHU 1: QUẢN TRỊ & THÊM TÀI KHOẢN (CHỈ HIỆN KHI LÀ ADMIN)
+           ======================================================== -->
+      <div class="zone-divider-header zone-admin-divider" id="zone-admin-divider" style="display: none;">
+        <div class="zone-divider-left">
+          <span class="zone-badge zone-badge-admin">KHU VỰC 1</span>
+          <span class="zone-title-text">⚙️ QUẢN TRỊ & THÊM TÀI KHOẢN</span>
+        </div>
+        <div class="zone-desc-text">Dành cho Quản trị viên nhập nick mới và cấu hình hệ thống</div>
+      </div>
+
       <!-- KHUNG NHẬP LIỆU GỌN GÀNG (MODERN SLATE) -->
       <div class="add-box" id="input-container">
         <div
@@ -3474,7 +3690,7 @@
               <label>Dán tk:mk hoặc tk|mk (mỗi dòng 1 nick):</label>
               <textarea
                 id="rawInput"
-                placeholder="a97truong:x1n3mdung&#10;tunglamspr1|Dunghoa1103"
+                placeholder="a97truong:x1n3mdung"
               ></textarea>
             </div>
             <div>
@@ -3533,6 +3749,17 @@
             </div>
           </div>
         </div>
+      </div>
+
+      <!-- ========================================================
+           PHÂN KHU 2: DANH SÁCH TÀI KHOẢN • CHỌN ACC ĐỂ DÙNG
+           ======================================================== -->
+      <div class="zone-divider-header zone-player-divider" id="zone-player-divider">
+        <div class="zone-divider-left">
+          <span class="zone-badge zone-badge-player">KHU VỰC 2</span>
+          <span class="zone-title-text">🎮 DANH SÁCH TÀI KHOẢN • CHỌN ACC ĐỂ CHƠI</span>
+        </div>
+        <div class="zone-desc-text">Tìm kiếm, lọc theo Rank và sao chép tài khoản để vào game</div>
       </div>
 
       <!-- THANH TÌM KIẾM TÀI KHOẢN HIỆN ĐẠI -->
@@ -4050,10 +4277,10 @@
             line-height: 1.45;
           "
         >
-          💡 <b>Cách lấy Token & Chat ID nhanh (1 phút):</b><br />
-          1. Vào Telegram tìm <b>@BotFather</b> $\rightarrow$ gõ
+          💡 <b>Cách lấy Token &amp; Chat ID nhanh (1 phút):</b><br />
+          1. Vào Telegram tìm <b>@BotFather</b> → gõ
           <code>/newbot</code> lấy Token.<br />
-          2. Tìm <b>@userinfobot</b> $\rightarrow$ bấm Start lấy Chat ID của
+          2. Tìm <b>@userinfobot</b> → bấm Start lấy Chat ID của
           bạn.
         </div>
       </div>
@@ -4144,6 +4371,110 @@
             🔓 Mở Khóa
           </button>
         </div>
+      </div>
+    </div>
+
+    <!-- MODAL QUẢN LÝ THIẾT BỊ TRUY CẬP (DÀNH CHO ADMIN) -->
+    <div id="device-modal" class="modal-overlay">
+      <div class="modal-card" style="max-width: 600px; text-align: left">
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+          "
+        >
+          <div
+            style="
+              font-weight: 800;
+              font-size: 1.15rem;
+              color: #fff;
+              display: flex;
+              align-items: center;
+              gap: 8px;
+            "
+          >
+            <span>📱</span> Quản Lý Thiết Bị Truy Cập
+          </div>
+          <button
+            onclick="closeDeviceModal()"
+            style="
+              background: none;
+              border: none;
+              color: #94a3b8;
+              font-size: 1.2rem;
+              cursor: pointer;
+            "
+          >
+            ✕
+          </button>
+        </div>
+
+        <p
+          style="
+            font-size: 0.8rem;
+            color: #94a3b8;
+            margin-bottom: 14px;
+            line-height: 1.45;
+          "
+        >
+          Danh sách thiết bị kết nối vào hệ thống. Bạn có quyền <b>Cho phép dùng</b> hoặc <b>Chặn truy cập</b> tức thì.
+        </p>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+          <span style="font-size: 0.78rem; font-weight: 700; color: #38bdf8;" id="device-modal-stat">Đang tải danh sách...</span>
+          <button onclick="refreshDeviceList()" class="btn btn-tool" style="padding: 4px 10px; font-size: 0.75rem;">🔄 Tải lại</button>
+        </div>
+
+        <!-- BẢNG DANH SÁCH THIẾT BỊ -->
+        <div id="device-list-container" style="max-height: 320px; overflow-y: auto; background: rgba(0,0,0,0.3); border-radius: 10px; border: 1px solid rgba(255,255,255,0.08); padding: 8px;">
+          <div style="text-align: center; color: #94a3b8; padding: 20px; font-size: 0.82rem;">Đang tải danh sách thiết bị từ Firebase...</div>
+        </div>
+
+        <div style="margin-top: 14px; text-align: right;">
+          <button class="btn btn-tool" onclick="closeDeviceModal()" style="padding: 8px 16px;">Đóng</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MÀN HÌNH CHỜ PHÊ DUYỆT THIẾT BỊ (CHO NGƯỜI DÙNG MỚI) -->
+    <div id="device-gate-overlay" class="device-gate-overlay">
+      <div class="device-gate-card">
+        <div class="device-gate-icon" id="device-gate-icon">⏳</div>
+        <div class="device-gate-title" id="device-gate-title">Thiết Bị Đang Chờ Duyệt</div>
+        <div class="device-gate-desc" id="device-gate-desc">
+          Thiết bị của bạn đang chờ Quản trị viên (Admin) phê duyệt để xem và sử dụng danh sách tài khoản.
+        </div>
+
+        <div class="device-info-pill">
+          <div>
+            <span>Tên người dùng:</span>
+            <b style="color: #38bdf8;" id="gate-user-name">Đang tải...</b>
+          </div>
+          <div>
+            <span>Thiết bị nhận diện:</span>
+            <b style="color: #cbd5e1;" id="gate-device-info">Đang nhận diện...</b>
+          </div>
+          <div>
+            <span>Trạng thái:</span>
+            <b style="color: #facc15;" id="gate-device-status">Chờ phê duyệt</b>
+          </div>
+        </div>
+
+        <div style="font-size: 0.78rem; color: #94a3b8; line-height: 1.45; margin-bottom: 16px;">
+          💡 Hãy liên hệ <b>Nguyễn Chí Duy (@devsepa)</b> để được duyệt vào hệ thống nhanh chóng!
+        </div>
+
+        <a
+          href="https://t.me/devsepa"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn btn-primary"
+          style="display: inline-flex; width: 100%; justify-content: center; padding: 11px 16px; font-size: 0.88rem; font-weight: 800; text-decoration: none;"
+        >
+          ✈️ Nhắn Tin Xin Cấp Quyền (@devsepa)
+        </a>
       </div>
     </div>
 
@@ -4370,6 +4701,17 @@
           });
         }
 
+        const zoneAdminDivider = document.getElementById("zone-admin-divider");
+        const btnOpenDevices = document.getElementById("btn-open-devices");
+
+        if (zoneAdminDivider) {
+          zoneAdminDivider.style.display =
+            isAdmin && !isEmergencyLocked ? "flex" : "none";
+        }
+        if (btnOpenDevices) {
+          btnOpenDevices.style.display = isAdmin ? "inline-flex" : "none";
+        }
+
         if (btnEmergency) {
           if (isEmergencyLocked) {
             btnEmergency.style.display = "inline-flex";
@@ -4391,7 +4733,288 @@
           }
         }
         updateGreetingUI();
+        syncCurrentDevice();
       }
+
+      // ==========================================
+      // HỆ THỐNG QUẢN LÝ THIẾT BỊ TRUY CẬP (DEVICE APPROVAL)
+      // ==========================================
+      function getClientDeviceInfo() {
+        const ua = navigator.userAgent || "";
+        let os = "Thiết bị khác";
+        if (/iPhone/i.test(ua)) os = "📱 iPhone (iOS)";
+        else if (/iPad/i.test(ua)) os = "📱 iPad (iPadOS)";
+        else if (/Android/i.test(ua)) os = "📱 Điện thoại Android";
+        else if (/Windows NT 10.0/i.test(ua)) os = "💻 Windows 10/11";
+        else if (/Windows/i.test(ua)) os = "💻 Windows PC";
+        else if (/Macintosh|Mac OS/i.test(ua)) os = "💻 Apple Mac";
+        else if (/Linux/i.test(ua)) os = "💻 Linux";
+
+        let browser = "";
+        if (/Edg/i.test(ua)) browser = "Edge";
+        else if (/Chrome/i.test(ua)) browser = "Chrome";
+        else if (/Safari/i.test(ua) && !/Chrome/i.test(ua)) browser = "Safari";
+        else if (/Firefox/i.test(ua)) browser = "Firefox";
+        else if (/CocCoc/i.test(ua)) browser = "Cốc Cốc";
+
+        return browser ? `${os} • ${browser}` : os;
+      }
+
+      function getOrCreateDeviceId() {
+        let id = localStorage.getItem("lq_device_id");
+        if (!id) {
+          id = "dev_" + Math.random().toString(36).substring(2, 9) + "_" + Date.now().toString(36);
+          localStorage.setItem("lq_device_id", id);
+        }
+        return id;
+      }
+
+      let currentDeviceStatus = "approved"; // Mặc định local
+
+      async function syncCurrentDevice() {
+        const deviceId = getOrCreateDeviceId();
+        const userName = getUserName();
+        const deviceInfo = getClientDeviceInfo();
+        const isDefaultGuest = !hasCustomUserName() && !isAdmin;
+
+        // Nếu là admin chạy trên file hoặc đã xác thực admin, tự động duyệt
+        let statusToSend = isAdmin ? "approved" : (currentDeviceStatus || "pending");
+
+        const payload = {
+          id: deviceId,
+          userName: userName,
+          deviceInfo: deviceInfo,
+          isAdmin: isAdmin,
+          lastActive: new Date().toLocaleTimeString("vi-VN") + " " + new Date().toLocaleDateString("vi-VN"),
+          timestamp: Date.now()
+        };
+
+        try {
+          // 1. Kiểm tra trạng thái hiện tại của thiết bị này trên Firebase
+          const getRes = await fetch(`${FIREBASE_DB_URL}/devices/${deviceId}.json?t=${Date.now()}`);
+          if (getRes.ok) {
+            const remoteData = await getRes.json();
+            if (remoteData && remoteData.status) {
+              currentDeviceStatus = remoteData.status;
+            } else {
+              // Thiết bị mới: nếu là admin thì approved, nếu khách thì pending
+              currentDeviceStatus = isAdmin ? "approved" : "pending";
+              payload.status = currentDeviceStatus;
+              await fetch(`${FIREBASE_DB_URL}/devices/${deviceId}.json`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+              });
+            }
+          }
+
+          // Cập nhật lại ping time và tên người dùng nếu có thay đổi
+          if (currentDeviceStatus) {
+            await fetch(`${FIREBASE_DB_URL}/devices/${deviceId}/lastActive.json`, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload.lastActive)
+            });
+            await fetch(`${FIREBASE_DB_URL}/devices/${deviceId}/userName.json`, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(userName)
+            });
+          }
+
+          // 2. Áp dụng quyền cho màn hình hiện tại
+          applyDeviceGateUI(currentDeviceStatus, userName, deviceInfo);
+
+          // 3. Nếu là Admin, cập nhật số thiết bị chờ duyệt lên badge
+          if (isAdmin) {
+            fetchPendingDeviceCount();
+          }
+        } catch (err) {
+          console.warn("Không thể đồng bộ trạng thái thiết bị:", err);
+        }
+      }
+
+      function applyDeviceGateUI(status, userName, deviceInfo) {
+        const overlay = document.getElementById("device-gate-overlay");
+        const iconEl = document.getElementById("device-gate-icon");
+        const titleEl = document.getElementById("device-gate-title");
+        const descEl = document.getElementById("device-gate-desc");
+        const userEl = document.getElementById("gate-user-name");
+        const devEl = document.getElementById("gate-device-info");
+        const statusEl = document.getElementById("gate-device-status");
+
+        if (userEl) userEl.textContent = userName || "Khách";
+        if (devEl) devEl.textContent = deviceInfo;
+
+        if (isAdmin || status === "approved") {
+          if (overlay) overlay.classList.remove("show");
+          return;
+        }
+
+        if (!overlay) return;
+
+        if (status === "blocked") {
+          overlay.classList.add("show");
+          if (iconEl) iconEl.textContent = "🚫";
+          if (titleEl) titleEl.textContent = "Thiết Bị Bị Chặn";
+          if (descEl) descEl.innerHTML = "Thiết bị của bạn đã bị Quản trị viên <b>từ chối hoặc khóa quyền truy cập</b> vào kho tài khoản.";
+          if (statusEl) {
+            statusEl.textContent = "🚫 Đã bị chặn";
+            statusEl.style.color = "#f43f5e";
+          }
+        } else {
+          // pending
+          overlay.classList.add("show");
+          if (iconEl) iconEl.textContent = "⏳";
+          if (titleEl) titleEl.textContent = "Thiết Bị Đang Chờ Phê Duyệt";
+          if (descEl) descEl.innerHTML = "Thiết bị của bạn đang chờ Quản trị viên phê duyệt. Sau khi được duyệt, hệ thống sẽ <b>tự động mở khóa ngay lập tức</b>!";
+          if (statusEl) {
+            statusEl.textContent = "⏳ Chờ Quản trị viên duyệt";
+            statusEl.style.color = "#facc15";
+          }
+        }
+      }
+
+      async function fetchPendingDeviceCount() {
+        if (!isAdmin) return;
+        try {
+          const res = await fetch(`${FIREBASE_DB_URL}/devices.json?t=${Date.now()}`);
+          if (!res.ok) return;
+          const data = await res.json();
+          if (!data) return;
+          const list = Object.values(data);
+          const pendingCount = list.filter(d => d && d.status === "pending").length;
+          const badge = document.getElementById("device-pending-badge");
+          if (badge) {
+            badge.textContent = pendingCount;
+            badge.style.display = pendingCount > 0 ? "inline-block" : "none";
+          }
+        } catch (e) {}
+      }
+
+      window.openDeviceModal = function () {
+        const m = document.getElementById("device-modal");
+        if (m) m.classList.add("show");
+        refreshDeviceList();
+      };
+
+      window.closeDeviceModal = function () {
+        const m = document.getElementById("device-modal");
+        if (m) m.classList.remove("show");
+      };
+
+      window.refreshDeviceList = async function () {
+        const container = document.getElementById("device-list-container");
+        const statEl = document.getElementById("device-modal-stat");
+        if (!container) return;
+        container.innerHTML = `<div style="text-align: center; color: #94a3b8; padding: 20px; font-size: 0.82rem;">Đang tải danh sách thiết bị...</div>`;
+
+        try {
+          const res = await fetch(`${FIREBASE_DB_URL}/devices.json?t=${Date.now()}`);
+          if (!res.ok) {
+            container.innerHTML = `<div style="text-align: center; color: #f43f5e; padding: 20px;">Không thể kết nối Firebase!</div>`;
+            return;
+          }
+          const raw = await res.json();
+          if (!raw) {
+            container.innerHTML = `<div style="text-align: center; color: #94a3b8; padding: 20px;">Chưa có thiết bị nào kết nối.</div>`;
+            if (statEl) statEl.textContent = "0 thiết bị";
+            return;
+          }
+
+          const devices = Object.keys(raw).map(k => ({ ...raw[k], id: k }));
+          // Sắp xếp: pending lên đầu, sau đó theo timestamp mới nhất
+          devices.sort((a, b) => {
+            if (a.status === "pending" && b.status !== "pending") return -1;
+            if (b.status === "pending" && a.status !== "pending") return 1;
+            return (b.timestamp || 0) - (a.timestamp || 0);
+          });
+
+          if (statEl) {
+            const pendingN = devices.filter(d => d.status === "pending").length;
+            statEl.textContent = `${devices.length} thiết bị (${pendingN} chờ duyệt)`;
+          }
+
+          let html = `<div style="display: flex; flex-direction: column; gap: 8px;">`;
+          devices.forEach(d => {
+            const isMe = d.id === getOrCreateDeviceId();
+            const statusBadge = d.status === "approved"
+              ? `<span style="background: rgba(16,185,129,0.2); color: #34d399; border: 1px solid rgba(16,185,129,0.4); padding: 2px 7px; border-radius: 6px; font-size: 0.7rem; font-weight: 800;">ĐÃ DUYỆT</span>`
+              : (d.status === "blocked"
+                ? `<span style="background: rgba(239,68,68,0.2); color: #fca5a5; border: 1px solid rgba(239,68,68,0.4); padding: 2px 7px; border-radius: 6px; font-size: 0.7rem; font-weight: 800;">ĐÃ CHẶN</span>`
+                : `<span style="background: rgba(234,179,8,0.2); color: #facc15; border: 1px solid rgba(234,179,8,0.4); padding: 2px 7px; border-radius: 6px; font-size: 0.7rem; font-weight: 800;">⏳ CHỜ DUYỆT</span>`);
+
+            html += `
+              <div style="background: rgba(15,23,42,0.9); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 180px;">
+                  <div style="display: flex; align-items: center; gap: 7px; margin-bottom: 3px;">
+                    <b style="font-size: 0.88rem; color: #fff;">${escapeHtml(d.userName || "Khách")}</b>
+                    ${isMe ? `<span style="font-size: 0.68rem; color: #a5b4fc; background: rgba(99,102,241,0.2); padding: 1px 5px; border-radius: 4px;">(Máy này)</span>` : ""}
+                    ${statusBadge}
+                  </div>
+                  <div style="font-size: 0.74rem; color: #94a3b8; display: flex; gap: 8px; flex-wrap: wrap;">
+                    <span>${escapeHtml(d.deviceInfo || "Không rõ")}</span>
+                    <span>• Lần cuối: ${escapeHtml(d.lastActive || "Vừa xong")}</span>
+                  </div>
+                </div>
+
+                <div style="display: flex; gap: 6px;">
+                  ${d.status !== "approved" ? `
+                    <button onclick="setDeviceStatus('${d.id}', 'approved')" class="btn" style="background: rgba(16,185,129,0.2); color: #34d399; border: 1px solid rgba(16,185,129,0.4); padding: 5px 9px; font-size: 0.72rem; font-weight: 700; border-radius: 6px;" title="Cho phép thiết bị này sử dụng tài khoản">
+                      ✅ Cho Phép
+                    </button>
+                  ` : `
+                    <button onclick="setDeviceStatus('${d.id}', 'blocked')" class="btn" style="background: rgba(239,68,68,0.15); color: #fca5a5; border: 1px solid rgba(239,68,68,0.3); padding: 5px 9px; font-size: 0.72rem; font-weight: 700; border-radius: 6px;" title="Chặn không cho thiết bị này sử dụng nữa">
+                      🚫 Chặn
+                    </button>
+                  `}
+                  <button onclick="removeDevice('${d.id}')" class="btn" style="background: rgba(255,255,255,0.06); color: #94a3b8; border: 1px solid rgba(255,255,255,0.1); padding: 5px 8px; font-size: 0.72rem; border-radius: 6px;" title="Xóa thiết bị khỏi danh sách">
+                    🗑️
+                  </button>
+                </div>
+              </div>
+            `;
+          });
+          html += `</div>`;
+          container.innerHTML = html;
+        } catch (err) {
+          container.innerHTML = `<div style="text-align: center; color: #f43f5e; padding: 20px;">Lỗi tải dữ liệu thiết bị!</div>`;
+        }
+      };
+
+      window.setDeviceStatus = async function (id, newStatus) {
+        try {
+          await fetch(`${FIREBASE_DB_URL}/devices/${id}/status.json`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(newStatus)
+          });
+          playSound("click");
+          showToast(newStatus === "approved" ? "✅ Đã phê duyệt thiết bị thành công!" : "🚫 Đã chặn thiết bị thành công!");
+          refreshDeviceList();
+          fetchPendingDeviceCount();
+        } catch (e) {
+          showToast("❌ Không thể cập nhật trạng thái!");
+        }
+      };
+
+      window.removeDevice = async function (id) {
+        if (!confirm("Bạn có chắc muốn xóa thiết bị này khỏi danh sách quản lý?")) return;
+        try {
+          await fetch(`${FIREBASE_DB_URL}/devices/${id}.json`, { method: "DELETE" });
+          playSound("delete");
+          showToast("🗑️ Đã xóa thiết bị!");
+          refreshDeviceList();
+          fetchPendingDeviceCount();
+        } catch (e) {
+          showToast("❌ Không thể xóa thiết bị!");
+        }
+      };
+
+      // Tự động kiểm tra trạng thái thiết bị mỗi 5 giây
+      setInterval(() => {
+        syncCurrentDevice();
+      }, 5000);
 
       // ==========================================
       // HỆ THỐNG ĐỊNH DANH TÊN NGƯỜI DÙNG & CHÀO MỪNG
@@ -5451,21 +6074,21 @@
         return `${dd}/${mm}`;
       }
 
-      function checkBanStatus(unlockStr) {
+      function checkBanStatus(unlockStr, item = null) {
         if (!unlockStr || !unlockStr.trim()) {
-          return { isBanned: false, desc: "🟢 HOẠT ĐỘNG" };
+          return { isBanned: false, isJustUnbanned: false, desc: "🟢 HOẠT ĐỘNG" };
         }
 
         const match = unlockStr.trim().match(/^(\d{1,2})[\/\-](\d{1,2})$/);
         if (!match) {
-          return { isBanned: false, desc: "🟢 HOẠT ĐỘNG" };
+          return { isBanned: false, isJustUnbanned: false, desc: "🟢 HOẠT ĐỘNG" };
         }
 
         const day = parseInt(match[1], 10);
         const month = parseInt(match[2], 10);
 
         if (month < 1 || month > 12 || day < 1 || day > 31) {
-          return { isBanned: false, desc: "🟢 HOẠT ĐỘNG" };
+          return { isBanned: false, isJustUnbanned: false, desc: "🟢 HOẠT ĐỘNG" };
         }
 
         const now = new Date();
@@ -5483,10 +6106,21 @@
         if (todayStart < targetStart) {
           return {
             isBanned: true,
+            isJustUnbanned: false,
             desc: `🚫 BAN (${String(day).padStart(2, "0")}/${String(month).padStart(2, "0")})`,
           };
         } else {
-          return { isBanned: false, desc: "🟢 HOẠT ĐỘNG" };
+          // Đã hết hạn BAN!
+          // Nếu tài khoản chưa từng được bấm SAO CHÉP để xóa trạng thái:
+          const isJustUnbanned = !item || item.unbanCleared !== true;
+          if (isJustUnbanned) {
+            return {
+              isBanned: false,
+              isJustUnbanned: true,
+              desc: "🎉 VỪA MỞ BAN",
+            };
+          }
+          return { isBanned: false, isJustUnbanned: false, desc: "🟢 HOẠT ĐỘNG" };
         }
       }
 
@@ -6312,8 +6946,9 @@
         // Helper render 1 dòng trong bảng desktop (MẪU 1)
         function renderTableRow(item, isRecent = false) {
           globalIndex++;
-          const banInfo = checkBanStatus(item.unlockDate);
+          const banInfo = checkBanStatus(item.unlockDate, item);
           const isBanned = banInfo.isBanned;
+          const isJustUnbanned = banInfo.isJustUnbanned;
           const rankGrp = parseRankGroup(item.rank);
 
           const borderClass = isRecent
@@ -6342,11 +6977,20 @@
           const onchangeUnlock = isAdmin ? `onchange="updateField('${item.id}', 'unlockDate', this.value)"` : "";
           const onRankClick = isAdmin ? `onclick="openRankPicker(this, event)"` : "";
 
+          let badgeHtml = "";
+          if (isBanned) {
+            badgeHtml = `<span class="badge badge-banned">${banInfo.desc}</span>`;
+          } else if (isJustUnbanned) {
+            badgeHtml = `<span class="badge badge-just-unbanned" title="Nick vừa mở BAN! Bấm Sao chép để dùng và xóa trạng thái này">🎉 VỪA MỞ BAN</span>`;
+          } else {
+            badgeHtml = `<span class="badge badge-active"><span class="status-dot-active"></span> HOẠT ĐỘNG</span>`;
+          }
+
           return `
-            <tr id="acc-row-${item.id}" class="acc-row-item ${borderClass} ${isBanned ? "is-banned" : ""}">
-              <td style="text-align: center; font-weight: 700; color: ${isBanned ? "#fecaca" : "var(--text-muted)"}; font-size: 0.92rem;">#${globalIndex}</td>
+            <tr id="acc-row-${item.id}" class="acc-row-item ${borderClass} ${isBanned ? "is-banned" : ""} ${isJustUnbanned ? "is-just-unbanned" : ""}">
+              <td style="text-align: center; font-weight: 700; color: ${isBanned ? "#fecaca" : (isJustUnbanned ? "#34d399" : "var(--text-muted)")}; font-size: 0.92rem;">#${globalIndex}</td>
               <td style="text-align: center;">
-                ${isBanned ? `<span class="badge badge-banned">${banInfo.desc}</span>` : `<span class="badge badge-active"><span class="status-dot-active"></span> HOẠT ĐỘNG</span>`}
+                ${badgeHtml}
               </td>
               <td style="text-align: center;">
                 <div style="display: inline-flex; align-items: center; gap: 5px; background: rgba(0, 0, 0, 0.35); padding: 2px 7px; border-radius: 6px; border: 1px solid ${rankGrp.color || "#94a3b8"}35;">
@@ -6487,8 +7131,9 @@
 
         // Helper render 1 card trên mobile (MẪU 1)
         function renderMobileCard(item, isRecent = false) {
-          const banInfo = checkBanStatus(item.unlockDate);
+          const banInfo = checkBanStatus(item.unlockDate, item);
           const isBanned = banInfo.isBanned;
+          const isJustUnbanned = banInfo.isJustUnbanned;
           const rankGrp = parseRankGroup(item.rank);
 
           const borderClass = isRecent
@@ -6517,16 +7162,25 @@
           const onchangeUnlock = isAdmin ? `onchange="updateField('${item.id}', 'unlockDate', this.value)"` : "";
           const onRankClick = isAdmin ? `onclick="openRankPicker(this, event)"` : "";
 
+          let mBadgeHtml = "";
+          if (isBanned) {
+            mBadgeHtml = `<span class="badge badge-banned">${banInfo.desc}</span>`;
+          } else if (isJustUnbanned) {
+            mBadgeHtml = `<span class="badge badge-just-unbanned" title="Nick vừa mở BAN! Bấm Sao chép để dùng và xóa trạng thái này">🎉 VỪA MỞ BAN</span>`;
+          } else {
+            mBadgeHtml = `<span class="badge badge-active"><span class="status-dot-active"></span> HOẠT ĐỘNG</span>`;
+          }
+
           const card = document.createElement("div");
           card.id = `m-card-${item.id}`;
-          card.className = `m-row-card ${borderClass} ${isBanned ? "is-banned" : ""}`;
+          card.className = `m-row-card ${borderClass} ${isBanned ? "is-banned" : ""} ${isJustUnbanned ? "is-just-unbanned" : ""}`;
 
           card.innerHTML = `
             <div class="m-card-top-row">
               <div class="m-stt-wrap">
-                <span class="m-stt">#${globalIndex}</span>
+                <span class="m-stt" style="color: ${isBanned ? "#fecaca" : (isJustUnbanned ? "#34d399" : "var(--text-muted)")};">#${globalIndex}</span>
                 ${item.rank ? `<span class="badge ${rankGrp.class}">${escapeHtml(item.rank)}</span>` : ""}
-                ${isBanned ? `<span class="badge badge-banned">${banInfo.desc}</span>` : `<span class="badge badge-active"><span class="status-dot-active"></span> HOẠT ĐỘNG</span>`}
+                ${mBadgeHtml}
               </div>
             </div>
 
@@ -6814,6 +7468,15 @@
         const mm = String(now.getMonth() + 1).padStart(2, "0");
         const timeStr = `${hh}:${min} - ${dd}/${mm}`;
 
+        // Nếu tài khoản đang ở trạng thái '🎉 VỪA MỞ BAN', khi bấm copy sẽ gỡ bỏ trạng thái này
+        const currentBan = checkBanStatus(item.unlockDate, item);
+        let wasJustUnbanned = false;
+        if (currentBan.isJustUnbanned) {
+          item.unbanCleared = true;
+          item.unlockDate = "";
+          wasJustUnbanned = true;
+        }
+
         item.lastUsed = timeStr;
         item.lastUsedTime = Date.now();
         item.lastUsedBy = getUserName();
@@ -6822,6 +7485,10 @@
         saveData();
         triggerAutoSync();
         playSound("copy");
+
+        if (wasJustUnbanned) {
+          showToast(`🎉 Đã mở khóa hoàn tất cho tài khoản [${item.username}]! Chuyển sang Hoạt Động.`, "success");
+        }
 
         // Hiệu ứng mượt mà đổi text nút sang 'ĐÃ COPY' tức thì
         if (btnEl) {
@@ -7283,28 +7950,46 @@
       }
 
       function autoCheckUnbannedAccounts() {
+        const today = getTodayFormatted();
+        const tomorrow = getTomorrowFormatted();
+
+        // 1. Quét các nick vừa mở ban (status.isJustUnbanned: true)
+        const unbannedNow = accounts.filter((a) => {
+          if (!a.unlockDate) return false;
+          const status = checkBanStatus(a.unlockDate, a);
+          return status.isJustUnbanned;
+        });
+
+        // Hiển thị thông báo trên Web một lần cho phiên nếu có nick vừa mở ban
+        const webNotifiedToday = sessionStorage.getItem("lq_web_unban_notified");
+        if (!webNotifiedToday && unbannedNow.length > 0) {
+          sessionStorage.setItem("lq_web_unban_notified", "true");
+          setTimeout(() => {
+            showNotice({
+              title: "🎉 TÀI KHOẢN VỪA MỞ BAN!",
+              message: `Hệ thống ghi nhận có <b>${unbannedNow.length} tài khoản</b> đã hết hạn BAN!<br><br>Các tài khoản này đang được gắn nhãn nổi bật <b>[🎉 VỪA MỞ BAN]</b>.<br>👉 Khi bạn ấn nút <b>SAO CHÉP</b> trên nick đó, nhãn sẽ tự động chuyển về trạng thái <b>Hoạt Động</b>.`,
+              icon: "🎉",
+              type: "info",
+            });
+          }, 1200);
+        }
+
+        // 2. Gửi thông báo Telegram nếu đã cấu hình bot
         const config = JSON.parse(
           localStorage.getItem("lq_tele_config") || '{"token":"","chatId":""}',
         );
         if (!config.token || !config.chatId) return;
 
-        const today = getTodayFormatted();
-        const tomorrow = getTomorrowFormatted();
         const notifiedList = JSON.parse(
           localStorage.getItem("lq_tele_notified_today") || "{}",
         );
 
-        const unbannedNow = accounts.filter((a) => {
-          if (!a.unlockDate) return false;
-          const status = checkBanStatus(a.unlockDate);
-          return !status.isBanned && a.unlockDate.trim() === today;
-        });
         const newUnbanned = unbannedNow.filter(
           (a) => !notifiedList[a.id + "_today"],
         );
 
         if (newUnbanned.length > 0) {
-          let msg = `✅ <b>THÔNG BÁO: CÓ ${newUnbanned.length} NICK ĐÃ MỞ BAN HÔM NAY (${today})!</b>\n\n`;
+          let msg = `🎉 <b>THÔNG BÁO: CÓ ${newUnbanned.length} NICK VỪA MỞ BAN HÔM NAY (${today})!</b>\n\n`;
           newUnbanned.forEach((a, i) => {
             msg += `${i + 1}. 🟢 <b>${a.username}</b> | Rank: <b>${a.rank || "Chưa rank"}</b>\n   Pass: <code>${a.password}</code>\n`;
             notifiedList[a.id + "_today"] = today;
