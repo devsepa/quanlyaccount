@@ -397,3 +397,112 @@
   max-height:calc(var(--mobile-viewport-height,100dvh) - 24px);
 }
 #analytics-modal .modal-card-analytics {max-height:var(--mobile-viewport-height,100dvh);}
+
+/* Primary add action: static gloss, with a single sweep on interaction. */
+#input-container #btn-add {
+  --add-top: #7663f1;
+  --add-bottom: #4730c4;
+  --add-shadow: #292060;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  min-height: 44px;
+  background: linear-gradient(180deg, var(--add-top), var(--add-bottom)) !important;
+  border: 1px solid #bcb2ff !important;
+  border-bottom: 1px solid var(--add-shadow) !important;
+  box-shadow: 0 3px 0 var(--add-shadow), 0 5px 14px #0003, inset 0 1px 0 #ffffff70 !important;
+  color: #fff !important;
+  text-shadow: 0 1px 2px #0006;
+  transform: none !important;
+  filter: none !important;
+  transition: filter .18s ease, transform .12s ease;
+}
+#input-container .add-form-grid.mode-chungsuc #btn-add {
+  --add-top: #ca7a14;
+  --add-bottom: #99500a;
+  --add-shadow: #653607;
+  border-color: #f5c574 !important;
+}
+#input-container #btn-add::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 48%;
+  background: linear-gradient(180deg, #ffffff38, #ffffff05);
+  border-radius: 9px 9px 45% 45%;
+  pointer-events: none;
+  z-index: 1;
+}
+#input-container #btn-add::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: auto;
+  width: 55%;
+  height: 100%;
+  background: linear-gradient(100deg, transparent, #ffffff66, transparent);
+  transform: translateX(-190%) skewX(-20deg);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 2;
+  animation: none !important;
+}
+#input-container #btn-add:focus-visible {
+  outline: 3px solid #e0d9ff;
+  outline-offset: 4px;
+}
+#input-container #btn-add:active {
+  transform: translateY(1px) !important;
+  filter: brightness(.96) !important;
+}
+@keyframes addActionShine {
+  0% { transform: translateX(-190%) skewX(-20deg); opacity: 0; }
+  15% { opacity: .85; }
+  85% { opacity: .85; }
+  100% { transform: translateX(280%) skewX(-20deg); opacity: 0; }
+}
+@media (hover: hover) and (pointer: fine) {
+  #input-container #btn-add:hover { filter: brightness(1.06) !important; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  #input-container #btn-add:is(:focus-visible, :active)::after {
+    animation: addActionShine .75s ease-out 1 !important;
+  }
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  #input-container #btn-add:hover::after { animation: addActionShine .75s ease-out 1 !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #input-container #btn-add { transition: none; }
+  #input-container #btn-add::after { animation: none !important; }
+}
+/* Mobile account entry: double the original 72px input height. */
+@media (max-width: 600px) {
+  #input-container #rawInput { height: 144px; min-height: 144px; }
+}
+
+/* Account entry: destination-colored boundary. */
+#input-container {
+  --entry-border: #24738a;
+  --entry-accent: #22b8d6;
+  --entry-surface: #101e2b;
+}
+#input-container:has(#btn-add-store-chungsuc.active) {
+  --entry-border: #8b682a;
+  --entry-accent: #f0b642;
+  --entry-surface: #241f17;
+}
+.account-workspace > #input-container,
+.account-workspace.has-admin-tools > #input-container {
+  border: 1px solid var(--entry-border);
+  border-radius: 12px;
+  background: var(--entry-surface);
+  box-shadow: inset 3px 0 0 var(--entry-accent);
+  padding: 18px;
+}
+#input-container .add-box-content { padding-bottom: 0; }
+@media (max-width: 600px) {
+  .account-workspace > #input-container,
+  .account-workspace.has-admin-tools > #input-container { padding: 14px; }
+}
