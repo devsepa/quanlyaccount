@@ -231,7 +231,6 @@
       }
 
       .typewriter-cursor {
-        display: inline-block;
         margin-left: 3px;
         color: #38bdf8;
         font-weight: 400;
@@ -308,37 +307,11 @@
         align-items: center;
       }
 
-      /* CHÚ THÍCH MÀU SẮC (CHỈ HIỆN TRÊN MÁY TÍNH) */
-      .color-guide {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        font-size: 0.76rem;
-        background: rgba(2, 6, 23, 0.6);
-        padding: 6px 14px;
-        border-radius: 10px;
-        border: 1px solid var(--border-color);
-      }
-
-      .guide-item {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        font-weight: 700;
-      }
-
       .dot {
         width: 9px;
         height: 9px;
         border-radius: 50%;
         display: inline-block;
-      }
-      .dot-ban {
-        background: #f43f5e;
-        box-shadow: 0 0 6px #f43f5e;
-      }
-      .dot-ok {
-        background: #10b981;
       }
 
       .header-action-group {
@@ -373,7 +346,6 @@
       }
 
       .btn-primary {
-        background: var(--primary-gradient);
         color: #fff;
         box-shadow: 0 4px 14px var(--primary-glow);
         border: none;
@@ -768,109 +740,10 @@
         font-weight: 700;
       }
 
-      /* NÚT BÍ MẬT ẨN/HIỆN PASS TRONG KHUNG QUẢN TRỊ */
-      .btn-secret-pass-toggle {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        background: rgba(168, 85, 247, 0.15);
-        border: 1px solid rgba(168, 85, 247, 0.35);
-        color: #e9d5ff;
-        padding: 4px 10px;
-        border-radius: 7px;
-        font-size: 0.74rem;
-        font-weight: 700;
-        cursor: pointer;
-        transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
-        user-select: none;
-      }
-      .btn-secret-pass-toggle:hover {
-        background: rgba(168, 85, 247, 0.3);
-        border-color: #c084fc;
-        color: #fff;
-        transform: translateY(-1px);
-        box-shadow: 0 0 10px rgba(168, 85, 247, 0.35);
-      }
-      .btn-secret-pass-toggle.is-showing {
-        background: rgba(16, 185, 129, 0.2);
-        border-color: rgba(16, 185, 129, 0.5);
-        color: #34d399;
-        box-shadow: 0 0 12px rgba(16, 185, 129, 0.3);
-      }
-
-      /* KHUNG CHỨA Ô NHẬP NICK & NÚT DÁN NHANH BÊN TRONG */
-      .textarea-paste-box {
-        position: relative;
-        width: 100%;
-        display: flex;
-        align-items: center;
-      }
-
-      .textarea-paste-box textarea {
-        width: 100%;
-        min-height: 48px;
-        height: 48px;
-        padding: 9px 132px 9px 12px !important; /* Chừa khoảng trống 132px bên phải để nút Dán Nhanh không đè lên chữ */
-        box-sizing: border-box;
-        border-radius: 10px;
-        font-size: 0.9rem;
-        line-height: 1.4;
-        resize: vertical;
-      }
-
-      /* NÚT DÁN NHANH NẰM BÊN TRONG Ô NHẬP: TO RÕ, NỔI BẬT & CỰC DỄ BẤM */
-      .btn-paste-fast {
-        position: absolute;
-        right: 7px;
-        top: 7px;
-        height: 34px;
-        padding: 0 15px;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        background: linear-gradient(135deg, #9333ea 0%, #0284c7 100%);
-        border: 1.5px solid rgba(255, 255, 255, 0.35);
-        color: #ffffff;
-        border-radius: 8px;
-        font-size: 0.86rem;
-        font-weight: 800;
-        letter-spacing: 0.3px;
-        cursor: pointer;
-        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-        white-space: nowrap;
-        user-select: none;
-        z-index: 5;
-        box-shadow:
-          0 2px 10px rgba(147, 51, 234, 0.45),
-          inset 0 1px 0 rgba(255, 255, 255, 0.3);
-      }
-
-      .btn-paste-fast .btn-paste-icon {
-        font-size: 1.05rem;
-        line-height: 1;
-        filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
-      }
-
-      .btn-paste-fast:hover {
-        background: linear-gradient(135deg, #a855f7 0%, #38bdf8 100%);
-        color: #ffffff;
-        border-color: #38bdf8;
-        box-shadow:
-          0 4px 18px rgba(56, 189, 248, 0.6),
-          0 0 12px rgba(168, 85, 247, 0.5);
-        transform: scale(1.03);
-      }
-
-      .btn-paste-fast:active {
-        transform: scale(0.95);
-        filter: brightness(0.95);
-      }
-
       /* THANH ĐIỀU HƯỚNG KHO TÀI KHOẢN (KHO RANK & SỰ KIỆN CHUNG SỨC) */
       .storage-switcher-bar {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 12px;
         margin: 14px 0 16px;
       }
 
@@ -1717,7 +1590,6 @@
         background: transparent;
         padding: 6px 0;
         border: none;
-        box-shadow: none;
       }
 
       /* THANH TAB RANK CUỘN NGANG LƯỚT CHỌN NHANH TRÊN MOBILE & PC */
@@ -1823,35 +1695,18 @@
 
       /* NÚT CUỘN LÊN ĐẦU TRANG */
       #btn-back-top {
-        position: fixed;
-        bottom: 24px;
         right: 20px;
-        width: 46px;
-        height: 46px;
-        border-radius: 50%;
         background: var(--primary-gradient);
         color: #fff;
         border: none;
         font-size: 1.25rem;
         font-weight: 800;
-        display: flex;
-        align-items: center;
-        justify-content: center;
         box-shadow: 0 6px 20px var(--primary-glow);
-        cursor: pointer;
-        opacity: 0;
-        pointer-events: none;
         transform: translateY(16px) scale(0.9);
         transition:
           opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1),
           transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
           box-shadow 0.25s ease;
-        z-index: 9999;
-      }
-      #btn-back-top.show {
-        opacity: 1;
-        pointer-events: auto;
-        transform: translateY(0) scale(1);
       }
       #btn-back-top:hover {
         transform: translateY(-4px) scale(1.08);
@@ -1981,9 +1836,7 @@
          ======================================================== */
       .desktop-table-wrap {
         display: block;
-        background: transparent;
         border: none;
-        border-radius: 0;
         overflow-x: auto;
         box-shadow: none;
         padding-bottom: 8px;
@@ -2025,8 +1878,6 @@
       }
 
       .rank-group-banner {
-        position: relative;
-        overflow: hidden;
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
         animation: rankGlowBreath 4.2s ease-in-out infinite;
@@ -3095,10 +2946,6 @@
           display: flex !important;
         }
 
-        .color-guide {
-          display: none !important;
-        }
-
         header {
           display: grid !important;
           grid-template-columns: 1fr 1fr !important;
@@ -3288,29 +3135,6 @@
           display: inline-flex !important;
           align-items: center !important;
           white-space: nowrap !important;
-        }
-
-        /* TỐI ƯU Ô NHẬP & NÚT DÁN NHANH TRÊN MOBILE */
-        .textarea-paste-box {
-          position: relative !important;
-          width: 100% !important;
-          max-width: 100% !important;
-        }
-
-        .textarea-paste-box textarea {
-          padding-right: 105px !important;
-          font-size: 0.85rem !important;
-          box-sizing: border-box !important;
-          max-width: 100% !important;
-        }
-
-        .btn-paste-fast {
-          right: 5px !important;
-          top: 5px !important;
-          height: 30px !important;
-          padding: 0 10px !important;
-          font-size: 0.78rem !important;
-          gap: 4px !important;
         }
 
         .option-menu-dropdown {
@@ -4524,7 +4348,6 @@
         font-size: 0.68rem;
         font-weight: 800;
         padding: 3px 8px;
-        border-radius: 6px;
         letter-spacing: 0.5px;
         text-transform: uppercase;
         display: inline-flex;
@@ -4956,7 +4779,6 @@
         padding: 1px 6px;
         border-radius: 4px;
         display: inline-block;
-        margin-top: 4px;
       }
 
       .badge-cat-rank {
@@ -5603,15 +5425,6 @@
         align-items: center;
         gap: 12px;
       }
-      .daily-pulse-icon {
-        width: 40px;
-        height: 40px;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.3rem;
-      }
       .daily-pulse-val {
         font-size: 1.25rem;
         font-weight: 900;
@@ -5687,17 +5500,17 @@
       .user-greeting-bar {
         margin-bottom: 20px; padding: 14px 18px;
         background: var(--bg-surface); border: 1px solid var(--border-color);
-        border-radius: 12px; box-shadow: none;
+        border-radius: 12px;
       }
       .user-greeting-bar::before, .user-greeting-bar::after { content: none; }
       .user-greeting-avatar { box-shadow: none; background: #292342; }
       .add-box.admin-unified-card, .add-box.admin-unified-card:hover {
         background: var(--bg-surface); border: 1px solid var(--border-color);
-        border-radius: 14px; box-shadow: none; transform: none;
+        border-radius: 14px; transform: none;
         margin-bottom: 22px;
       }
       .admin-card-header { padding: 16px 20px; border-bottom-color: var(--border-color); }
-      .admin-card-title { font-size: .94rem; letter-spacing: 0; }
+      .admin-card-title { letter-spacing: 0; }
       .admin-card-subtitle { color: var(--text-sub); font-size: .76rem; }
       .add-box-content { padding: 18px 20px; }
       .storage-switcher-bar { gap: 12px; margin-bottom: 20px; }
@@ -5711,12 +5524,11 @@
       }
       .storage-tab-btn.active .storage-tab-title,
       .storage-tab-btn.active#storage-tab-chungsuc .storage-tab-title { color: #d4cbff; }
-      .storage-tab-title { font-size: .9rem; }
       .storage-tab-sub { color: var(--text-sub); font-size: .74rem; }
       .storage-tab-icon { font-size: 1.4rem; }
       .storage-tab-pill { box-shadow: none; }
       .zone-divider-header { margin: 16px 0 12px; padding: 10px 0; }
-      .zone-title-text { font-size: .88rem; letter-spacing: 0; }
+      .zone-title-text { font-size: .88rem; }
       .zone-desc-text { color: var(--text-sub); font-size: .75rem; }
       .zone-badge { border-radius: 6px; font-size: .62rem; box-shadow: none; }
       .search-bar-wrap { margin-bottom: 10px; }
@@ -5739,7 +5551,7 @@
         border-radius: 12px; padding: 0 8px 8px;
       }
       .acc-table { border-spacing: 0 4px; font-size: .84rem; }
-      .acc-table th { padding: 12px 10px; color: var(--text-sub); font-weight: 600; font-size: .69rem; }
+      .acc-table th { padding: 12px 10px; font-size: .69rem; }
       .acc-table tbody tr.acc-row-item,
       .acc-table tbody tr.acc-row-item:hover {
         background: #192336 !important; box-shadow: none !important;
@@ -6153,7 +5965,6 @@
         transform: none !important; animation: none !important;
         overscroll-behavior: contain;
       }
-      #noti-flyout-panel { width: min(360px, calc(100vw - 24px)); }
       #option-menu-dropdown { width: min(320px, calc(100vw - 24px)) !important; overflow: hidden; }
       #noti-flyout-panel .noti-flyout-header, #option-menu-dropdown .option-menu-header { flex: 0 0 auto; flex-wrap: wrap; gap: 8px; }
       #noti-flyout-panel .noti-flyout-title { min-width: 0; flex: 1 1 150px; overflow-wrap: anywhere; }
@@ -6165,7 +5976,7 @@
       .noti-item-content, .option-item-content { min-width: 0; overflow-wrap: anywhere; }
       .noti-item-card { flex-shrink: 0; }
       .modal-overlay { padding: 12px; }
-      .modal-card:not(.modal-card-analytics) { max-width: 100%; max-height: calc(100dvh - 24px); overflow-y: auto; }
+      .modal-card:not(.modal-card-analytics) { max-width: min(380px, 100%); max-height: calc(100dvh - 24px); }
       @media (max-width: 600px) {
         header, .header-brand, .header-brand-info, .header-action-group { min-width: 0; }
         .header-brand h1 { flex-wrap: wrap; }
@@ -6176,6 +5987,92 @@
         .btn-target-pill { white-space: normal; }
         .modal-overlay { padding: 8px; }
         #analytics-modal { padding: 0; }
+      }
+      /* Unified compact sizes for notices, forms, flyouts and status messages. */
+      :root {
+        --dialog-small: 380px;
+        --dialog-medium: 460px;
+        --dialog-large: 640px;
+        --overlay-gap: 16px;
+      }
+      .modal-overlay { padding: var(--overlay-gap); backdrop-filter: blur(4px); }
+      .modal-card:not(.modal-card-analytics) {
+        width: 100%; min-width: 0; max-width: var(--dialog-small);
+        max-height: calc(100dvh - 32px); padding: 22px;
+        border-radius: 14px; overflow-y: auto; overscroll-behavior: contain;
+        overflow-wrap: anywhere; font-size: .85rem; line-height: 1.55;
+      }
+      #custom-modal > .modal-card, #pin-modal > .modal-card { max-width: var(--dialog-small) !important; }
+      #name-modal > .modal-card, #tele-modal > .modal-card,
+      #cloud-modal > .modal-card { max-width: var(--dialog-medium) !important; }
+      #device-modal > .modal-card { max-width: var(--dialog-large) !important; }
+      .modal-icon { font-size: 1.9rem; margin-bottom: 10px; animation: none; }
+      .modal-title { font-size: 1rem; line-height: 1.5; font-weight: 700; }
+      .modal-msg { font-size: .84rem; line-height: 1.65; margin-top: 8px; }
+      .modal-btns { gap: 8px; margin-top: 18px; flex-wrap: wrap; }
+      .modal-btn-act { min-height: 36px; padding: 8px 14px; border-radius: 8px; font-size: .82rem; }
+      .modal-card input, .modal-card textarea, .modal-card select { max-width: 100%; min-width: 0; box-sizing: border-box; }
+      .welcome-banner-card, .welcome-name-card, .device-gate-card {
+        width: min(100%, 460px); max-width: calc(100vw - 32px);
+        max-height: calc(100dvh - 32px); overflow-y: auto;
+        padding: 22px; border-radius: 14px; overscroll-behavior: contain;
+        overflow-wrap: anywhere;
+      }
+      #noti-flyout-panel { --floating-max-height: 480px; width: min(360px, calc(100vw - 24px)); max-height: min(480px, calc(100dvh - 24px)); border-radius: 12px; }
+      #option-menu-dropdown { --floating-max-height: 480px; max-height: min(480px, calc(100dvh - 24px)); border-radius: 12px; padding: 8px; }
+      #rank-popover { --floating-max-height: 300px; max-height: min(300px, calc(100dvh - 24px)); border-radius: 10px; }
+      #noti-flyout-panel .noti-flyout-header { padding: 10px 12px; gap: 6px; }
+      #noti-flyout-panel .noti-flyout-title { font-size: .8rem; font-weight: 600; flex-basis: 135px; }
+      #noti-flyout-panel .noti-flyout-list { padding: 8px; gap: 7px; scrollbar-gutter: stable; }
+      .noti-item-card { padding: 9px 10px; gap: 8px; border-radius: 9px; box-shadow: none; }
+      .noti-item-avatar { width: 28px; height: 28px; flex: 0 0 28px; font-size: .9rem; border-radius: 7px; }
+      .noti-item-top { gap: 5px; flex-wrap: wrap; }
+      .noti-item-user { font-size: .78rem; font-weight: 600; overflow-wrap: anywhere; }
+      .noti-item-time { font-size: .65rem; }
+      .noti-item-desc { font-size: .75rem; line-height: 1.5; }
+      .noti-item-badge-cat { font-size: .63rem; padding: 2px 5px; margin-top: 4px; }
+      .noti-item-del-btn, .btn-noti-close, .option-menu-close { min-width: 28px; min-height: 28px; }
+      .option-menu-item { padding: 10px; border-radius: 8px; gap: 10px; }
+      .option-item-title { font-size: .83rem; font-weight: 600; }
+      .option-item-sub { font-size: .73rem; line-height: 1.5; }
+      .option-item-icon { width: 32px; height: 32px; flex: 0 0 32px; font-size: 1rem; border-radius: 8px; }
+      #toast {
+        min-width: 0; width: max-content; max-width: min(360px, calc(100vw - 32px));
+        max-height: calc(100dvh - 32px); overflow-y: auto; overflow-wrap: anywhere;
+        padding: 18px 22px; border-radius: 12px; gap: 8px;
+        box-shadow: 0 12px 36px #0006;
+      }
+      #toast .tick-done-circle, #toast .tick-done-svg { width: 38px; height: 38px; flex-shrink: 0; }
+      .toast-center-title { font-size: .95rem; line-height: 1.5; }
+      .toast-center-sub { font-size: .8rem; line-height: 1.5; }
+      .activity-toast-container {
+        width: min(320px, calc(100vw - 32px)); max-width: none;
+        left: 16px; bottom: 16px; gap: 8px;
+        max-height: min(360px, calc(100dvh - 32px)); overflow-y: auto;
+        overscroll-behavior: contain;
+      }
+      .activity-toast-item { flex-shrink: 0; padding: 10px 12px; border-radius: 10px; box-shadow: 0 8px 24px #0004; overflow-wrap: anywhere; }
+      @media (max-width: 600px) {
+        :root { --overlay-gap: 12px; }
+        .modal-card:not(.modal-card-analytics), .welcome-banner-card, .welcome-name-card, .device-gate-card {
+          padding: 18px; max-height: calc(100dvh - 24px);
+        }
+        #custom-modal > .modal-card { max-width: min(380px, calc(100vw - 24px)) !important; }
+        .modal-btn-act, .toast-center-action-btn { min-height: 44px; }
+        .btn-noti-close, .btn-noti-clear, .option-menu-close { min-height: 36px; }
+        #analytics-modal { padding: 0; }
+      }
+      /* Mobile: reduce compositing and decorative animation work. */
+      @media (pointer: coarse), (prefers-reduced-motion: reduce) {
+        .modal-overlay, .modal-card, .welcome-banner-overlay, .welcome-banner-card,
+        .m-row-card, .rank-group-banner, #toast, #noti-flyout-panel,
+        #option-menu-dropdown, .activity-toast-item {
+          backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
+        }
+        .m-row-card, .rank-group-banner, .row-newly-added-glow,
+        .badge-just-unbanned, .emergency-banner, .btn-emergency,
+        .status-dot-active, .modal-icon { animation: none !important; }
+        .m-row-card, .acc-row-item { transition: background-color .15s, border-color .15s !important; }
       }
     </style>
   </head>
@@ -8513,7 +8410,8 @@
         const viewport = { left: view?.offsetLeft || 0, top: view?.offsetTop || 0,
           width: view?.width || document.documentElement.clientWidth,
           height: view?.height || window.innerHeight };
-        panel.style.maxHeight = `${Math.max(0, viewport.height - 24)}px`;
+        const preferredHeight = parseFloat(getComputedStyle(panel).getPropertyValue("--floating-max-height"));
+        panel.style.maxHeight = `${Math.max(0, Math.min(viewport.height - 24, preferredHeight || viewport.height))}px`;
         panel.style.maxWidth = `${Math.max(0, viewport.width - 24)}px`;
         const rect = panel.getBoundingClientRect();
         const position = floatingPanelPosition(anchor.getBoundingClientRect(), viewport, rect);
@@ -10677,7 +10575,7 @@
       const defaultUnlock = document.getElementById("defaultUnlock");
       const defaultRank = document.getElementById("defaultRank");
       const defaultUyTin = document.getElementById("defaultUyTin");
-      const btnAdd = document.getElementById("btn-add");
+
       const displayArea = document.getElementById("display-area");
       const statCount = document.getElementById("stat-count");
       const statActive = document.getElementById("stat-active");
@@ -10787,6 +10685,7 @@
       window.addEventListener(
         "wheel",
         (e) => {
+          if (window.matchMedia("(pointer: coarse), (prefers-reduced-motion: reduce)").matches) return;
           // Bỏ qua nếu người dùng đang cuộn bên trong ô nhập nhiều dòng hoặc modal có thanh cuộn riêng
           const scrollableParent = e.target.closest(
             "textarea, .modal-card, #rank-popover, select",
@@ -13044,8 +12943,7 @@
       // TÍNH NĂNG KÊNH THÔNG BÁO TELEGRAM (CHANNEL & BOT)
       // ==========================================
       const teleModal = document.getElementById("tele-modal");
-      const btnOpenTele = document.getElementById("btn-open-tele");
-      const btnCloseTele = document.getElementById("btn-close-tele");
+
 
       function getTeleConfig() {
         try {
@@ -13271,9 +13169,7 @@
       const FIREBASE_ENDPOINT = `${FIREBASE_DB_URL}/app_data.json`;
 
       const cloudModal = document.getElementById("cloud-modal");
-      const btnOpenCloud = document.getElementById("btn-open-cloud");
-      const btnCloseCloud = document.getElementById("btn-close-cloud");
-      const btnPullCloud = document.getElementById("btn-pull-cloud");
+
       const btnPushCloud = document.getElementById("btn-push-cloud");
       const cloudStatusIcon = document.getElementById("cloud-status-icon");
       const cloudBtnText = document.getElementById("cloud-btn-text");
@@ -13291,6 +13187,20 @@
 
       // 1. TẢI DỮ LIỆU TỪ FIREBASE (PULL)
       async function pullFromCloud(silent = false) {
+        if (silent && (document.hidden || navigator.onLine === false)) return;
+        if (cloudPullInFlight) return cloudPullInFlight;
+        cloudPullInFlight = fetchCloudData(silent).finally(() => {
+          cloudPullInFlight = null;
+          if (cloudPullAgain && !document.hidden && navigator.onLine !== false) {
+            cloudPullAgain = false;
+            scheduleRealtimePull();
+          }
+        });
+        return cloudPullInFlight;
+      }
+      let cloudPullInFlight = null;
+      let cloudPullAgain = false;
+      async function fetchCloudData(silent = false) {
         try {
           if (!silent) updateCloudUI("⏳", "Đang tải...");
           const res = await fetch(`${FIREBASE_ENDPOINT}?t=${Date.now()}`);
@@ -13528,34 +13438,63 @@
       // LẮNG NGHE REALTIME EVENT-SOURCE TỪ FIREBASE
       function initFirebaseRealtimeListener() {
         try {
-          if (typeof EventSource !== "undefined") {
+          if (!firebaseRealtimeSource && !document.hidden && navigator.onLine !== false && typeof EventSource !== "undefined") {
             const es = new EventSource(FIREBASE_ENDPOINT);
-            es.addEventListener("put", () => {
-              pullFromCloud(true);
-            });
-            es.addEventListener("patch", () => {
-              pullFromCloud(true);
-            });
+            firebaseRealtimeSource = es;
+            es.addEventListener("open", () => { firebaseRealtimeHealthy = true; });
+            es.addEventListener("error", () => { firebaseRealtimeHealthy = false; });
+            es.addEventListener("put", scheduleRealtimePull);
+            es.addEventListener("patch", scheduleRealtimePull);
           }
         } catch (err) {
           console.warn("Realtime listener error:", err);
         }
       }
 
-      // Tự động kiểm tra dữ liệu khi quay lại tab trình duyệt
-      window.addEventListener("focus", () => {
+      let firebaseRealtimeSource = null;
+      let firebaseRealtimeHealthy = false;
+      let deviceRealtimeSource = null;
+      let realtimePullTimer = null;
+      let lastResumeSync = 0;
+      function scheduleRealtimePull() {
+        if (document.hidden || navigator.onLine === false) return;
+        if (cloudPullInFlight) { cloudPullAgain = true; return; }
+        clearTimeout(realtimePullTimer);
+        realtimePullTimer = setTimeout(() => {
+          realtimePullTimer = null;
+          pullFromCloud(true);
+        }, 250);
+      }
+      function pauseBackgroundConnections() {
+        firebaseRealtimeSource?.close();
+        deviceRealtimeSource?.close();
+        firebaseRealtimeSource = null;
+        deviceRealtimeSource = null;
+        firebaseRealtimeHealthy = false;
+        clearTimeout(realtimePullTimer);
+        realtimePullTimer = null;
+      }
+      function resumeVisibleConnections() {
+        if (document.hidden || navigator.onLine === false) return;
+        initFirebaseRealtimeListener();
+        initDeviceRealtimeListener();
+        if (Date.now() - lastResumeSync < 1000) return;
+        lastResumeSync = Date.now();
         syncCurrentDevice();
         pullFromCloud(true);
-      });
+      }
+      window.addEventListener("focus", resumeVisibleConnections);
+      window.addEventListener("online", resumeVisibleConnections);
+      window.addEventListener("offline", pauseBackgroundConnections);
+      window.addEventListener("pagehide", pauseBackgroundConnections);
+      window.addEventListener("pageshow", resumeVisibleConnections);
       document.addEventListener("visibilitychange", () => {
-        if (!document.hidden) {
-          syncCurrentDevice();
-          pullFromCloud(true);
-        }
+        if (document.hidden) pauseBackgroundConnections();
+        else resumeVisibleConnections();
       });
       // Polling dự phòng định kỳ (hệ thống đã có Realtime EventSource) - TỐI ƯU 4G & CHỐNG HAO PIN
       setInterval(() => {
-        if (document.hidden) return; // Tab ẩn thì dừng hẳn polling ngầm
+        if (document.hidden || navigator.onLine === false || firebaseRealtimeHealthy) return;
         pullFromCloud(true);
       }, 60000);
 
@@ -13852,6 +13791,7 @@
 
         let currentLen = totalLen;
         let isDeleting = true;
+        let typewriterPaused = false;
 
         function render(len) {
           if (len === 0) {
@@ -13866,6 +13806,10 @@
         }
 
         function step() {
+          if (document.hidden) {
+            typewriterPaused = true;
+            return;
+          }
           if (isDeleting) {
             currentLen--;
             render(currentLen);
@@ -13887,6 +13831,12 @@
           }
         }
 
+        document.addEventListener("visibilitychange", () => {
+          if (!document.hidden && typewriterPaused) {
+            typewriterPaused = false;
+            step();
+          }
+        });
         // Chờ 2.5s ban đầu trước khi bắt đầu chu kỳ xóa - gõ lặp lại
         setTimeout(step, 2500);
       }
@@ -13987,9 +13937,10 @@
       // LẮNG NGHE REALTIME TRẠNG THÁI THIẾT BỊ TỪ FIREBASE (NHẬN TÍN HIỆU TƯỚC ADMIN / CHẶN TỨC THÌ)
       function initDeviceRealtimeListener() {
         try {
-          if (typeof EventSource !== "undefined") {
+          if (!deviceRealtimeSource && !document.hidden && navigator.onLine !== false && typeof EventSource !== "undefined") {
             const devId = getOrCreateDeviceId();
             const esDev = new EventSource(`${FIREBASE_DB_URL}/devices/${devId}.json`);
+            deviceRealtimeSource = esDev;
             const handleDevEvent = (e) => {
               try {
                 if (!e.data || e.data === "null") return;

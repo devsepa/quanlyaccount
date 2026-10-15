@@ -1,5 +1,5 @@
 /* Analytics reads existing account records; it never writes or synchronizes them. */
-const analyticsReportState = { storage: "all", selectedDate: null };
+const analyticsReportState = { storage: "all" };
 const ANALYTICS_DAY_MS = 86400000;
 const ANALYTICS_UTC_OFFSET = 7 * 3600000;
 
@@ -95,7 +95,7 @@ function buildAnalyticsReport(scope) {
 function setAnalyticsStorage(storage) {
   if (!["all", "rank", "chungsuc"].includes(storage)) return;
   analyticsReportState.storage = storage;
-  analyticsReportState.selectedDate = null;
+
   renderAnalyticsData();
 }
 
@@ -116,7 +116,7 @@ function analyticsBar(label, count, total, color = "#a99bff") {
 }
 
 function inspectDailyAccounts(dateKey) {
-  analyticsReportState.selectedDate = dateKey;
+
   const scope = getAnalyticsScope();
   const matched = scope.accounts.filter(a => getAccountDateInfo(a).fullDateKey === dateKey);
   const card = document.getElementById("analytics-daily-detail-card");
@@ -184,7 +184,7 @@ function renderAnalyticsData() {
   // A changed filter must never leave a detail table from the old scope visible.
   const detail = document.getElementById("analytics-daily-detail-card");
   if (detail) detail.style.display = "none";
-  analyticsReportState.selectedDate = null;
+
 
   analyticsSetText("analytics-rank-total-note", `${report.rankCounts.size} nhóm · ${report.rank} acc chơi rank`);
   analyticsSetHtml("analytics-rank-bars-container", [...report.rankCounts].map(([key, count]) => {
