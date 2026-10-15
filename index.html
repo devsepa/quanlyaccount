@@ -6144,6 +6144,39 @@
         #analytics-modal .daily-chart-col { height: 130px; }
         #analytics-modal .analytics-table th, #analytics-modal .analytics-table td { padding: 10px 3px; font-size: .72rem; }
       }
+      /* Keep floating actions inside the usable browser viewport. */
+      .app-layout, .account-workspace, .account-list-workspace { min-width: 0; max-width: 100%; }
+      #noti-flyout-panel, #option-menu-dropdown, #rank-popover {
+        position: fixed; box-sizing: border-box;
+        inset: auto; right: auto !important;
+        max-width: calc(100vw - 24px); max-height: calc(100dvh - 24px);
+        transform: none !important; animation: none !important;
+        overscroll-behavior: contain;
+      }
+      #noti-flyout-panel { width: min(360px, calc(100vw - 24px)); }
+      #option-menu-dropdown { width: min(320px, calc(100vw - 24px)) !important; overflow: hidden; }
+      #noti-flyout-panel .noti-flyout-header, #option-menu-dropdown .option-menu-header { flex: 0 0 auto; flex-wrap: wrap; gap: 8px; }
+      #noti-flyout-panel .noti-flyout-title { min-width: 0; flex: 1 1 150px; overflow-wrap: anywhere; }
+      #noti-flyout-panel .noti-flyout-list, #option-menu-dropdown .option-menu-list {
+        min-height: 0; flex: 1 1 auto; max-height: none; overflow-y: auto;
+        overscroll-behavior: contain;
+      }
+      #rank-popover { overflow-y: auto; }
+      .noti-item-content, .option-item-content { min-width: 0; overflow-wrap: anywhere; }
+      .noti-item-card { flex-shrink: 0; }
+      .modal-overlay { padding: 12px; }
+      .modal-card:not(.modal-card-analytics) { max-width: 100%; max-height: calc(100dvh - 24px); overflow-y: auto; }
+      @media (max-width: 600px) {
+        header, .header-brand, .header-brand-info, .header-action-group { min-width: 0; }
+        .header-brand h1 { flex-wrap: wrap; }
+        .header-brand h1 #brand-typewriter-text { white-space: normal !important; overflow-wrap: anywhere; }
+        .storage-switcher-bar { gap: 8px 18px; }
+        .storage-tab-title { white-space: normal; }
+        .add-target-pill-group { flex-wrap: wrap; max-width: 100%; }
+        .btn-target-pill { white-space: normal; }
+        .modal-overlay { padding: 8px; }
+        #analytics-modal { padding: 0; }
+      }
     </style>
   </head>
   <body>
@@ -8458,6 +8491,50 @@
       // ==========================================
       // ĐIỀU KHIỂN MENU 3 GẠCH (HAMBURGER OPTION MENU)
       // ==========================================
+      function floatingPanelPosition(anchor, viewport, size, margin = 12) {
+        const width = Math.min(size.width, Math.max(0, viewport.width - margin * 2));
+        const height = Math.min(size.height, Math.max(0, viewport.height - margin * 2));
+        const leftEdge = viewport.left + margin;
+        const topEdge = viewport.top + margin;
+        const rightEdge = viewport.left + viewport.width - margin;
+        const bottomEdge = viewport.top + viewport.height - margin;
+        const below = anchor.bottom + 8;
+        const above = anchor.top - height - 8;
+        const preferredTop = below + height <= bottomEdge ? below : above >= topEdge ? above : below;
+        return {
+          left: Math.max(leftEdge, Math.min(anchor.right - width, rightEdge - width)),
+          top: Math.max(topEdge, Math.min(preferredTop, bottomEdge - height)),
+          width, maxHeight: Math.max(0, viewport.height - margin * 2),
+        };
+      }
+      function placeFloatingPanel(panel, anchor) {
+        if (!panel || !anchor || !panel.classList.contains("show")) return;
+        const view = window.visualViewport;
+        const viewport = { left: view?.offsetLeft || 0, top: view?.offsetTop || 0,
+          width: view?.width || document.documentElement.clientWidth,
+          height: view?.height || window.innerHeight };
+        panel.style.maxHeight = `${Math.max(0, viewport.height - 24)}px`;
+        panel.style.maxWidth = `${Math.max(0, viewport.width - 24)}px`;
+        const rect = panel.getBoundingClientRect();
+        const position = floatingPanelPosition(anchor.getBoundingClientRect(), viewport, rect);
+        panel.style.left = `${position.left}px`;
+        panel.style.top = `${position.top}px`;
+      }
+      let floatingPanelFrame = null;
+      function repositionFloatingPanels(event) {
+        if (event?.target instanceof Element && event.target.closest("#noti-flyout-panel, #option-menu-dropdown, #rank-popover")) return;
+        if (floatingPanelFrame !== null) return;
+        floatingPanelFrame = requestAnimationFrame(() => {
+          floatingPanelFrame = null;
+          placeFloatingPanel(document.getElementById("noti-flyout-panel"), document.getElementById("btn-open-noti"));
+          placeFloatingPanel(document.getElementById("option-menu-dropdown"), document.getElementById("btn-toggle-menu"));
+          if (typeof currentActiveRankInput !== "undefined") placeFloatingPanel(document.getElementById("rank-popover"), currentActiveRankInput);
+        });
+      }
+      window.addEventListener("resize", repositionFloatingPanels);
+      window.addEventListener("scroll", repositionFloatingPanels, { capture: true, passive: true });
+      window.visualViewport?.addEventListener("resize", repositionFloatingPanels);
+      window.visualViewport?.addEventListener("scroll", repositionFloatingPanels);
       window.toggleOptionMenu = function (e) {
         if (e) e.stopPropagation();
         const dropdown = document.getElementById("option-menu-dropdown");
@@ -8466,6 +8543,7 @@
         const isShow = dropdown.classList.toggle("show");
         if (btn) btn.classList.toggle("is-active", isShow);
         if (isShow) {
+          placeFloatingPanel(dropdown, btn);
           playSound("click");
           if (typeof window.closeNotiFlyout === "function") window.closeNotiFlyout();
         }
@@ -9635,6 +9713,8 @@
           }
           renderNotificationList();
           panel.classList.add("show");
+          window.closeOptionMenu();
+          placeFloatingPanel(panel, document.getElementById("btn-open-noti"));
           playSound("click");
         }
       };
@@ -10833,21 +10913,8 @@
       window.openRankPicker = function (inputEl, event) {
         if (event) event.stopPropagation();
         currentActiveRankInput = inputEl;
-        const rect = inputEl.getBoundingClientRect();
-
-        let top = rect.bottom + 6;
-        let left = rect.left;
-
-        if (left + 175 > window.innerWidth) {
-          left = window.innerWidth - 180;
-        }
-        if (top + 210 > window.innerHeight) {
-          top = rect.top - 215;
-        }
-
-        rankPopover.style.top = `${Math.max(10, top)}px`;
-        rankPopover.style.left = `${Math.max(10, left)}px`;
         rankPopover.classList.add("show");
+        placeFloatingPanel(rankPopover, inputEl);
       };
 
       window.selectQuickRank = function (rankCode) {
