@@ -449,6 +449,9 @@
                   <span class="option-item-arrow">›</span>
                 </button>
 
+                <button type="button" class="option-menu-item" id="btn-open-admin-audit" style="display:none" onclick="openAdminAudit(); closeOptionMenu();">
+                  <div class="option-item-icon">📋</div><div class="option-item-content"><div class="option-item-title">Nhật ký quản trị</div><div class="option-item-sub">Ai đã thêm, sửa, chuyển kho hoặc xóa acc</div></div><span class="option-item-arrow">›</span>
+                </button>
                 <!-- 4. QUẢN LÝ THIẾT BỊ (ADMIN) -->
                 <button
                   type="button"
@@ -1666,7 +1669,7 @@
             line-height: 1.45;
           "
         >
-          Danh sách thiết bị kết nối vào hệ thống. Mọi thiết bị mới mặc định <b>được phép sử dụng ngay</b>. Bạn có quyền <b>Chặn</b> hoặc <b>Xóa</b> thiết bị bất kỳ lúc nào.
+          Chọn các trình duyệt bạn xác nhận thuộc cùng một máy rồi bấm <b>Gộp cùng thiết bị</b>. Trình duyệt chưa liên kết được hiển thị riêng; không tự gộp theo tên. Chặn/Bỏ chặn áp dụng cả nhóm đã gộp; quyền Admin vẫn riêng từng trình duyệt.
         </p>
 
         <div
@@ -1685,7 +1688,7 @@
           <div style="display: flex; gap: 6px">
             <button
               type="button"
-              onclick="cleanDuplicateDevices()"
+              onclick="mergeSelectedDevices()"
               class="btn btn-tool"
               style="
                 padding: 4px 10px;
@@ -1693,9 +1696,9 @@
                 color: #facc15;
                 border-color: rgba(234, 179, 8, 0.4);
               "
-              title="Xóa các thiết bị cũ trùng lặp của cùng 1 người, chỉ giữ 1 thiết bị mới nhất"
+              title="Chọn các trình duyệt trên cùng một máy rồi gộp thành một thiết bị"
             >
-              🧹 Dọn Trùng Lặp
+              🔗 Gộp cùng thiết bị
             </button>
             <button
               type="button"
@@ -1804,6 +1807,14 @@
     </div>
 
     <!-- MODAL THÔNG BÁO -->
+    <div id="admin-audit-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="admin-audit-title">
+      <div class="modal-card audit-card">
+        <div class="audit-heading"><h3 id="admin-audit-title">📋 Nhật ký quản trị</h3><button type="button" class="btn btn-tool" onclick="closeAdminAudit()" aria-label="Đóng nhật ký">✕</button></div>
+        <p class="audit-description">Ghi nhận từ khi bật tính năng. Tên người thao tác là tên đã đặt trên web. Không ghi nội dung mật khẩu. Hiển thị tối đa 200 mục gần nhất.</p>
+        <div class="audit-tools"><input id="admin-audit-search" type="search" placeholder="Tìm tên quản trị hoặc tài khoản…" aria-label="Tìm nhật ký" oninput="renderAdminAudit()"><select id="admin-audit-filter" aria-label="Lọc thao tác" onchange="renderAdminAudit()"><option value="all">Mọi thao tác</option><option value="add">Thêm acc</option><option value="edit">Sửa acc</option><option value="move">Chuyển kho</option><option value="delete">Xóa acc</option><option value="restore">Khôi phục</option></select><button type="button" class="btn btn-tool" onclick="refreshAdminAudit()">↻ Tải lại / Thử lại</button></div>
+        <p id="admin-audit-status" role="status" aria-live="polite"></p><div id="admin-audit-list" class="audit-list"></div>
+      </div>
+    </div>
     <div id="custom-modal" class="modal-overlay">
       <div class="modal-card">
         <div class="modal-icon" id="modal-icon">⚠️</div>
@@ -2482,7 +2493,7 @@
       });
 
       // ==========================================
-      // HỆ THỐNG ÂM THANH: GÓI 1 CYBERPUNK CRYSTAL (CAO CẤP)
+      // HỆ THỐNG ÂM THANH: GAME ĐIỆN TỬ
       // ==========================================
       let soundEnabled = localStorage.getItem("lq_sound_enabled") !== "false";
       let audioCtx = null;
@@ -2494,94 +2505,56 @@
           if (AudioContextClass) audioCtx = new AudioContextClass();
         }
         if (audioCtx && audioCtx.state === "suspended") {
-          audioCtx.resume();
+          audioCtx.resume().catch(() => {});
         }
         return audioCtx;
       }
 
+      // Âm game ngắn: tạo tại chỗ, không tải file âm thanh.
+      let lastGameClickAt = -Infinity;
       function playSound(type) {
         if (!soundEnabled) return;
+        const sounds = {
+          click: [[740, 0, .055, .045]],
+          copy: [[784, 0, .085, .065], [1175, .065, .11, .06]],
+          success: [[523, 0, .10, .065], [659, .075, .10, .065], [784, .15, .10, .065], [1047, .225, .15, .06]],
+          delete: [[330, 0, .085, .07], [165, .07, .12, .065]],
+          unban: [[659, 0, .10, .065], [880, .09, .10, .065], [1047, .18, .11, .065], [1319, .28, .16, .055]]
+        };
+        const notes = sounds[type];
+        if (!notes) return;
         try {
           const ctx = getAudioContext();
-          if (!ctx) return;
+          if (!ctx || ctx.state === "closed") return;
           const now = ctx.currentTime;
-
-          if (type === "copy") {
-            // GÓI 1 (CYBERPUNK CRYSTAL): 2 nốt chuông pha lê đôi ngân vang (1046.5Hz -> 1567.98Hz)
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-
-            osc.type = "sine";
-            osc.frequency.setValueAtTime(1046.5, now);
-            osc.frequency.setValueAtTime(1567.98, now + 0.04);
-            gain.gain.setValueAtTime(0.28, now);
-            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
-            osc.start(now);
-            osc.stop(now + 0.16);
-          } else if (type === "success") {
-            // GÓI 1: Hợp âm C-E-G thăng hoa ngân dài
-            [523.25, 659.25, 783.99, 1046.5].forEach((freq, idx) => {
-              const osc = ctx.createOscillator();
-              const gain = ctx.createGain();
-              osc.connect(gain);
-              gain.connect(ctx.destination);
-              osc.type = "triangle";
-              osc.frequency.setValueAtTime(freq, now + idx * 0.05);
-              gain.gain.setValueAtTime(0.18, now + idx * 0.05);
-              gain.gain.exponentialRampToValueAtTime(
-                0.001,
-                now + idx * 0.05 + 0.22,
-              );
-              osc.start(now + idx * 0.05);
-              osc.stop(now + idx * 0.05 + 0.22);
-            });
-          } else if (type === "delete") {
-            // GÓI 1: Sub-bass sweep trầm ấm
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-            osc.type = "sine";
-            osc.frequency.setValueAtTime(340, now);
-            osc.frequency.exponentialRampToValueAtTime(80, now + 0.14);
-            gain.gain.setValueAtTime(0.25, now);
-            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
-            osc.start(now);
-            osc.stop(now + 0.16);
-          } else if (type === "click") {
-            // GÓI 1: Micro-bubble nảy nhẹ
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-            osc.type = "sine";
-            osc.frequency.setValueAtTime(900, now);
-            osc.frequency.exponentialRampToValueAtTime(400, now + 0.035);
-            gain.gain.setValueAtTime(0.14, now);
-            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.035);
-            osc.start(now);
-            osc.stop(now + 0.035);
-          } else if (type === "unban") {
-            // GÓI 1: Chuông báo 3 nốt vui vẻ (659Hz -> 880Hz -> 1318.5Hz)
-            [659.25, 880, 1318.5].forEach((f, i) => {
-              const osc = ctx.createOscillator();
-              const gain = ctx.createGain();
-              osc.connect(gain);
-              gain.connect(ctx.destination);
-              osc.type = "sine";
-              osc.frequency.setValueAtTime(f, now + i * 0.06);
-              gain.gain.setValueAtTime(0.2, now + i * 0.06);
-              gain.gain.exponentialRampToValueAtTime(
-                0.001,
-                now + i * 0.06 + 0.2,
-              );
-              osc.start(now + i * 0.06);
-              osc.stop(now + i * 0.06 + 0.2);
-            });
+          if (type === "click") {
+            if (now - lastGameClickAt < .045) return;
+            lastGameClickAt = now;
           }
-        } catch (e) {}
+          notes.forEach(([frequency, offset, duration, volume]) => {
+            const start = now + offset;
+            const osc = ctx.createOscillator();
+            const filter = ctx.createBiquadFilter();
+            const gain = ctx.createGain();
+            osc.type = type === "delete" ? "triangle" : "square";
+            osc.frequency.setValueAtTime(frequency, start);
+            if (type === "click" || type === "delete") {
+              osc.frequency.exponentialRampToValueAtTime(frequency * .65, start + duration);
+            }
+            // Giữ sắc thái game 8-bit, lọc bớt dải cao để giảm chói.
+            filter.type = "lowpass";
+            filter.frequency.setValueAtTime(2400, start);
+            filter.Q.setValueAtTime(.5, start);
+            gain.gain.setValueAtTime(0, start);
+            gain.gain.linearRampToValueAtTime(volume, start + .006);
+            gain.gain.exponentialRampToValueAtTime(.0001, start + duration);
+            osc.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
+            osc.onended = () => { osc.disconnect(); filter.disconnect(); gain.disconnect(); };
+            osc.start(start); osc.stop(start + duration + .01);
+          });
+        } catch (_) {
+          // Thiết bị không hỗ trợ âm thanh vẫn thao tác bình thường.
+        }
       }
 
       function updateSoundUI() {
@@ -2694,6 +2667,9 @@
         }
 
         const zoneAdminDivider = document.getElementById("zone-admin-divider");
+        const btnOpenAudit = document.getElementById("btn-open-admin-audit");
+        if (btnOpenAudit) btnOpenAudit.style.display = isAdmin ? "flex" : "none";
+        if (!isAdmin) document.getElementById("admin-audit-modal")?.classList.remove("show");
         const btnOpenDevices = document.getElementById("btn-open-devices");
 
         if (zoneAdminDivider) {
@@ -2783,7 +2759,7 @@
         let id = localStorage.getItem("lq_device_id");
         if (id) return id;
 
-        // TẠO FINGERPRINT ỔN ĐỊNH CHO THIẾT BỊ (ĐỂ KHÔNG BỊ TRÙNG LẶP ID KHI MỞ QUA ZALO/SAFARI/CHROME)
+        // Mã lưu riêng trong trình duyệt; liên kết cùng máy do quản trị xác nhận.
         try {
           const screenFp = `${window.screen.width}x${window.screen.height}_${window.screen.colorDepth || 24}`;
           const coreFp = navigator.hardwareConcurrency || 4;
@@ -2878,32 +2854,8 @@
               }
             } else {
               // THIẾT BỊ MỚI TRUY CẬP: MẶC ĐỊNH LUÔN ĐƯỢC PHÉP DÙNG (approved), KHÔNG BẮT CHỜ DUYỆT
-              // Chỉ bị chặn nếu tên người dùng này đã từng bị Admin đánh dấu chặn trước đó
-              let inheritedStatus = "approved";
-              if (hasCustomUserName()) {
-                try {
-                  const allRes = await fetch(
-                    `${FIREBASE_DB_URL}/devices.json?t=${Date.now()}`,
-                  );
-                  if (allRes.ok) {
-                    const allData = await allRes.json();
-                    if (allData) {
-                      const userRecords = Object.values(allData).filter(
-                        (d) =>
-                          d &&
-                          d.userName &&
-                          d.userName.trim().toLowerCase() ===
-                            userName.trim().toLowerCase(),
-                      );
-                      if (userRecords.some((d) => d.status === "blocked")) {
-                        inheritedStatus = "blocked";
-                      }
-                    }
-                  }
-                } catch (e) {}
-              }
-
-              currentDeviceStatus = inheritedStatus;
+              // Trình duyệt mới chưa liên kết: không suy đoán cùng máy qua tên.
+              currentDeviceStatus = "approved";
               payload.status = currentDeviceStatus;
               await fetch(`${FIREBASE_DB_URL}/devices/${deviceId}.json`, {
                 method: "PUT",
@@ -3018,7 +2970,74 @@
         if (m) m.classList.remove("show");
       };
 
+      let deviceDisplayGroups = [];
+      let deviceGroupBusy = false;
+      function groupDeviceRecords(devices) {
+        const groups = new Map();
+        devices.forEach(d => {
+          const linked = typeof d.physicalDeviceId === "string" && d.physicalDeviceId;
+          const key = linked ? "group:" + linked : "browser:" + d.id;
+          if (!groups.has(key)) groups.set(key, {key, label: linked ? (d.physicalDeviceName || "Thiết bị đã liên kết") : (d.userName || "Chưa đặt tên"), linked: !!linked, records: []});
+          groups.get(key).records.push(d);
+        });
+        return [...groups.values()];
+      }
+      async function readDeviceRecords() {
+        const res = await fetch(`${FIREBASE_DB_URL}/devices.json?t=${Date.now()}`);
+        if (!res.ok) throw new Error("Không tải được danh sách thiết bị");
+        return await res.json() || {};
+      }
+      async function patchDeviceRecords(patch) {
+        if (!isAdmin) throw new Error("Cần quyền quản trị");
+        const res = await fetch(`${FIREBASE_DB_URL}/devices.json`, {method:"PATCH", headers:{"Content-Type":"application/json"}, body:JSON.stringify(patch)});
+        if (!res.ok) throw new Error("Không lưu được thay đổi thiết bị");
+      }
+      function buildDeviceLinkPatch(raw, selected, groupId, name) {
+        const patch = {};
+        selected.forEach(old => {
+          const latest = raw[old.id];
+          if (!latest || (latest.physicalDeviceId || "") !== (old.physicalDeviceId || "")) throw new Error("Danh sách đã thay đổi. Hãy tải lại và chọn lại.");
+          patch[`${old.id}/physicalDeviceId`] = groupId;
+          patch[`${old.id}/physicalDeviceName`] = name;
+        });
+        return patch;
+      }
+      window.mergeSelectedDevices = function () {
+        if (!isAdmin || deviceGroupBusy) return;
+        const selected = [...document.querySelectorAll(".device-group-select:checked")].flatMap(input => deviceDisplayGroups[Number(input.value)]?.records || []);
+        if (selected.length < 2) { showToast("Chọn ít nhất hai bản ghi trình duyệt thuộc cùng một máy."); return; }
+        showNotice({title:"Gộp cùng một thiết bị", icon:"🔗", type:"confirm",
+          message:`<p>Chỉ xác nhận nếu ${selected.length} trình duyệt sau thuộc <b>cùng một máy</b>:</p><ul>${selected.map(d => `<li>${escapeHtml(d.userName || "Chưa đặt tên")} · ${escapeHtml(d.deviceInfo || "Không rõ")}</li>`).join("")}</ul><label for="physical-device-name">Tên thiết bị</label><input id="physical-device-name" class="physical-device-name" maxlength="60" value="${escapeHtml(selected[0].physicalDeviceName || selected[0].userName || "Thiết bị")}" placeholder="Ví dụ: iPhone của Duy"><p>Không xóa bản ghi, không thay đổi quyền Admin hoặc trạng thái chặn hiện có. Có thể tách nhóm sau.</p>`,
+          onConfirm: async () => {
+            if (!isAdmin || deviceGroupBusy) return;
+            const name = document.getElementById("physical-device-name")?.value.trim().slice(0,60);
+            if (!name) { showToast("Chưa gộp: hãy chọn lại và nhập tên thiết bị."); return; }
+            deviceGroupBusy = true;
+            try {
+              const raw = await readDeviceRecords();
+              const id = "physical_" + (globalThis.crypto?.randomUUID?.() || Date.now().toString(36) + Math.random().toString(36).slice(2));
+              await patchDeviceRecords(buildDeviceLinkPatch(raw, selected, id, name));
+              showToast("Đã gộp các trình duyệt vào một thiết bị.");
+              await refreshDeviceList();
+            } catch (e) { showToast(escapeHtml(e.message)); }
+            finally { deviceGroupBusy = false; }
+          }});
+      };
+      window.ungroupDeviceBrowsers = function (index) {
+        if (!isAdmin || deviceGroupBusy) return;
+        const group = deviceDisplayGroups[index];
+        if (!group?.linked) return;
+        showNotice({title:"Tách nhóm thiết bị?", message:`Tách các trình duyệt của <b>${escapeHtml(group.label)}</b> thành bản ghi riêng? Quyền và trạng thái chặn không thay đổi.`,type:"confirm",onConfirm:async()=>{
+          if (!isAdmin || deviceGroupBusy) return;
+          deviceGroupBusy=true;
+          try { const raw=await readDeviceRecords(); await patchDeviceRecords(buildDeviceLinkPatch(raw,group.records,null,null)); await refreshDeviceList(); showToast("Đã tách nhóm thiết bị."); }
+          catch(e){showToast(escapeHtml(e.message));}finally{deviceGroupBusy=false;}
+        }});
+      };
+
       window.refreshDeviceList = async function () {
+        if (!isAdmin) return;
+        deviceDisplayGroups = [];
         const container = document.getElementById("device-list-container");
         const statEl = document.getElementById("device-modal-stat");
         if (!container) return;
@@ -3044,7 +3063,7 @@
             const dev = raw[k];
             if (!dev || typeof dev !== "object") return false;
             return dev.isAdmin === true || dev.status === "blocked" ||
-              (isValidUserName(dev.userName) && dev.userName.trim().toLowerCase() !== "kh?ch");
+              (isValidUserName(dev.userName) && dev.userName.trim().toLowerCase() !== "khách");
           }).map((k) => {
             const dev = { ...raw[k], id: k };
             // Tự động nâng cấp các thiết bị pending cũ thành approved
@@ -3066,14 +3085,12 @@
             return (b.timestamp || 0) - (a.timestamp || 0);
           });
 
-          if (statEl) {
-            const adminCount = devices.filter((d) => d.isAdmin === true).length;
-            const blockedN = devices.filter((d) => d.status === "blocked").length;
-            statEl.textContent = `${devices.length} thiết bị (${adminCount} Quản trị viên${blockedN > 0 ? `, ${blockedN} bị chặn` : ""})`;
-          }
-
-          let html = `<div style="display: flex; flex-direction: column; gap: 8px;">`;
-          devices.forEach((d) => {
+          deviceDisplayGroups = groupDeviceRecords(devices);
+          if (statEl) statEl.textContent = `${deviceDisplayGroups.length} thiết bị/nhóm · ${devices.length} trình duyệt (${devices.filter(d=>d.isAdmin === true).length} có quyền Admin)`;
+          let html = `<div class="device-groups">`;
+          deviceDisplayGroups.forEach((group,index) => {
+            html += `<section class="device-physical-group"><div class="device-group-heading"><label><input class="device-group-select" type="checkbox" value="${index}"><b>${escapeHtml(group.label)}</b></label><span>${group.records.length} trình duyệt · ${group.linked ? "Đã liên kết" : "Chưa liên kết"}</span>${group.linked ? `<button type="button" class="btn btn-tool" onclick="ungroupDeviceBrowsers(${index})">Tách nhóm</button>` : ""}</div>`;
+            group.records.forEach((d) => {
             const isMe = d.id === getOrCreateDeviceId();
             const isBlocked = d.status === "blocked";
             const isDevAdmin = d.isAdmin === true;
@@ -3091,7 +3108,7 @@
                 <div style="flex: 1; min-width: 180px;">
                   <div style="display: flex; align-items: center; gap: 7px; margin-bottom: 3px; flex-wrap: wrap;">
                     <b style="font-size: 0.88rem; color: #fff;">${escapeHtml(d.userName || "Khách")}</b>
-                    ${isMe ? `<span style="font-size: 0.68rem; color: #a5b4fc; background: rgba(99,102,241,0.2); padding: 1px 5px; border-radius: 4px;">(Máy này)</span>` : ""}
+                    ${isMe ? `<span style="font-size: 0.68rem; color: #a5b4fc; background: rgba(99,102,241,0.2); padding: 1px 5px; border-radius: 4px;">(Trình duyệt này)</span>` : ""}
                     ${adminBadge}
                     ${statusBadge}
                   </div>
@@ -3124,12 +3141,14 @@
                     </button>
                   `
                   }
-                  <button onclick="removeDevice('${d.id}')" class="btn" style="background: rgba(255,255,255,0.06); color: #94a3b8; border: 1px solid rgba(255,255,255,0.1); padding: 5px 8px; font-size: 0.72rem; border-radius: 6px;" title="Xóa thiết bị khỏi danh sách">
+                  <button onclick="removeDevice('${d.id}')" class="btn" style="background: rgba(255,255,255,0.06); color: #94a3b8; border: 1px solid rgba(255,255,255,0.1); padding: 5px 8px; font-size: 0.72rem; border-radius: 6px;" title="Xóa bản ghi trình duyệt này khỏi danh sách">
                     🗑️
                   </button>
                 </div>
               </div>
             `;
+            });
+            html += `</section>`;
           });
           html += `</div>`;
           container.innerHTML = html;
@@ -3168,126 +3187,25 @@
       };
 
       window.setDeviceStatus = async function (id, newStatus) {
+        if (!isAdmin || !["approved","blocked"].includes(newStatus)) return;
         try {
-          // Lấy thông tin thiết bị để lấy userName
-          let targetUserName = "";
-          try {
-            const devRes = await fetch(
-              `${FIREBASE_DB_URL}/devices/${id}.json?t=${Date.now()}`,
-            );
-            if (devRes.ok) {
-              const devData = await devRes.json();
-              if (devData && devData.userName)
-                targetUserName = devData.userName.trim();
-            }
-          } catch (e) {}
-
-          await fetch(`${FIREBASE_DB_URL}/devices/${id}/status.json`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(newStatus),
-          });
-
-          // NẾU CÓ TÊN NGƯỜI DÙNG -> ĐỒNG BỘ TRẠNG THÁI CHO TẤT CẢ CÁC THIẾT BỊ CỦA NGƯỜI ĐÓ
-          if (targetUserName && targetUserName.toLowerCase() !== "khách") {
-            try {
-              const allRes = await fetch(
-                `${FIREBASE_DB_URL}/devices.json?t=${Date.now()}`,
-              );
-              if (allRes.ok) {
-                const allData = await allRes.json();
-                if (allData) {
-                  for (const key of Object.keys(allData)) {
-                    const item = allData[key];
-                    if (
-                      item &&
-                      item.userName &&
-                      item.userName.trim().toLowerCase() ===
-                        targetUserName.toLowerCase()
-                    ) {
-                      await fetch(
-                        `${FIREBASE_DB_URL}/devices/${key}/status.json`,
-                        {
-                          method: "PUT",
-                          headers: { "Content-Type": "application/json" },
-                          body: JSON.stringify(newStatus),
-                        },
-                      );
-                    }
-                  }
-                }
-              }
-            } catch (e) {}
+          const raw = await readDeviceRecords();
+          const target = raw[id];
+          if (!target) throw new Error("Bản ghi không còn tồn tại. Hãy tải lại.");
+          const patch = {};
+          for (const key of Object.keys(raw)) {
+            if (key === id || (target.physicalDeviceId && raw[key]?.physicalDeviceId === target.physicalDeviceId)) patch[`${key}/status`] = newStatus;
           }
-
+          await patchDeviceRecords(patch);
           playSound("click");
-          showToast(
-            newStatus === "approved"
-              ? `🔓 Đã bỏ chặn cho [${targetUserName || "thiết bị"}]!`
-              : `🚫 Đã chặn [${targetUserName || "thiết bị"}]!`,
-          );
-          refreshDeviceList();
-          fetchPendingDeviceCount();
-        } catch (e) {
-          showToast("❌ Không thể cập nhật trạng thái!");
-        }
-      };
-
-      // TỰ ĐỘNG QUÉT VÀ DỌN DẸP CÁC THIẾT BỊ CŨ TRÙNG LẶP CỦA CÙNG 1 NGƯỜI
-      window.cleanDuplicateDevices = async function () {
-        showToast("⏳ Đang quét và dọn thiết bị trùng lặp...");
-        try {
-          const res = await fetch(
-            `${FIREBASE_DB_URL}/devices.json?t=${Date.now()}`,
-          );
-          if (!res.ok) return;
-          const raw = await res.json();
-          if (!raw) {
-            showToast("✨ Danh sách thiết bị trống!");
-            return;
-          }
-
-          // Gom nhóm thiết bị theo userName
-          const groups = {};
-          Object.keys(raw).forEach((id) => {
-            const item = { ...raw[id], id };
-            const uName = (item.userName || "khách").trim().toLowerCase();
-            if (!groups[uName]) groups[uName] = [];
-            groups[uName].push(item);
-          });
-
-          let deleteCount = 0;
-          for (const uName of Object.keys(groups)) {
-            const list = groups[uName];
-            if (list.length > 1 && uName !== "khách") {
-              // Sắp xếp: timestamp mới nhất lên đầu
-              list.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-              // Giữ lại thiết bị mới nhất (list[0]), xóa các thiết bị cũ thừa thãi
-              for (let i = 1; i < list.length; i++) {
-                await fetch(`${FIREBASE_DB_URL}/devices/${list[i].id}.json`, {
-                  method: "DELETE",
-                });
-                deleteCount++;
-              }
-            }
-          }
-
-          if (deleteCount > 0) {
-            playSound("delete");
-            showToast(`🧹 Đã dọn sạch ${deleteCount} thiết bị trùng lặp cũ!`);
-          } else {
-            showToast("✨ Danh sách không có thiết bị trùng lặp nào!");
-          }
-          refreshDeviceList();
-          fetchPendingDeviceCount();
-        } catch (e) {
-          showToast("❌ Lỗi khi dọn thiết bị trùng lặp!");
-        }
+          showToast(newStatus === "approved" ? "Đã bỏ chặn thiết bị/nhóm." : "Đã chặn thiết bị/nhóm.");
+          await refreshDeviceList(); fetchPendingDeviceCount();
+        } catch(e) { showToast(escapeHtml(e.message)); }
       };
 
       window.removeDevice = async function (id) {
         if (
-          !confirm("Bạn có chắc muốn xóa thiết bị này khỏi danh sách quản lý?")
+          !confirm("Xóa bản ghi trình duyệt này khỏi danh sách quản lý? Các trình duyệt khác trong nhóm vẫn được giữ.")
         )
           return;
         try {
@@ -5309,6 +5227,7 @@
 
         accounts = [...newItems, ...accounts];
         saveData();
+        recordAdminAudit("add",newItems);
 
         // Tự động mở bung nhóm rank của các nick vừa thêm nếu nhóm đó đang bị thu gọn
         if (targetCategory !== "chungsuc") {
@@ -5405,6 +5324,101 @@
         }
       };
 
+      // Nhật ký riêng: append theo ID, không nằm trong payload PUT app_data.
+      let adminAuditState = null;
+      let adminAuditFlush = null;
+      let adminAuditLoading = false;
+      let adminAuditMessage = "";
+      const adminAuditLabels = {add:"Thêm acc",edit:"Sửa acc",move:"Chuyển kho",delete:"Xóa acc",restore:"Khôi phục"};
+      function getAdminAuditState() {
+        if (!adminAuditState) {
+          try { adminAuditState = JSON.parse(localStorage.getItem("lq_admin_audit") || "null"); } catch (_) {}
+          if (!adminAuditState || !Array.isArray(adminAuditState.entries) || !Array.isArray(adminAuditState.pending)) adminAuditState = {entries:[],pending:[]};
+        }
+        return adminAuditState;
+      }
+      function saveAdminAuditState() {
+        try { localStorage.setItem("lq_admin_audit",JSON.stringify(getAdminAuditState())); return true; }
+        catch (_) { adminAuditMessage="Không lưu được nhật ký trên máy. Hãy giữ trang mở và thử đồng bộ lại."; return false; }
+      }
+      function recordAdminAudit(action, items, details = {}) {
+        try { return appendAdminAudit(action,items,details); }
+        catch (_) { showToast("Không ghi được nhật ký cho thao tác vừa rồi. Dữ liệu tài khoản vẫn được xử lý riêng."); }
+      }
+      function appendAdminAudit(action, items, details = {}) {
+        if (!isAdmin || !adminAuditLabels[action]) return;
+        const state=getAdminAuditState();
+        if (state.pending.length >= 1000) { showToast("Nhật ký chưa đồng bộ quá nhiều. Mở Nhật ký quản trị để thử lại."); return; }
+        const list=Array.isArray(items)?items:[items];
+        const stamp=Date.now();
+        const entry={id:stamp+"_"+(globalThis.crypto?.randomUUID?.() || Math.random().toString(36).slice(2)),timestamp:stamp,
+          actor:String(getUserName()).slice(0,60),action,count:list.length,
+          targets:list.slice(0,100).map(a=>({id:String(a?.id||"").slice(0,100),username:String(a?.username||"").slice(0,120),category:a?.category==="chungsuc"?"chungsuc":"rank"})),
+          field:["username","password","rank","uyTin","unlockDate"].includes(details.field)?details.field:""};
+        if (action==="edit" && entry.field && entry.field!=="password") {
+          entry.before=String(details.before??"").slice(0,120); entry.after=String(details.after??"").slice(0,120);
+        }
+        if (action==="move") {entry.from="rank";entry.to="chungsuc";}
+        if (action==="restore") entry.previousCount=Number(details.previousCount)||0;
+        state.entries=[entry,...state.entries].slice(0,200); state.pending.push(entry);
+        if (!saveAdminAuditState()) showToast("Nhật ký đang giữ tạm trong phiên, chưa lưu được trên máy.");
+        renderAdminAudit(); void flushAdminAudit();
+      }
+      function flushAdminAudit() {
+        if (adminAuditFlush) return adminAuditFlush;
+        if (!isAdmin || navigator.onLine===false || !getAdminAuditState().pending.length) return Promise.resolve();
+        adminAuditFlush=(async()=>{
+          try {
+            while (isAdmin && navigator.onLine!==false && getAdminAuditState().pending.length) {
+              const batch=getAdminAuditState().pending.slice(0,50);
+              const controller=new AbortController(); const timeout=setTimeout(()=>controller.abort(),15000);
+              let res;
+              try {res=await fetch(`${FIREBASE_DB_URL}/admin_audit.json`,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify(Object.fromEntries(batch.map(e=>[e.id,e]))),signal:controller.signal});}
+              finally {clearTimeout(timeout);}
+              if (!res.ok) throw new Error("Không lưu được nhật ký lên cloud.");
+              const done=new Set(batch.map(e=>e.id));
+              getAdminAuditState().pending=getAdminAuditState().pending.filter(e=>!done.has(e.id));
+              saveAdminAuditState(); adminAuditMessage="";
+            }
+          } catch (_) {adminAuditMessage="Chưa đồng bộ nhật ký. Bấm Tải lại / Thử lại khi có mạng.";}
+        })().finally(()=>{adminAuditFlush=null;renderAdminAudit();});
+        return adminAuditFlush;
+      }
+      window.renderAdminAudit = function () {
+        const list=document.getElementById("admin-audit-list"),status=document.getElementById("admin-audit-status");
+        if (!list || !status || !isAdmin) return;
+        const modal=document.getElementById("admin-audit-modal");
+        if (modal && !modal.classList.contains("show")) return;
+        const state=getAdminAuditState(),pending=new Set(state.pending.map(e=>e.id));
+        status.textContent=adminAuditLoading?"Đang tải nhật ký…":adminAuditMessage || (pending.size?`${pending.size} mục đang chờ đồng bộ nhật ký.`:"Nhật ký hiện có đã đồng bộ.");
+        const search=(document.getElementById("admin-audit-search")?.value||"").trim().toLowerCase();
+        const filter=document.getElementById("admin-audit-filter")?.value||"all";
+        const entries=state.entries.filter(e=>adminAuditLabels[e.action]&&(filter==="all"||e.action===filter)&&(!search||`${e.actor} ${(e.targets||[]).map(a=>a.username).join(" ")}`.toLowerCase().includes(search)));
+        const fieldLabels={username:"Tên tài khoản",password:"Mật khẩu (ẩn nội dung)",rank:"Rank",uyTin:"Uy tín",unlockDate:"Ngày mở BAN"};
+        list.innerHTML=entries.map(e=>`<article class="audit-entry"><div class="audit-entry-title"><b>${escapeHtml(adminAuditLabels[e.action])}</b><time>${escapeHtml(new Date(e.timestamp).toLocaleString("vi-VN"))}</time></div><p>👤 ${escapeHtml(e.actor||"Chưa đặt tên")} · ${Number(e.count)||0} acc ${pending.has(e.id)?"· Chờ đồng bộ nhật ký":""}</p><p>${(e.targets||[]).slice(0,8).map(a=>escapeHtml(a.username)).join(", ")}${Number(e.count)>8?"…":""}</p>${e.action==="edit"?`<p>${escapeHtml(fieldLabels[e.field]||"Thông tin")}${e.field!=="password"&&e.before!==undefined?`: ${escapeHtml(e.before||"Trống")} → ${escapeHtml(e.after||"Trống")}`:""}</p>`:""}${e.action==="move"?"<p>Kho Rank → Kho Chung Sức</p>":""}${e.action==="restore"?`<p>Danh sách trước: ${Number(e.previousCount)||0} acc → sau: ${Number(e.count)||0} acc</p>`:""}</article>`).join("")||"<p>Chưa có nhật ký phù hợp.</p>";
+      };
+      window.refreshAdminAudit = async function () {
+        if (!isAdmin || adminAuditLoading) return;
+        adminAuditLoading=true; renderAdminAudit();
+        try {
+          await flushAdminAudit();
+          const controller=new AbortController(); const timeout=setTimeout(()=>controller.abort(),15000);
+          let res;try {res=await fetch(`${FIREBASE_DB_URL}/admin_audit.json?orderBy=%22%24key%22&limitToLast=200`,{signal:controller.signal});}finally{clearTimeout(timeout);}
+          if (!res.ok) throw new Error();
+          const remote=await res.json()||{};const state=getAdminAuditState();
+          const merged=new Map(state.entries.map(e=>[e.id,e]));
+          Object.entries(remote).filter(([,e])=>e&&adminAuditLabels[e.action]&&Array.isArray(e.targets)).forEach(([id,e])=>merged.set(id,{...e,id}));
+          state.pending.forEach(e=>merged.set(e.id,e));
+          state.entries=[...merged.values()].sort((a,b)=>Number(b.timestamp)-Number(a.timestamp)).slice(0,200);
+          adminAuditMessage=state.pending.length?"Còn nhật ký chưa đồng bộ; bấm Thử lại.":"";saveAdminAuditState();
+        }catch(_){adminAuditMessage="Không tải được nhật ký cloud. Đang hiển thị bản trên máy; hãy thử lại.";}
+        finally{adminAuditLoading=false;renderAdminAudit();}
+      };
+      window.openAdminAudit = function () {if(!isAdmin)return;document.getElementById("admin-audit-modal")?.classList.add("show");renderAdminAudit();void refreshAdminAudit();};
+      window.closeAdminAudit = function () {document.getElementById("admin-audit-modal")?.classList.remove("show");};
+      window.addEventListener("online",()=>{if(isAdmin)void flushAdminAudit();});
+      document.addEventListener("keydown",e=>{if(e.key==="Escape")closeAdminAudit();});
+
       function saveData() {
         // Giữ trạng thái trước thay đổi để có thể hoàn tác xoá/khôi phục.
         try {
@@ -5497,8 +5511,9 @@
               showNotice({title: "Chưa thể khôi phục", message: "Không lưu được bản dự phòng của danh sách hiện tại. Hãy tải file sao lưu và giải phóng dung lượng trình duyệt trước khi thử lại."});
               return;
             }
+            const previousCount=accounts.length;
             accounts = restoreList;
-            saveData(); renderList(); triggerAutoSync();
+            saveData(); recordAdminAudit("restore",restoreList,{previousCount}); renderList(); triggerAutoSync();
             showToast(`Đã khôi phục ${accounts.length} tài khoản.`);
             closeCloudModal();
           }});
@@ -5645,6 +5660,7 @@
           }
         }
 
+        const beforeValue=item[field] ?? "";
         item[field] = trimmedVal;
         if (field === "rank") {
           item[field] = item[field].toUpperCase();
@@ -5652,7 +5668,9 @@
         if (field === "uyTin") {
           item[field] = item[field].replace(/[^0-9]/g, "");
         }
+        if (String(beforeValue)===String(item[field])) return;
         saveData();
+        recordAdminAudit("edit",item,{field,before:field==="password"?undefined:beforeValue,after:field==="password"?undefined:item[field]});
         renderList();
         triggerAutoSync();
       };
@@ -6885,6 +6903,7 @@
             if (!current || current.category === "chungsuc") return;
             current.category = "chungsuc";
             saveData();
+            recordAdminAudit("move",current);
             renderList();
             triggerAutoSync();
             showToast(`Đã chuyển <b>${escapeHtml(current.username)}</b> sang kho Chung Sức.`);
@@ -6903,8 +6922,12 @@
           icon: "🗑️",
           type: "danger",
           onConfirm: () => {
+            if (!isAdmin) return;
+            const removed=accounts.find(a=>a.id===id);
+            if (!removed) return;
             accounts = accounts.filter((a) => a.id !== id);
             saveData();
+            recordAdminAudit("delete",removed);
             renderList();
             triggerAutoSync();
             playSound("delete");
@@ -8096,6 +8119,7 @@
       syncAdminPinFromCloud();
       initFirebaseRealtimeListener();
       initDeviceRealtimeListener();
+      if (isAdmin) void flushAdminAudit();
       setTimeout(autoCheckUnbannedAccounts, 2000);
     </script>
   </body>

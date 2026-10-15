@@ -4109,11 +4109,10 @@
       }
 
       .footer-top-row {
-        display: flex;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, .65fr);
         align-items: center;
-        justify-content: space-between;
-        gap: 28px;
-        flex-wrap: wrap;
+        gap: clamp(16px, 2vw, 28px);
       }
 
       /* CỘT THƯƠNG HIỆU & TÁC GIẢ (BÊN TRÁI) */
@@ -4122,6 +4121,7 @@
         flex-direction: column;
         gap: 12px;
         max-width: 620px;
+        min-width: 0;
       }
 
       .footer-brand-header {
@@ -4152,6 +4152,8 @@
       }
 
       .footer-brand-text {
+        min-width: 0;
+        overflow-wrap: anywhere;
         display: flex;
         flex-direction: column;
         gap: 2px;
@@ -4190,6 +4192,8 @@
         font-size: 0.8rem;
         color: #cbd5e1;
         width: fit-content;
+        max-width: 100%;
+        flex-wrap: wrap;
       }
 
       .footer-author-card b {
@@ -4198,6 +4202,9 @@
 
       /* KHỐI HÀNH ĐỘNG & LIÊN HỆ (BÊN PHẢI) */
       .footer-action-side {
+        min-width: 0;
+        max-width: 100%;
+        justify-self: end;
         display: flex;
         flex-direction: column;
         align-items: flex-end;
@@ -4205,6 +4212,9 @@
       }
 
       .footer-tele-cta {
+        max-width: 100%;
+        min-width: 0;
+        overflow-wrap: anywhere;
         display: inline-flex;
         align-items: center;
         justify-content: space-between;
@@ -4267,20 +4277,21 @@
         font-weight: 500;
       }
 
-      @media (max-width: 768px) {
+      @media (max-width: 1100px) {
         .footer-top-row {
-          flex-direction: column;
-          align-items: flex-start;
+          grid-template-columns: minmax(0, 1fr);
+          align-items: start;
           gap: 20px;
         }
         .footer-action-side {
           align-items: stretch;
           width: 100%;
           flex-direction: row;
+          flex-wrap: wrap;
           gap: 10px;
         }
         .footer-tele-cta {
-          flex: 1;
+          flex: 1 1 180px;
           justify-content: center;
         }
         .footer-bottom-row {

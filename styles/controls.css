@@ -565,3 +565,28 @@
 @media (min-width:1101px) {
   .desktop-table-wrap .acc-table .btn-copy-action {width:100%; min-height:36px; padding:7px 6px;}
 }
+
+/* Explicit physical-device groups retain separate browser permissions. */
+.device-groups {display:flex; flex-direction:column; gap:12px;}
+.device-physical-group {border:1px solid #46536b; border-radius:10px; padding:10px; display:flex; flex-direction:column; gap:8px; min-width:0;}
+.device-group-heading {display:flex; flex-wrap:wrap; align-items:center; gap:8px; font-size:.76rem; color:#aab8cd;}
+.device-group-heading label {display:flex; align-items:center; gap:8px; min-height:40px; color:#eef2ff; cursor:pointer; overflow-wrap:anywhere;}
+.device-group-select {width:20px; height:20px; flex-shrink:0; accent-color:#8b7bec;}
+.physical-device-name {display:block; width:100%; margin:8px 0; padding:10px; border:1px solid #66748e; border-radius:8px; background:#111b2c; color:#fff; font-size:16px;}
+#device-modal #device-modal-stat {overflow-wrap:anywhere;}
+
+#device-modal .modal-card > div:has(> #device-modal-stat) {flex-wrap:wrap; gap:8px;}
+#device-modal-stat + div {flex-wrap:wrap;}
+
+/* Admin history is separate from customer activity notifications. */
+#admin-audit-modal > .audit-card {width:100%; max-width:min(760px,calc(100vw - 24px)) !important; text-align:left;}
+.audit-heading,.audit-entry-title {display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;}
+.audit-description,#admin-audit-status {color:var(--text-sub); font-size:.76rem; margin:10px 0;}
+.audit-tools {display:flex; flex-wrap:wrap; gap:8px; margin:12px 0;}
+.audit-tools input,.audit-tools select {min-width:0; max-width:100%; padding:9px; border:1px solid #48566e; background:#111b2b; color:#fff; border-radius:8px;}
+.audit-tools input {flex:1 1 220px;}
+.audit-list {display:flex; flex-direction:column; gap:10px;}
+.audit-entry {padding:12px; border:1px solid #35445c; border-radius:10px; background:#101a2b; overflow-wrap:anywhere; font-size:.78rem;}
+.audit-entry p {margin-top:5px; color:#b6c4d9;}
+.audit-entry time {font-size:.7rem; color:#a3b2c8;}
+@media(max-width:600px){.audit-tools input,.audit-tools select{font-size:16px;}.audit-tools>*{min-height:44px;}}

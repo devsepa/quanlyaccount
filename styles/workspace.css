@@ -316,10 +316,10 @@
       .account-list-workspace .zone-desc-text { width: 100%; }
       #input-container .admin-card-title-group { min-width: 0; }
       #input-container .admin-card-subtitle { line-height: 1.5; }
-      @media (min-width: 1280px) {
+      @media (min-width: 1101px) {
         .account-workspace.has-admin-tools {
-          display: grid; grid-template-columns: 350px minmax(0, 1fr);
-          align-items: start; gap: 28px;
+          display: grid; grid-template-columns: clamp(270px, 20vw, 350px) minmax(0, 1fr);
+          align-items: start; gap: clamp(16px, 1.5vw, 28px);
         }
         .has-admin-tools > .account-list-workspace { grid-column: 2; grid-row: 1; }
         .account-workspace.has-admin-tools > #input-container {
@@ -344,8 +344,11 @@
         .has-admin-tools #input-container .add-target-pill-group { width: 100%; }
         .has-admin-tools #input-container .btn-target-pill { flex: 1; justify-content: center; padding: 8px; font-size: .75rem; }
         .has-admin-tools #input-container .btn-quick-paste-purple { justify-content: center; width: 100%; white-space: normal; }
-        .has-admin-tools #input-container #rawInput { min-height: 150px; }
+        .has-admin-tools #input-container #rawInput { min-height: 130px; }
         .has-admin-tools #input-container .add-fields-row { grid-template-columns: 1fr 1fr; gap: 12px; }
+        .has-admin-tools #input-container #field-wrap-rank { grid-column: 1 / -1; grid-row: 1; }
+        .has-admin-tools #input-container #field-wrap-unlock { grid-column: 1; grid-row: 2; }
+        .has-admin-tools #input-container #field-wrap-uytin { grid-column: 2; grid-row: 2; }
         .has-admin-tools #input-container .field-wrap-action { grid-column: 1 / -1; }
         .has-admin-tools #input-container .field-wrap-action > label { display: none; }
         .has-admin-tools #input-container .add-form-grid.mode-chungsuc .add-fields-row { display: block; }
@@ -379,34 +382,6 @@
         .desktop-table-wrap .acc-table .btn-toggle-row-eye { right: 0 !important; }
         .desktop-table-wrap .acc-table input[type="password"] { padding-right: 25px !important; padding-left: 2px !important; letter-spacing: 1px !important; }
         .desktop-table-wrap .acc-table td:has(.btn-toggle-row-eye) input { padding-right: 25px !important; }
-      }
-      @media (min-width: 1280px) and (max-width: 1599px) {
-        .account-workspace.has-admin-tools { display: block; }
-        .account-workspace.has-admin-tools > #input-container {
-          position: static; max-height: none; overflow: visible;
-          border: 0; border-bottom: 1px solid var(--border-color);
-          padding: 0 0 20px; margin: 0 0 24px;
-        }
-        .has-admin-tools #input-container .admin-card-header { flex-direction: row; align-items: center; }
-        .has-admin-tools #input-container .add-control-row { flex-direction: row; align-items: center; }
-        .has-admin-tools #input-container .add-target-selector { flex-direction: row; align-items: center; }
-        .has-admin-tools #input-container .add-target-pill-group { width: auto; }
-        .has-admin-tools #input-container #rawInput { min-height: 72px; }
-        .has-admin-tools #input-container .add-fields-row { grid-template-columns: 1fr 1fr .8fr auto; }
-        .has-admin-tools #input-container .field-wrap-action { grid-column: auto; }
-        .has-admin-tools #input-container .btn-quick-paste-purple { width: auto; }
-      }
-      @media (min-width: 1600px) {
-        .account-workspace.has-admin-tools { grid-template-columns: 350px minmax(0, 1fr); gap: 28px; }
-        .account-workspace.has-admin-tools > #input-container { padding-right: 24px; }
-        .has-admin-tools #input-container .admin-card-header { gap: 10px; padding-bottom: 16px; }
-        .has-admin-tools #input-container .admin-card-subtitle { max-width: 300px; }
-        .has-admin-tools #input-container #rawInput { min-height: 130px; }
-        .has-admin-tools #input-container #field-wrap-rank { grid-column: 1 / -1; grid-row: 1; }
-        .has-admin-tools #input-container #field-wrap-unlock { grid-column: 1; grid-row: 2; }
-        .has-admin-tools #input-container #field-wrap-uytin { grid-column: 2; grid-row: 2; }
-        .has-admin-tools #input-container .add-fields-row label { line-height: 1.5; }
-        .has-admin-tools #input-container .btn-target-pill { padding: 9px 8px; }
       }
       @media (min-width: 821px) and (max-width: 1100px) {
         .account-list-workspace .desktop-table-wrap { display: none; }
