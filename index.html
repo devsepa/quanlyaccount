@@ -6094,7 +6094,7 @@
 
         let tableHtml = `
           <table class="acc-table ${isChungSuc ? "table-chungsuc" : ""}">
-            <colgroup>${(isChungSuc ? (isAdmin ? [4, 12, 20, 18, 15, 15, 12, 4] : [4, 14, 24, 22, 20, 16]) : (isAdmin ? [3, 9, 7, 5, 16, 14, 7, 13, 14, 8, 4] : [4, 11, 8, 6, 20, 18, 8, 13, 12])).map(width => `<col style="width:${width}%">`).join("")}</colgroup>
+            <colgroup>${(isChungSuc ? (isAdmin ? [4, 12, 19, 17, 15, 14, 11, 8] : [4, 14, 24, 22, 20, 16]) : (isAdmin ? [3, 9, 5, 4, 14, 12, 6, 12, 13, 10, 12] : [4, 11, 8, 6, 20, 18, 8, 13, 12])).map(width => `<col style="width:${width}%">`).join("")}</colgroup>
             <thead>
               <tr>
                 <th style="width: 45px; text-align: center;">STT</th>
@@ -6327,6 +6327,8 @@
                 isAdmin
                   ? `
                 <td style="text-align: center;">
+                  <div class="desktop-admin-actions">
+                  ${!isChungSuc ? `<button type="button" class="btn-transfer-account" onclick="moveAccountToChungSuc('${item.id}')" title="Chuyển sang Chung Sức" aria-label="Chuyển tài khoản sang kho Chung Sức"><span aria-hidden="true">⇄</span></button>` : ""}
                   ${
                     isRecent
                       ? `
@@ -6340,6 +6342,7 @@
                     </button>
                   `
                   }
+                  </div>
                 </td>
               `
                   : ""
@@ -6511,24 +6514,21 @@
               `
                   : ""
               }
-              <button class="m-btn-copy ${isEmergencyLocked ? "btn-copy-locked" : ""}" id="m-btn-copy-${item.id}" style="background: ${isEmergencyLocked ? "rgba(239, 68, 68, 0.2)" : copyBtnGrad}; color: ${isEmergencyLocked ? "#fca5a5" : "#ffffff"} !important; ${isEmergencyLocked ? "border: 1px solid rgba(239, 68, 68, 0.4); cursor: not-allowed;" : ""} flex: 1;" onclick="copyCombo('${item.id}', this)" title="${isEmergencyLocked ? "Hệ thống đang khóa khẩn cấp" : "Sao chép"}">
+              ${isAdmin && !isChungSuc ? `<button type="button" class="btn-transfer-account m-btn-transfer-compact" onclick="moveAccountToChungSuc('${item.id}')" title="Chuyển sang Chung Sức" aria-label="Chuyển tài khoản sang kho Chung Sức"><span aria-hidden="true">⇄</span></button>` : !isAdmin ? `<button class="m-btn-copy ${isEmergencyLocked ? "btn-copy-locked" : ""}" id="m-btn-copy-${item.id}" style="background: ${isEmergencyLocked ? "rgba(239, 68, 68, 0.2)" : copyBtnGrad}; color: ${isEmergencyLocked ? "#fca5a5" : "#ffffff"} !important; ${isEmergencyLocked ? "border: 1px solid rgba(239, 68, 68, 0.4); cursor: not-allowed;" : ""} flex: 1;" onclick="copyCombo('${item.id}', this)" title="${isEmergencyLocked ? "Hệ thống đang khóa khẩn cấp" : "Sao chép"}">
+                ${isEmergencyLocked ? "🔒 KHÓA" : "📋 COPY"}
+              </button>` : ""}
+              ${isAdmin ? `
+                <div class="m-admin-actions">
+                  <button class="m-btn-copy ${isEmergencyLocked ? "btn-copy-locked" : ""}" id="m-btn-copy-${item.id}" style="background: ${isEmergencyLocked ? "rgba(239, 68, 68, 0.2)" : copyBtnGrad}; color: ${isEmergencyLocked ? "#fca5a5" : "#ffffff"} !important; ${isEmergencyLocked ? "border: 1px solid rgba(239, 68, 68, 0.4); cursor: not-allowed;" : ""} flex: 1;" onclick="copyCombo('${item.id}', this)" title="${isEmergencyLocked ? "Hệ thống đang khóa khẩn cấp" : "Sao chép"}">
                 ${isEmergencyLocked ? "🔒 KHÓA" : "📋 COPY"}
               </button>
-              ${
-                isAdmin
-                  ? isRecent
-                    ? `
-                  <button class="m-btn-remove-recent" onclick="removeFromRecent('${item.id}')" title="Gỡ khỏi nhóm Đã dùng gần đây (vẫn giữ nick)">
-                    ✕
-                  </button>
-                `
-                    : `
-                  <button type="button" class="m-btn-del" onclick="deleteAccount('${item.id}')" title="Xóa tài khoản này">
-                    🗑️ <span>Xóa acc</span>
-                  </button>
-                `
-                  : ""
-              }
+                  ${isRecent ? `
+                    <button type="button" class="m-btn-remove-recent" onclick="removeFromRecent('${item.id}')" title="Gỡ khỏi nhóm Đã dùng gần đây (vẫn giữ nick)">✕ Bỏ gần đây</button>
+                  ` : `
+                    <button type="button" class="m-btn-del" onclick="deleteAccount('${item.id}')" title="Xóa tài khoản này">🗑️ <span>Xóa acc</span></button>
+                  `}
+                </div>
+              ` : ""}
             </div>
           `;
           return card;
@@ -6867,6 +6867,28 @@
             playSound("delete");
             showToast("🧹 Đã dọn sạch tab Đã dùng gần đây!");
           },
+        });
+      };
+
+      // Chuyển kho trên cùng bản ghi, giữ ID, thông tin và lịch sử sử dụng.
+      window.moveAccountToChungSuc = function (id) {
+        if (!isAdmin) return;
+        const item = accounts.find(a => a.id === id);
+        if (!item || item.category === "chungsuc") return;
+        showNotice({
+          title: "Chuyển sang kho Chung Sức?",
+          message: `Chuyển tài khoản <b>${escapeHtml(item.username)}</b> từ <b>Kho Rank</b> sang <b>Kho Chung Sức</b>?<br>Tài khoản sẽ rời danh sách Rank. Thông tin và lịch sử sử dụng được giữ nguyên.`,
+          icon: "⇄", type: "confirm",
+          onConfirm: () => {
+            if (!isAdmin) return;
+            const current = accounts.find(a => a.id === id);
+            if (!current || current.category === "chungsuc") return;
+            current.category = "chungsuc";
+            saveData();
+            renderList();
+            triggerAutoSync();
+            showToast(`Đã chuyển <b>${escapeHtml(current.username)}</b> sang kho Chung Sức.`);
+          }
         });
       };
 
