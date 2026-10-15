@@ -22,8 +22,48 @@
     <link rel="stylesheet" href="styles/core.css" />
     <link rel="stylesheet" href="styles/workspace.css" />
     <link rel="stylesheet" href="styles/controls.css" />
+    <style>
+      #page-loader {display:none;}
+      html.page-loading #page-loader {display:flex;position:fixed;inset:0;z-index:100000;align-items:center;justify-content:center;flex-direction:column;gap:14px;background:#0d1422;color:#c5d0e3;font:13px/1.5 system-ui,sans-serif;}
+      html.page-loading body > :not(#page-loader):not(script) {visibility:hidden;}
+      html.page-loading #page-loader .page-loader-ring {position:relative;width:64px;height:64px;border:3px solid #303b52;border-top-color:#ac97ff;border-right-color:#7965d6;border-radius:50%;animation:pageLoaderSpin .85s linear infinite !important;}
+      .page-loader-ring::before {content:"";position:absolute;inset:8px;border:3px solid transparent;border-bottom-color:#39c4e5;border-left-color:#2596b2;border-radius:50%;animation:pageLoaderSpin 1.25s linear infinite reverse;}
+      @keyframes pageLoaderSpin {from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+      @media(prefers-reduced-motion:reduce){html.page-loading #page-loader .page-loader-ring{animation-duration:1.8s !important;}.page-loader-ring::before{animation:none;}}
+    </style>
+    <script>
+      // Start the visible minimum after a paint; always release on failure.
+      (() => {
+        const root=document.documentElement;
+        let finished=false,requested=false,visibleAt=null,revealTimer=null,deadline=null;
+        root.classList.add("page-loading");root.setAttribute("aria-busy","true");
+        function revealPage() {
+          if(finished)return;
+          finished=true;clearTimeout(hardDeadline);clearTimeout(deadline);clearTimeout(revealTimer);
+          root.classList.remove("page-loading");root.classList.add("page-ready");root.setAttribute("aria-busy","false");
+          const loader=document.getElementById("page-loader");if(loader)loader.setAttribute("aria-hidden","true");
+        }
+        const hardDeadline=setTimeout(revealPage,5000);
+        function scheduleReveal(){
+          if(finished||!requested||visibleAt===null)return;
+          clearTimeout(revealTimer);
+          revealTimer=setTimeout(revealPage,Math.max(0,900-(performance.now()-visibleAt)));
+        }
+        function beginVisibleLoading(){
+          requestAnimationFrame(()=>requestAnimationFrame(()=>{
+            if(finished)return;
+            visibleAt=performance.now();deadline=setTimeout(revealPage,3000);scheduleReveal();
+          }));
+        }
+        window.finishPageLoading=()=>{if(finished)return;requested=true;scheduleReveal();};
+        if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",beginVisibleLoading,{once:true});
+        else beginVisibleLoading();
+        window.addEventListener("pageshow",event=>{if(event.persisted)revealPage();});
+      })();
+    </script>
   </head>
   <body>
+    <div id="page-loader" role="status" aria-live="polite"><span class="page-loader-ring" aria-hidden="true"></span><span>Đang mở trang…</span></div>
     <!-- POPUP CHÀO MỪNG GIỮA MÀN HÌNH (LÀM MỜ NỀN) -->
     <div
       id="welcome-banner-overlay"
@@ -210,6 +250,7 @@
     <div class="app-layout">
       <!-- TOPBAR HEADER (MODERN SLATE, CHÍNH GIỮA TRANG WEB) -->
       <header>
+        <canvas id="header-aurora" aria-hidden="true"></canvas>
         <div class="header-left">
           <button
             class="btn btn-tool"
@@ -8093,6 +8134,65 @@
         }
       }
 
+      // Decorative header only; independent of account rendering and cloud sync.
+      function initHeaderAurora() {
+        try {
+          const header=document.querySelector(".app-layout > header"),canvas=document.getElementById("header-aurora");
+          if(!header||!canvas||canvas.dataset.started)return;
+          const ctx=canvas.getContext("2d");if(!ctx)return;
+          canvas.dataset.started="true";
+          const preference=window.matchMedia("(prefers-reduced-motion: reduce)");
+          let width=1,height=1,time=0,last=0,frameId=0,inView=true,pageActive=true;
+          const allowed=()=>!document.hidden&&inView&&pageActive&&!preference.matches;
+          function draw() {
+            ctx.clearRect(0,0,width,height);
+            for(let k=0;k<4;k++){
+              ctx.beginPath();
+              for(let x=0;x<=width+10;x+=10){
+                const y=height*(.4+k*.14)+Math.sin(x/width*5+time*.55+k)*height*.29;
+                if(x)ctx.lineTo(x,y);else ctx.moveTo(x,y);
+              }
+              ctx.lineTo(width,height+40);ctx.lineTo(0,height+40);ctx.closePath();
+              const gradient=ctx.createLinearGradient(0,0,width,height);
+              gradient.addColorStop(0,"transparent");
+              gradient.addColorStop(.4,k%2?"rgba(141,140,255,.14)":"rgba(69,217,207,.14)");
+              gradient.addColorStop(1,"rgba(69,217,207,.015)");
+              ctx.fillStyle=gradient;ctx.fill();
+            }
+            ctx.beginPath();
+            for(let x=0;x<=width+8;x+=8){
+              const y=height*.6+Math.sin(x/width*7+time*.6)*height*.26+Math.cos(x/width*11-time*.6)*height*.26*.35;
+              if(x)ctx.lineTo(x,y);else ctx.moveTo(x,y);
+            }
+            ctx.strokeStyle="rgba(69,217,207,.28)";ctx.lineWidth=1.2;ctx.stroke();
+          }
+          function frame(stamp){
+            frameId=0;if(!allowed()){last=0;return;}
+            if(!last||stamp-last>=42){time+=last?Math.min((stamp-last)/1000,.08):.042;last=stamp;draw();}
+            frameId=requestAnimationFrame(frame);
+          }
+          function update(){
+            if(!allowed()){if(frameId)cancelAnimationFrame(frameId);frameId=0;last=0;draw();}
+            else if(!frameId)frameId=requestAnimationFrame(frame);
+          }
+          function resize(){
+            const rect=header.getBoundingClientRect();width=Math.max(1,rect.width);height=Math.max(1,rect.height);
+            const ratio=Math.min(window.devicePixelRatio||1,1.5);
+            canvas.width=Math.round(width*ratio);canvas.height=Math.round(height*ratio);
+            ctx.setTransform(ratio,0,0,ratio,0,0);draw();update();
+          }
+          if(typeof ResizeObserver!=="undefined")new ResizeObserver(resize).observe(header);
+          else window.addEventListener("resize",resize);
+          if(typeof IntersectionObserver!=="undefined")new IntersectionObserver(entries=>{inView=entries[0].isIntersecting;update();}).observe(header);
+          document.addEventListener("visibilitychange",update);
+          window.addEventListener("pagehide",()=>{pageActive=false;update();});
+          window.addEventListener("pageshow",()=>{pageActive=true;update();});
+          if(preference.addEventListener)preference.addEventListener("change",update);
+          else if(preference.addListener)preference.addListener(update);
+          resize();
+        } catch (_) { /* Header remains usable if decorative canvas is unavailable. */ }
+      }
+
       // KHỞI CHẠY
       restoreInputBoxState();
       updateGreetingUI();
@@ -8100,6 +8200,7 @@
       switchAccountStorage(currentStorage, false);
       initWelcomeBanner();
       initBrandTypewriter();
+      initHeaderAurora();
       updateSoundUI();
       updateAdminUI();
       updatePassToggleUI();
@@ -8114,7 +8215,7 @@
       }
       updateAutoBackupUI();
       renderList();
-      pullFromCloud(true);
+      Promise.resolve(pullFromCloud(true)).then(() => window.finishPageLoading(), () => window.finishPageLoading());
       syncTeleConfigFromCloud();
       syncAdminPinFromCloud();
       initFirebaseRealtimeListener();

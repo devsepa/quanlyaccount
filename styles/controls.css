@@ -601,16 +601,24 @@
   to { opacity: 1; transform: translateY(0); }
 }
 @media (prefers-reduced-motion: no-preference) {
-  .app-layout > header {
+  .page-ready .app-layout > header {
     animation: pageContentReveal 280ms ease-out 0ms 1 backwards;
   }
-  .app-layout > #user-greeting-bar {
+  .page-ready .app-layout > #user-greeting-bar {
     animation: greetingContentReveal 300ms ease-out 30ms 1 backwards;
   }
-  .app-layout > #account-workspace {
+  .page-ready .app-layout > #account-workspace {
     animation: pageContentReveal 320ms ease-out 50ms 1 backwards;
   }
-  .app-layout > .app-footer {
+  .page-ready .app-layout > .app-footer {
     animation: pageContentReveal 300ms ease-out 70ms 1 backwards;
   }
 }
+/* Selected header 01: cyan silk aurora, without clipping fixed menus. */
+.app-layout > header {
+  position:relative; background:linear-gradient(110deg,#0b192c,#102c39 55%,#131a2c);
+  border:1px solid #285365; border-radius:14px; padding:18px 20px;
+}
+#header-aurora {position:absolute;inset:0;width:100%;height:100%;border-radius:13px;pointer-events:none;z-index:0;}
+.app-layout > header > :not(#header-aurora) {position:relative;z-index:1;}
+@media(max-width:600px){.app-layout > header {padding:14px 12px;}}
