@@ -590,3 +590,27 @@
 .audit-entry p {margin-top:5px; color:#b6c4d9;}
 .audit-entry time {font-size:.7rem; color:#a3b2c8;}
 @media(max-width:600px){.audit-tools input,.audit-tools select{font-size:16px;}.audit-tools>*{min-height:44px;}}
+
+/* Gentle entrance: once per document, independent of list and cloud updates. */
+@keyframes pageContentReveal {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes greetingContentReveal {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .app-layout > header {
+    animation: pageContentReveal 280ms ease-out 0ms 1 backwards;
+  }
+  .app-layout > #user-greeting-bar {
+    animation: greetingContentReveal 300ms ease-out 30ms 1 backwards;
+  }
+  .app-layout > #account-workspace {
+    animation: pageContentReveal 320ms ease-out 50ms 1 backwards;
+  }
+  .app-layout > .app-footer {
+    animation: pageContentReveal 300ms ease-out 70ms 1 backwards;
+  }
+}
