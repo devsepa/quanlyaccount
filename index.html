@@ -6074,6 +6074,231 @@
         .status-dot-active, .modal-icon { animation: none !important; }
         .m-row-card, .acc-row-item { transition: background-color .15s, border-color .15s !important; }
       }
+      /* Make storage choices recognizable and keep the selected destination explicit. */
+      .storage-picker-heading { display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 14px; margin: 8px 0 10px; }
+      .storage-picker-heading strong { font-size: .88rem; font-weight: 600; }
+      .storage-picker-heading span { font-size: .76rem; color: var(--text-sub); }
+      #storage-switcher-bar {
+        display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px; max-width: 840px; border: 0; margin: 0 0 24px;
+      }
+      #storage-switcher-bar .storage-tab-btn {
+        width: 100%; min-height: 88px; margin: 0; padding: 14px 16px;
+        background: var(--bg-surface); border: 1px solid #3b475d;
+        border-radius: 10px; gap: 12px; box-shadow: none; transform: none;
+        flex-wrap: wrap; transition: background-color .15s, border-color .15s;
+      }
+      #storage-switcher-bar .storage-tab-text-wrap { flex: 1 1 170px; }
+      #storage-switcher-bar .storage-tab-title { font-size: .9rem; color: var(--text-main); font-weight: 600; }
+      #storage-switcher-bar .storage-tab-sub { display: block; white-space: normal; font-size: .74rem; color: var(--text-sub); margin-top: 3px; }
+      #storage-switcher-bar .storage-tab-icon { font-size: 1.25rem; }
+      #storage-switcher-bar .storage-tab-pill { margin-left: auto; padding: 2px 7px; color: var(--text-sub); background: #202a3b; }
+      #storage-switcher-bar .storage-tab-btn::after { content: "Chọn kho →"; font-size: .73rem; color: var(--text-sub); white-space: nowrap; }
+      #storage-switcher-bar .storage-tab-btn:hover { background: #202b40; border-color: #a99bff; }
+      #storage-switcher-bar .storage-tab-btn.active {
+        background: #292342; border: 2px solid #a99bff; padding: 13px 15px;
+      }
+      #storage-switcher-bar .storage-tab-btn.active .storage-tab-title { color: #e2dbff; }
+      #storage-switcher-bar .storage-tab-btn.active::after { content: "✓ Đang chọn"; color: #ded5ff; font-weight: 600; }
+      @media (max-width: 600px) {
+        #storage-switcher-bar { gap: 8px; }
+        #storage-switcher-bar .storage-tab-btn { padding: 12px; gap: 8px; align-content: start; }
+        #storage-switcher-bar .storage-tab-btn.active { padding: 11px; }
+        #storage-switcher-bar .storage-tab-text-wrap { flex: 1 1 100%; order: 2; }
+        #storage-switcher-bar .storage-tab-title { font-size: .8rem; }
+        #storage-switcher-bar .storage-tab-sub { font-size: .7rem; }
+        #storage-switcher-bar .storage-tab-btn::after { order: 3; }
+        #storage-switcher-bar .storage-tab-pill { margin-left: auto; }
+      }
+      /* Pointer feedback only: no continuous animation or movement on touch screens. */
+      @media (hover: hover) and (pointer: fine) {
+        .option-menu-item, .noti-item-card, .m-row-card,
+        .rank-group-banner, .btn, .btn-card-collapse, .btn-change-user-name,
+        .rank-nav-chip, .btn-target-pill, .btn-quick-paste-purple,
+        .btn-copy-action, .analytics-kpi-card, .analytics-section-card {
+          transition: background-color .16s ease, border-color .16s ease, box-shadow .16s ease;
+        }
+        #storage-switcher-bar .storage-tab-btn:hover {
+          background: #252e45; border-color: #b8aaff;
+          box-shadow: 0 3px 12px #0003, inset 0 0 0 1px #a99bff33;
+        }
+        #storage-switcher-bar .storage-tab-btn.active:hover { background: #352b53; }
+        .option-menu-item:hover, .noti-item-card:hover, .m-row-card:hover {
+          background: #202c40 !important; border-color: #716693;
+          box-shadow: inset 0 0 0 1px #a99bff26;
+        }
+        .acc-table tbody tr.acc-row-item:hover {
+          background: #202d43 !important;
+          box-shadow: inset 3px 0 0 #a99bff !important;
+        }
+        .acc-table tbody tr.acc-row-item.is-banned:hover { background: #3a2232 !important; box-shadow: inset 3px 0 0 #f18b9e !important; }
+        .m-row-card.is-banned:hover { background: #3a2232 !important; }
+        .acc-table tbody tr.acc-group-header-row:hover td, .rank-group-banner:hover {
+          filter: brightness(1.1); box-shadow: inset 0 0 0 1px #a99bff55 !important;
+        }
+        .btn:not(:disabled):hover, .btn-card-collapse:hover, .btn-change-user-name:hover,
+        .btn-target-pill:hover, .btn-quick-paste-purple:hover {
+          border-color: #a99bff; box-shadow: inset 0 0 0 1px #a99bff33;
+        }
+        .quick-rank-nav .rank-nav-chip:hover { background: #28334a; border-color: #716693 !important; color: #fff !important; }
+        .quick-rank-nav .rank-nav-chip.active:hover { background: #382d55 !important; }
+        .btn-copy-action:not(:disabled):not(.btn-copy-locked):hover {
+          background: #443668 !important; border-color: #b8aaff !important;
+          box-shadow: inset 0 0 0 1px #b8aaff33 !important;
+        }
+        #analytics-modal .analytics-kpi-card:hover { border-color: #716693; background: #1d293d; }
+        #analytics-modal .analytics-table tr:hover td { background: #202c40; }
+        .btn:disabled, .btn-copy-action:disabled { cursor: not-allowed; }
+      }
+      @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+        #storage-switcher-bar .storage-tab-btn { transition: background-color .16s ease, border-color .16s ease, box-shadow .16s ease, transform .16s ease; }
+        #storage-switcher-bar .storage-tab-btn:hover { transform: translateY(-2px); }
+        #storage-switcher-bar .storage-tab-btn:active { transform: translateY(0); }
+      }
+      /* Separate mobile account cards without changing the desktop table. */
+      @media (max-width: 1100px) {
+        .mobile-card-list { gap: 16px; }
+        .mobile-card-list .m-row-card {
+          background: #161f30 !important;
+          border: 1px solid #354158; border-radius: 12px;
+          padding: 15px 14px; gap: 12px;
+          margin: 0;
+          box-shadow: none !important;
+        }
+        .mobile-card-list .m-row-card:last-child { margin-bottom: 0; }
+        .mobile-card-list .m-row-card.is-banned { background: #2b1d2a !important; }
+        .mobile-card-list .m-row-card.is-just-unbanned { background: #142b28 !important; }
+        .mobile-card-list .m-card-top-row { gap: 10px; flex-wrap: wrap; }
+        .mobile-card-list .m-history-row {
+          background: transparent; border: 0; border-radius: 0;
+          border-bottom: 1px solid #2c374b; padding: 0 0 10px;
+          margin: 0; line-height: 1.5;
+        }
+        .mobile-card-list .m-creds-row { gap: 10px; }
+        .mobile-card-list .m-creds-row .tbl-input { min-height: 36px; }
+        .mobile-card-list .m-action-row { gap: 8px; padding-top: 2px; }
+        .mobile-card-list .m-btn-copy { min-height: 40px; border-radius: 8px; }
+        .mobile-card-list .rank-group-banner { margin-top: 8px; margin-bottom: 0; }
+        .mobile-card-list .rank-group-banner:first-child { margin-top: 0; }
+      }
+      /* Balanced full-width storage navigation and aligned working controls. */
+      .storage-picker-heading { justify-content: space-between; margin-bottom: 12px; }
+      #storage-switcher-bar { max-width: none; gap: 16px; }
+      #storage-switcher-bar .storage-tab-btn {
+        display: grid; grid-template-columns: 42px minmax(0, 1fr) auto;
+        grid-template-rows: auto auto; column-gap: 14px; row-gap: 4px;
+        min-height: 94px; padding: 16px 20px; align-items: center;
+        text-align: left; position: relative;
+      }
+      #storage-switcher-bar .storage-tab-btn.active { padding: 15px 19px; }
+      #storage-switcher-bar .storage-tab-icon {
+        grid-column: 1; grid-row: 1 / 3; width: 42px; height: 42px;
+        display: flex; align-items: center; justify-content: center;
+        border-radius: 10px; background: #ffffff08; font-size: 1.3rem;
+      }
+      #storage-switcher-bar .storage-tab-text-wrap { grid-column: 2; grid-row: 1 / 3; min-width: 0; }
+      #storage-switcher-bar .storage-tab-title { font-size: .94rem; }
+      #storage-switcher-bar .storage-tab-sub { margin-top: 4px; font-size: .76rem; }
+      #storage-switcher-bar .storage-tab-pill {
+        grid-column: 3; grid-row: 1; margin: 0; justify-self: end;
+        padding: 2px 9px; font-size: .8rem; line-height: 1.5;
+        font-variant-numeric: tabular-nums;
+      }
+      #storage-switcher-bar .storage-tab-btn::after { grid-column: 3; grid-row: 2; justify-self: end; font-size: .72rem; }
+      .account-list-workspace .quick-rank-nav { align-items: center; gap: 12px 20px; }
+      .account-list-workspace .quick-rank-nav .filter-actions { margin-left: auto; }
+      @media (max-width: 600px) {
+        .storage-picker-heading { align-items: flex-start; gap: 4px; }
+        .storage-picker-heading span { flex-basis: 100%; }
+        #storage-switcher-bar { gap: 10px; }
+        #storage-switcher-bar .storage-tab-btn {
+          grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto 1fr auto;
+          min-height: 154px; padding: 12px; gap: 10px 6px; align-items: start;
+        }
+        #storage-switcher-bar .storage-tab-btn.active { padding: 11px; }
+        #storage-switcher-bar .storage-tab-icon { grid-column: 1; grid-row: 1; width: 30px; height: 30px; font-size: 1rem; border-radius: 8px; }
+        #storage-switcher-bar .storage-tab-pill { grid-column: 2; grid-row: 1; align-self: center; font-size: .72rem; }
+        #storage-switcher-bar .storage-tab-text-wrap { grid-column: 1 / -1; grid-row: 2; }
+        #storage-switcher-bar .storage-tab-title { font-size: .8rem; }
+        #storage-switcher-bar .storage-tab-sub { font-size: .7rem; line-height: 1.5; }
+        #storage-switcher-bar .storage-tab-btn::after { grid-column: 1 / -1; grid-row: 3; justify-self: start; }
+        .account-list-workspace .quick-rank-nav { gap: 10px; }
+      }
+      /* Destructive action: distinct color and its own row on mobile. */
+      .btn-del-action, .m-btn-del {
+        background: #3a1f2b; color: #fda4af;
+        border: 1px solid #ad4c62; border-radius: 8px;
+        min-width: 32px; min-height: 36px;
+      }
+      .btn-del-action:hover, .m-btn-del:hover {
+        background: #542334; color: #ffe4e6; border-color: #fb7185;
+        transform: none; box-shadow: none;
+      }
+      .btn-del-action:focus-visible, .m-btn-del:focus-visible {
+        outline: 2px solid #fb7185; outline-offset: 3px;
+      }
+      @media (max-width: 1100px) {
+        .mobile-card-list .m-action-row:not(.mode-chungsuc) {
+          grid-template-columns: minmax(0, .8fr) minmax(0, .8fr) minmax(0, 1fr) minmax(84px, 1.5fr);
+        }
+        .mobile-card-list .m-action-row.mode-chungsuc { grid-template-columns: minmax(0, 1fr) !important; }
+        .mobile-card-list .m-btn-del {
+          grid-column: 1 / -1; justify-self: end;
+          width: auto; min-height: 44px; height: auto;
+          margin-top: 6px; padding: 9px 14px; gap: 6px;
+          font-size: .78rem; font-weight: 600;
+        }
+      }
+      /* Compact centered storage picker. */
+      .storage-picker-heading {
+        max-width: 760px; margin: 8px auto 10px;
+        justify-content: center; text-align: center; gap: 4px 12px;
+      }
+      #storage-switcher-bar { width: 100%; max-width: 760px; margin: 0 auto 24px; gap: 12px; }
+      #storage-switcher-bar .storage-tab-btn,
+      #storage-switcher-bar .storage-tab-btn.active,
+      #storage-switcher-bar .storage-tab-btn.active#storage-tab-chungsuc {
+        border-radius: 10px;
+      }
+      #storage-switcher-bar .storage-tab-btn {
+        min-height: 80px; padding: 12px 14px;
+        grid-template-columns: 34px minmax(0, 1fr) auto; column-gap: 10px;
+      }
+      #storage-switcher-bar .storage-tab-btn.active { padding: 11px 13px; }
+      #storage-switcher-bar .storage-tab-icon { width: 34px; height: 34px; font-size: 1.1rem; }
+      #storage-switcher-bar .storage-tab-title { font-size: .86rem; }
+      #storage-switcher-bar .storage-tab-sub { font-size: .7rem; }
+      @media (max-width: 600px) {
+        .storage-picker-heading { gap: 4px; }
+        #storage-switcher-bar { gap: 10px; }
+        #storage-switcher-bar .storage-tab-btn {
+          grid-template-columns: minmax(0, 1fr) auto;
+          grid-template-rows: auto 1fr auto; min-height: 142px;
+          padding: 12px; column-gap: 6px;
+        }
+        #storage-switcher-bar .storage-tab-btn.active { padding: 11px; }
+        #storage-switcher-bar .storage-tab-title { font-size: .8rem; }
+        #storage-switcher-bar .storage-tab-icon { width: 30px; height: 30px; }
+      }
+      @media (max-width: 600px) {
+        .storage-picker-heading { margin: 4px auto 8px; gap: 2px; }
+        .storage-picker-heading span { display: none; }
+        #storage-switcher-bar { margin-bottom: 16px; gap: 8px; }
+        #storage-switcher-bar .storage-tab-btn {
+          min-height: 86px; padding: 10px;
+          grid-template-columns: minmax(0, 1fr) auto;
+          grid-template-rows: auto auto auto; gap: 5px 6px;
+        }
+        #storage-switcher-bar .storage-tab-btn.active { padding: 9px; }
+        #storage-switcher-bar .storage-tab-icon {
+          width: auto; height: auto; background: transparent;
+          justify-content: flex-start; font-size: .9rem;
+        }
+        #storage-switcher-bar .storage-tab-title { font-size: .76rem; line-height: 1.4; }
+        #storage-switcher-bar .storage-tab-sub { display: none; }
+        #storage-switcher-bar .storage-tab-pill { font-size: .65rem; padding: 1px 6px; }
+        #storage-switcher-bar .storage-tab-btn::after { font-size: .65rem; line-height: 1.4; }
+      }
     </style>
   </head>
   <body>
@@ -6589,40 +6814,6 @@
       <!-- ========================================================
            KHU VỰC 1: QUẢN TRỊ & THÊM TÀI KHOẢN (VÒNG KHUNG DUY NHẤT)
            ======================================================== -->
-      <div class="storage-switcher-bar" id="storage-switcher-bar">
-        <button
-          type="button"
-          class="storage-tab-btn active"
-          id="storage-tab-rank"
-          onclick="switchAccountStorage('rank')"
-        >
-          <span class="storage-tab-icon">🎮</span>
-          <div class="storage-tab-text-wrap">
-            <span class="storage-tab-title">Kho Nick Chơi Rank</span>
-            <span class="storage-tab-sub"
-              >Tài khoản leo rank, solo, tổ đội</span
-            >
-          </div>
-          <span class="storage-tab-pill" id="storage-pill-rank">0</span>
-        </button>
-
-        <button
-          type="button"
-          class="storage-tab-btn"
-          id="storage-tab-chungsuc"
-          onclick="switchAccountStorage('chungsuc')"
-        >
-          <span class="storage-tab-icon">🤝</span>
-          <div class="storage-tab-text-wrap">
-            <span class="storage-tab-title">Sự Kiện Chung Sức</span>
-            <span class="storage-tab-sub"
-              >Kho nick buff chéo, hỗ trợ sự kiện</span
-            >
-          </div>
-          <span class="storage-tab-pill" id="storage-pill-chungsuc">0</span>
-        </button>
-      </div>
-
       <div class="account-workspace" id="account-workspace">
       <div class="add-box admin-unified-card" id="input-container" style="display: none">
         <!-- HEADER CỦA CARD (TÍCH HỢP TIÊU ĐỀ KHU VỰC 1 & NÚT THU GỌN) -->
@@ -6758,6 +6949,42 @@
            PHÂN KHU 2: DANH SÁCH TÀI KHOẢN • CHỌN ACC ĐỂ DÙNG
            ======================================================== -->
       <section class="account-list-workspace" aria-label="Danh sách tài khoản">
+      <div class="storage-picker-heading"><strong>Chọn kho tài khoản</strong><span>Bấm vào một kho để xem danh sách acc bên dưới.</span></div>
+      <div class="storage-switcher-bar" id="storage-switcher-bar" role="group" aria-label="Chọn kho tài khoản">
+        <button
+          type="button"
+          class="storage-tab-btn active"
+          id="storage-tab-rank"
+          onclick="switchAccountStorage('rank')"
+        >
+          <span class="storage-tab-icon">🎮</span>
+          <div class="storage-tab-text-wrap">
+            <span class="storage-tab-title">Kho Nick Chơi Rank</span>
+            <span class="storage-tab-sub"
+              >Tài khoản leo rank, solo, tổ đội</span
+            >
+          </div>
+          <span class="storage-tab-pill" id="storage-pill-rank">0</span>
+        </button>
+
+        <button
+          type="button"
+          class="storage-tab-btn"
+          id="storage-tab-chungsuc"
+          onclick="switchAccountStorage('chungsuc')"
+        >
+          <span class="storage-tab-icon">🤝</span>
+          <div class="storage-tab-text-wrap">
+            <span class="storage-tab-title">Sự Kiện Chung Sức</span>
+            <span class="storage-tab-sub"
+              >Kho nick buff chéo, hỗ trợ sự kiện</span
+            >
+          </div>
+          <span class="storage-tab-pill" id="storage-pill-chungsuc">0</span>
+        </button>
+      </div>
+
+
       <div
         class="zone-divider-header zone-player-divider"
         id="zone-player-divider"
@@ -10463,6 +10690,8 @@
           tabRank.classList.toggle("active", currentStorage === "rank");
         if (tabChungSuc)
           tabChungSuc.classList.toggle("active", currentStorage === "chungsuc");
+        tabRank?.setAttribute("aria-pressed", String(currentStorage === "rank"));
+        tabChungSuc?.setAttribute("aria-pressed", String(currentStorage === "chungsuc"));
 
         // Đồng bộ 2 nút chọn kho trong form thêm nick
         currentAddStorage = currentStorage;
@@ -12510,8 +12739,8 @@
                   </button>
                 `
                     : `
-                  <button class="m-btn-del" onclick="deleteAccount('${item.id}')" title="Xóa">
-                    🗑️
+                  <button type="button" class="m-btn-del" onclick="deleteAccount('${item.id}')" title="Xóa tài khoản này">
+                    🗑️ <span>Xóa acc</span>
                   </button>
                 `
                   : ""
