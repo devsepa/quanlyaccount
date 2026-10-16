@@ -751,6 +751,7 @@
           <span class="storage-tab-pill" id="storage-pill-chungsuc">0</span>
         </button>
         <button type="button" class="storage-tab-btn" id="storage-tab-filter" hidden aria-pressed="false" onclick="switchAccountStorage('filter')"><span class="storage-tab-icon">📥</span><div class="storage-tab-text-wrap"><span class="storage-tab-title">Kho acc cần lọc</span><span class="storage-tab-sub">Nhập TXT, kiểm tra và phân loại</span></div><span class="storage-tab-pill" id="storage-pill-filter">…</span></button>
+        <button type="button" class="storage-tab-btn" id="storage-tab-unban" hidden aria-pressed="false" onclick="switchAccountStorage('unban')"><span class="storage-tab-icon">🎉</span><div class="storage-tab-text-wrap"><span class="storage-tab-title">Acc vừa mở BAN</span><span class="storage-tab-sub">Kiểm tra rồi chuyển sang Rank hoặc Chung Sức</span></div><span class="storage-tab-pill" id="storage-pill-unban">0</span></button>
       </div>
 
 
@@ -4229,6 +4230,36 @@
         return `<span class="badge badge-filter-transfer" data-filter-transfer-until="${until}">Vừa chuyển từ kho lọc</span>`;
       }
 
+      function needsUnbanReview(item) {
+        return !!item && (item.unbanReviewPending === true || checkBanStatus(item.unlockDate,item).isJustUnbanned === true);
+      }
+      function updateUnbanWarehouseUI() {
+        const count=accounts.filter(needsUnbanReview).length,tab=document.getElementById('storage-tab-unban');
+        if(tab){tab.hidden=!isAdmin||count===0;tab.classList.toggle('active',currentStorage==='unban');tab.setAttribute('aria-pressed',String(currentStorage==='unban'));}
+        const pill=document.getElementById('storage-pill-unban');if(pill)pill.textContent=count;
+        document.getElementById('storage-switcher-bar')?.classList.toggle('has-unban',isAdmin&&count>0);
+        document.body.classList.toggle('storage-mode-unban',currentStorage==='unban');
+        return count;
+      }
+      window.returnUnbanAccount=function(id){
+        if(!isAdmin)return;const item=accounts.find(a=>a.id===id);if(!item||!needsUnbanReview(item))return;
+        showNotice({title:'Chọn kho sau khi kiểm tra',type:'confirm',message:`Tài khoản <b>${escapeHtml(item.username)}</b><br><label for="unban-return-destination" style="display:block;margin-top:12px;text-align:left">Kho đích</label><select id="unban-return-destination" style="width:100%;margin:8px 0 12px;padding:10px;border-radius:7px;background:#162233;color:#e2e8f0;border:1px solid #586780"><option value="rank">🎮 Kho Rank</option><option value="chungsuc">🤝 Kho Chung Sức</option></select><br>Xác nhận đã kiểm tra và chuyển acc vào kho đã chọn. Lịch sử dùng được giữ nguyên.`,onConfirm:()=>{
+          if(!isAdmin)return;const current=accounts.find(a=>a.id===id);if(!current||!needsUnbanReview(current))return;
+          const destination=document.getElementById('unban-return-destination')?.value;
+          if(!['rank','chungsuc'].includes(destination))return;
+          current.category=destination;current.unbanReviewPending=false;
+          const stillBanned=checkBanStatus(current.unlockDate,current).isBanned;current.unbanCleared=!stillBanned;
+          if(!stillBanned)current.unlockDate='';
+          current.unbanReviewedAt=Date.now();current.unbanReviewedBy=getUserName();
+          saveData();recordAdminAudit('move',current,{from:'unban',to:destination});renderList();triggerAutoSync();showToast('Đã chuyển acc vào '+(destination==='rank'?'kho Rank.':'kho Chung Sức.'));
+        }});
+      };
+      window.returnUnbanAccountToRank=window.returnUnbanAccount;
+      let unbanDayKey=new Date().toDateString();
+      function refreshUnbanDay(){const key=new Date().toDateString();if(key!==unbanDayKey){unbanDayKey=key;renderList();}}
+      setInterval(()=>{if(!document.hidden)refreshUnbanDay();},30000);
+      document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshUnbanDay();});
+
       // ĐỊNH DẠNG THỜI GIAN TẠO / THÊM NICK
       function formatCreatedTime(item) {
         if (!item) return "Chưa rõ";
@@ -4358,6 +4389,7 @@
                   createdAt: a.createdAt || "",
                   createdTimestamp: Number(a.createdTimestamp) || 0,
                   filterTransferredAt: Number(a.filterTransferredAt)||0, sourceWarehouse:a.sourceWarehouse==='filter'?'filter':'', sourceBatch:a.sourceBatch||'',
+                  unbanReviewPending:a.unbanReviewPending===true,unbanCleared:a.unbanCleared===true,unbanReviewedAt:Number(a.unbanReviewedAt)||0,unbanReviewedBy:String(a.unbanReviewedBy||''),
                   createdBy: a.createdBy || "",
                   unlockDate: String(unlock),
                   lastUsed: a.lastUsed || "",
@@ -4377,7 +4409,7 @@
       // ==========================================
       // QUẢN LÝ KHO TÀI KHOẢN (RANK & SỰ KIỆN CHUNG SỨC)
       // ==========================================
-      let currentStorage = ["rank","chungsuc","filter"].includes(localStorage.getItem("lq_current_storage")) ? localStorage.getItem("lq_current_storage") : "rank"; // "rank", "chungsuc" hoặc "filter"
+      let currentStorage = ["rank","chungsuc","filter","unban"].includes(localStorage.getItem("lq_current_storage")) ? localStorage.getItem("lq_current_storage") : "rank"; // "rank", "chungsuc" hoặc "filter"
       let currentAddStorage = currentStorage === "chungsuc" ? "chungsuc" : "rank"; // Kho được chọn trong form thêm nick
 
       function updateAddFormMode(storageType) {
@@ -4401,7 +4433,8 @@
       }
 
       window.switchAccountStorage = function (type, reRender = true) {
-        currentStorage = ["rank","chungsuc","filter"].includes(type) && (type !== "filter" || isAdmin) ? type : "rank";
+        if(type==='unban'){activeRankFilter='all';currentSearchQuery='';if(searchAccountInput)searchAccountInput.value='';}
+        currentStorage = ["rank","chungsuc","filter","unban"].includes(type) && (!["filter","unban"].includes(type) || isAdmin) ? type : "rank";
         localStorage.setItem("lq_current_storage", currentStorage);
 
         const tabRank = document.getElementById("storage-tab-rank");
@@ -4644,7 +4677,7 @@
           if (window.matchMedia("(pointer: coarse), (prefers-reduced-motion: reduce)").matches) return;
           // Bỏ qua nếu người dùng đang cuộn bên trong ô nhập nhiều dòng hoặc modal có thanh cuộn riêng
           const scrollableParent = e.target.closest(
-            "textarea, .modal-card, #rank-popover, select",
+            "textarea, .modal-card, #rank-popover, .fq-group-picker .fq-groups, select",
           );
           if (
             scrollableParent &&
@@ -5434,7 +5467,7 @@
         if (action==="edit" && entry.field && entry.field!=="password") {
           entry.before=String(details.before??"").slice(0,120); entry.after=String(details.after??"").slice(0,120);
         }
-        if (action==="move") {entry.from=details.from==="filter"?"filter":"rank";entry.to=details.to==="rank"?"rank":"chungsuc";}
+        if (action==="move") {entry.from=["filter","unban"].includes(details.from)?details.from:"rank";entry.to=details.to==="rank"?"rank":"chungsuc";}
         if (action==="restore") entry.previousCount=Number(details.previousCount)||0;
         state.entries=[entry,...state.entries].slice(0,200); state.pending.push(entry);
         if (!saveAdminAuditState()) showToast("Nhật ký đang giữ tạm trong phiên, chưa lưu được trên máy.");
@@ -5471,7 +5504,7 @@
         const filter=document.getElementById("admin-audit-filter")?.value||"all";
         const entries=state.entries.filter(e=>adminAuditLabels[e.action]&&(filter==="all"||e.action===filter)&&(!search||`${e.actor} ${(e.targets||[]).map(a=>a.username).join(" ")}`.toLowerCase().includes(search)));
         const fieldLabels={username:"Tên tài khoản",password:"Mật khẩu (ẩn nội dung)",rank:"Rank",uyTin:"Uy tín",unlockDate:"Ngày mở BAN"};
-        list.innerHTML=entries.map(e=>`<article class="audit-entry"><div class="audit-entry-title"><b>${escapeHtml(adminAuditLabels[e.action])}</b><time>${escapeHtml(new Date(e.timestamp).toLocaleString("vi-VN"))}</time></div><p>👤 ${escapeHtml(e.actor||"Chưa đặt tên")} · ${Number(e.count)||0} acc ${pending.has(e.id)?"· Chờ đồng bộ nhật ký":""}</p><p>${(e.targets||[]).slice(0,8).map(a=>escapeHtml(a.username)).join(", ")}${Number(e.count)>8?"…":""}</p>${e.action==="edit"?`<p>${escapeHtml(fieldLabels[e.field]||"Thông tin")}${e.field!=="password"&&e.before!==undefined?`: ${escapeHtml(e.before||"Trống")} → ${escapeHtml(e.after||"Trống")}`:""}</p>`:""}${e.action==="move"?`<p>${e.from==="filter"?"Kho cần lọc":"Kho Rank"} → ${e.to==="rank"?"Kho Rank":"Kho Chung Sức"}</p>`:""}${e.action==="restore"?`<p>Danh sách trước: ${Number(e.previousCount)||0} acc → sau: ${Number(e.count)||0} acc</p>`:""}</article>`).join("")||"<p>Chưa có nhật ký phù hợp.</p>";
+        list.innerHTML=entries.map(e=>`<article class="audit-entry"><div class="audit-entry-title"><b>${escapeHtml(adminAuditLabels[e.action])}</b><time>${escapeHtml(new Date(e.timestamp).toLocaleString("vi-VN"))}</time></div><p>👤 ${escapeHtml(e.actor||"Chưa đặt tên")} · ${Number(e.count)||0} acc ${pending.has(e.id)?"· Chờ đồng bộ nhật ký":""}</p><p>${(e.targets||[]).slice(0,8).map(a=>escapeHtml(a.username)).join(", ")}${Number(e.count)>8?"…":""}</p>${e.action==="edit"?`<p>${escapeHtml(fieldLabels[e.field]||"Thông tin")}${e.field!=="password"&&e.before!==undefined?`: ${escapeHtml(e.before||"Trống")} → ${escapeHtml(e.after||"Trống")}`:""}</p>`:""}${e.action==="move"?`<p>${e.from==="unban"?"Kho vừa mở BAN":e.from==="filter"?"Kho cần lọc":"Kho Rank"} → ${e.to==="rank"?"Kho Rank":"Kho Chung Sức"}</p>`:""}${e.action==="restore"?`<p>Danh sách trước: ${Number(e.previousCount)||0} acc → sau: ${Number(e.count)||0} acc</p>`:""}</article>`).join("")||"<p>Chưa có nhật ký phù hợp.</p>";
       };
       window.refreshAdminAudit = async function () {
         if (!isAdmin || adminAuditLoading) return;
@@ -5745,6 +5778,7 @@
           item[field] = item[field].replace(/[^0-9]/g, "");
         }
         if (String(beforeValue)===String(item[field])) return;
+        if(field==="unlockDate"&&trimmedVal)item.unbanCleared=false;
         saveData();
         recordAdminAudit("edit",item,{field,before:field==="password"?undefined:beforeValue,after:field==="password"?undefined:item[field]});
         renderList();
@@ -5775,18 +5809,26 @@
 
       // HIỂN THỊ DANH SÁCH
       function renderList() {
+        const pendingUnbanCount=updateUnbanWarehouseUI();
+        if(currentStorage==='unban'&&(!isAdmin||!pendingUnbanCount)){switchAccountStorage('rank');return;}
         if (currentStorage === "filter" && !isAdmin) { switchAccountStorage("rank"); return; }
         window.filterQueue?.setActive(currentStorage === "filter");
         if (currentStorage === "filter") return;
         const fRank = activeRankFilter;
         const isChungSuc = currentStorage === "chungsuc";
+        const isUnbanStorage = currentStorage === 'unban';
+        if(isUnbanStorage){
+          const title=document.querySelector('#zone-player-divider .zone-title-text'),desc=document.querySelector('#zone-player-divider .zone-desc-text');
+          if(title)title.textContent='🎉 ACC VỪA MỞ BAN · CHỜ KIỂM TRA';
+          if(desc)desc.textContent='Sao chép để kiểm tra, sau đó bấm Chọn kho để chuyển sang Rank hoặc Chung Sức. Thao tác sao chép trong kho này không tính lượt dùng.';
+        }
 
         // 1. CẬP NHẬT SỐ LƯỢNG TRÊN 2 TAB KHO TÀI KHOẢN
         const rankTotal = accounts.filter(
-          (a) => (a.category || "rank") === "rank",
+          (a) => (a.category || "rank") === "rank" && !needsUnbanReview(a),
         ).length;
         const chungSucTotal = accounts.filter(
-          (a) => a.category === "chungsuc",
+          (a) => a.category === "chungsuc" && !needsUnbanReview(a),
         ).length;
 
         const pillRank = document.getElementById("storage-pill-rank");
@@ -5797,7 +5839,7 @@
         // 2. LỌC DANH SÁCH NICK THUỘC KHO HIỆN TẠI (TÁCH BIỆT HOÀN TOÀN)
         const storageAccounts = accounts.filter((a) => {
           const cat = a.category || "rank";
-          return cat === currentStorage;
+          return currentStorage==='unban'?needsUnbanReview(a):cat===currentStorage&&!needsUnbanReview(a);
         }).sort((a,b)=>(Number(b.createdTimestamp)||filterTransferTime(b))-(Number(a.createdTimestamp)||filterTransferTime(a)));
 
         let banCount = 0;
@@ -5807,7 +5849,7 @@
         const activeCount = storageAccounts.length - banCount;
 
         const storeTagLabel =
-          currentStorage === "chungsuc" ? "Chung Sức" : "Chơi Rank";
+          currentStorage === "unban" ? "Vừa mở BAN" : currentStorage === "chungsuc" ? "Chung Sức" : "Chơi Rank";
 
         if (statCount)
           statCount.textContent = `${storageAccounts.length} nick [${storeTagLabel}]`;
@@ -6277,7 +6319,7 @@
           if (isBanned) {
             badgeHtml = `<span class="badge badge-banned">${banInfo.desc}</span>`;
           } else if (isJustUnbanned) {
-            badgeHtml = `<span class="badge badge-just-unbanned" title="Nick vừa mở BAN! Bấm Sao chép để dùng và xóa trạng thái này">🎉 VỪA MỞ BAN</span>`;
+            badgeHtml = `<span class="badge badge-just-unbanned" title="Nick vừa mở BAN! Sao chép lần đầu để xác nhận đã kiểm tra; không tính lượt dùng">🎉 VỪA MỞ BAN</span>`;
           } else {
             badgeHtml = `<span class="badge badge-active"><span class="status-dot-active"></span> HOẠT ĐỘNG</span>`;
           }
@@ -6294,6 +6336,7 @@
                 <div style="display: inline-flex; align-items: center; justify-content: center; gap: 4px; flex-wrap: wrap;">
                   ${badgeHtml}
                 ${filterTransferBadge(item)}
+                ${isUnbanStorage&&item.unbanReviewPending?'<span class="badge badge-unban-checked">✓ Đã sao chép kiểm tra</span>':''}
                   ${chungSucBadge}
                 </div>
               </td>
@@ -6426,7 +6469,7 @@
                   ? `
                 <td style="text-align: center;">
                   <div class="desktop-admin-actions">
-                  ${!isChungSuc ? `<button type="button" class="btn-transfer-account" onclick="moveAccountToChungSuc('${item.id}')" title="Chuyển sang Chung Sức" aria-label="Chuyển tài khoản sang kho Chung Sức"><span aria-hidden="true">⇄</span></button>` : ""}
+                  ${isUnbanStorage ? `<button type="button" class="btn-return-rank" onclick="returnUnbanAccount('${item.id}')">↩ Chọn kho</button>` : !isChungSuc ? `<button type="button" class="btn-transfer-account" onclick="moveAccountToChungSuc('${item.id}')" title="Chuyển sang Chung Sức" aria-label="Chuyển tài khoản sang kho Chung Sức"><span aria-hidden="true">⇄</span></button>` : ""}
                   ${
                     isRecent
                       ? `
@@ -6500,7 +6543,7 @@
           if (isBanned) {
             badgeHtml = `<span class="badge badge-banned">${banInfo.desc}</span>`;
           } else if (isJustUnbanned) {
-            badgeHtml = `<span class="badge badge-just-unbanned" title="Nick vừa mở BAN! Bấm Sao chép để dùng và xóa trạng thái này">🎉 VỪA MỞ BAN</span>`;
+            badgeHtml = `<span class="badge badge-just-unbanned" title="Nick vừa mở BAN! Sao chép lần đầu để xác nhận đã kiểm tra; không tính lượt dùng">🎉 VỪA MỞ BAN</span>`;
           } else {
             badgeHtml = `<span class="badge badge-active"><span class="status-dot-active"></span> HOẠT ĐỘNG</span>`;
           }
@@ -6517,6 +6560,7 @@
                 ${!isChungSuc && item.rank ? `<span class="badge ${rankGrp.class}">${escapeHtml(item.rank)}</span>` : ""}
                 ${badgeHtml}
                 ${filterTransferBadge(item)}
+                ${isUnbanStorage&&item.unbanReviewPending?'<span class="badge badge-unban-checked">✓ Đã sao chép kiểm tra</span>':''}
               </div>
             </div>
 
@@ -6568,7 +6612,7 @@
               </div>
             </div>
 
-            <div class="m-action-row ${isChungSuc ? "mode-chungsuc" : ""} ${!isAdmin ? "no-admin" : ""}">
+            <div class="m-action-row ${isChungSuc ? "mode-chungsuc" : ""} ${isUnbanStorage ? "mode-unban" : ""} ${!isAdmin ? "no-admin" : ""}">
               ${
                 !isChungSuc
                   ? `
@@ -6613,7 +6657,7 @@
               `
                   : ""
               }
-              ${isAdmin && !isChungSuc ? `<button type="button" class="btn-transfer-account m-btn-transfer-compact" onclick="moveAccountToChungSuc('${item.id}')" title="Chuyển sang Chung Sức" aria-label="Chuyển tài khoản sang kho Chung Sức"><span aria-hidden="true">⇄</span></button>` : !isAdmin ? `<button class="m-btn-copy ${isEmergencyLocked ? "btn-copy-locked" : ""}" id="m-btn-copy-${item.id}" style="background: ${isEmergencyLocked ? "rgba(239, 68, 68, 0.2)" : copyBtnGrad}; color: ${isEmergencyLocked ? "#fca5a5" : "#ffffff"} !important; ${isEmergencyLocked ? "border: 1px solid rgba(239, 68, 68, 0.4); cursor: not-allowed;" : ""} flex: 1;" onclick="copyCombo('${item.id}', this)" title="${isEmergencyLocked ? "Hệ thống đang khóa khẩn cấp" : "Sao chép"}">
+              ${isAdmin && !isUnbanStorage && !isChungSuc ? `<button type="button" class="btn-transfer-account m-btn-transfer-compact" onclick="moveAccountToChungSuc('${item.id}')" title="Chuyển sang Chung Sức" aria-label="Chuyển tài khoản sang kho Chung Sức"><span aria-hidden="true">⇄</span></button>` : !isAdmin ? `<button class="m-btn-copy ${isEmergencyLocked ? "btn-copy-locked" : ""}" id="m-btn-copy-${item.id}" style="background: ${isEmergencyLocked ? "rgba(239, 68, 68, 0.2)" : copyBtnGrad}; color: ${isEmergencyLocked ? "#fca5a5" : "#ffffff"} !important; ${isEmergencyLocked ? "border: 1px solid rgba(239, 68, 68, 0.4); cursor: not-allowed;" : ""} flex: 1;" onclick="copyCombo('${item.id}', this)" title="${isEmergencyLocked ? "Hệ thống đang khóa khẩn cấp" : "Sao chép"}">
                 ${isEmergencyLocked ? "🔒 KHÓA" : "📋 COPY"}
               </button>` : ""}
               ${isAdmin ? `
@@ -6621,10 +6665,11 @@
                   <button class="m-btn-copy ${isEmergencyLocked ? "btn-copy-locked" : ""}" id="m-btn-copy-${item.id}" style="background: ${isEmergencyLocked ? "rgba(239, 68, 68, 0.2)" : copyBtnGrad}; color: ${isEmergencyLocked ? "#fca5a5" : "#ffffff"} !important; ${isEmergencyLocked ? "border: 1px solid rgba(239, 68, 68, 0.4); cursor: not-allowed;" : ""} flex: 1;" onclick="copyCombo('${item.id}', this)" title="${isEmergencyLocked ? "Hệ thống đang khóa khẩn cấp" : "Sao chép"}">
                 ${isEmergencyLocked ? "🔒 KHÓA" : "📋 COPY"}
               </button>
+                  ${isUnbanStorage ? `<button type="button" class="btn-return-rank" onclick="returnUnbanAccount('${item.id}')">↩ Chọn kho</button>` : ''}
                   ${isRecent ? `
                     <button type="button" class="m-btn-remove-recent" onclick="removeFromRecent('${item.id}')" title="Gỡ khỏi nhóm Đã dùng gần đây (vẫn giữ nick)">✕ Bỏ gần đây</button>
                   ` : `
-                    <button type="button" class="m-btn-del" onclick="deleteAccount('${item.id}')" title="Xóa tài khoản này">🗑️ <span>Xóa acc</span></button>
+                    <button type="button" class="m-btn-del" onclick="deleteAccount('${item.id}')" title="Xóa tài khoản này" aria-label="Xóa tài khoản này">🗑️ <span>Xóa acc</span></button>
                   `}
                 </div>
               ` : ""}
@@ -6847,7 +6892,8 @@
       }
 
       // COPY TK:MK
-      window.copyCombo = function (id, btnEl = null) {
+      const accountCopiesInFlight = new Set();
+      window.copyCombo = async function (id, btnEl = null) {
         if (isEmergencyLocked) {
           playSound("delete");
           showNotice({
@@ -6863,10 +6909,23 @@
 
         const item = accounts.find((a) => a.id === id);
         if (!item) return;
+        if(needsUnbanReview(item)&&!isAdmin){showToast('Acc đang chờ Admin kiểm tra sau mở BAN.');return;}
+
+        const textToCopy = `${item.username}:${item.password}`;
+        if(accountCopiesInFlight.has(id))return;
+        accountCopiesInFlight.add(id);
+        try {
+          if(navigator.clipboard?.writeText) await navigator.clipboard.writeText(textToCopy);
+          else {
+            const temp=document.createElement('textarea');temp.value=textToCopy;document.body.appendChild(temp);temp.select();
+            try {if(!document.execCommand('copy'))throw new Error('Clipboard unavailable');}finally{temp.remove();}
+          }
+        } catch (_) {
+          showToast('Chưa sao chép được. Hãy thử lại; trạng thái và lượt dùng chưa thay đổi.');return;
+        } finally {accountCopiesInFlight.delete(id);}
+
 
         window.accountPrivacy?.record("copy", String(id));
-        const textToCopy = `${item.username}:${item.password}`;
-
         const now = new Date();
         const hh = String(now.getHours()).padStart(2, "0");
         const min = String(now.getMinutes()).padStart(2, "0");
@@ -6877,17 +6936,21 @@
         // Nếu tài khoản đang ở trạng thái '🎉 VỪA MỞ BAN', khi bấm copy sẽ gỡ bỏ trạng thái này
         const currentBan = checkBanStatus(item.unlockDate, item);
         let wasJustUnbanned = false;
-        if (currentBan.isJustUnbanned) {
+        if (currentBan.isJustUnbanned || item.unbanReviewPending === true) {
+          item.unbanReviewPending = true;
           item.unbanCleared = true;
           item.unlockDate = "";
           wasJustUnbanned = true;
         }
 
-        item.lastUsed = timeStr;
-        item.lastUsedTime = Date.now();
-        item.lastUsedBy = getUserName();
-        item.useCount = (item.useCount || 0) + 1;
-        item.inRecent = true;
+        // First copy after unban confirms a check and preserves existing usage history.
+        if (!wasJustUnbanned) {
+          item.lastUsed = timeStr;
+          item.lastUsedTime = Date.now();
+          item.lastUsedBy = getUserName();
+          item.useCount = (item.useCount || 0) + 1;
+          item.inRecent = true;
+        }
         saveData();
         triggerAutoSync();
         if (wasJustUnbanned) {
@@ -6898,7 +6961,7 @@
 
         if (wasJustUnbanned) {
           showToast(
-            `🎉 Đã mở khóa hoàn tất cho tài khoản [${item.username}]! Chuyển sang Hoạt Động.`,
+            `✅ Đã xác nhận kiểm tra lại acc [${escapeHtml(item.username)}]. Lần sao chép này không tính lượt dùng. Bấm Chọn kho sau khi kiểm tra.`,
             "success",
           );
         }
@@ -6911,33 +6974,15 @@
           setTimeout(() => {
             btnEl.classList.remove("copied");
             btnEl.innerHTML = oldText;
-            renderList();
           }, 900);
-        } else {
-          renderList();
         }
 
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(textToCopy).then(() =>
-            showCenterToast({
-              title: "ĐÃ SAO CHÉP",
-              subtitle: item.username,
-              duration: 1600,
-            }),
-          );
-        } else {
-          const temp = document.createElement("textarea");
-          temp.value = textToCopy;
-          document.body.appendChild(temp);
-          temp.select();
-          document.execCommand("copy");
-          document.body.removeChild(temp);
-          showCenterToast({
-            title: "ĐÃ SAO CHÉP",
-            subtitle: item.username,
-            duration: 1600,
-          });
-        }
+        showCenterToast({
+          title: wasJustUnbanned ? "ĐÃ XÁC NHẬN KIỂM TRA" : "ĐÃ SAO CHÉP",
+          subtitle: wasJustUnbanned ? "Không tính lượt dùng" : item.username,
+          duration: 1600,
+        });
+        (window.requestAnimationFrame||((fn)=>setTimeout(fn,0)))(()=>renderList());
       };
 
       // GỠ KHỎI NHÓM ĐÃ DÙNG (GIỮ NGUYÊN NICK & LỊCH SỬ DÙNG TRONG DANH SÁCH GỐC)
@@ -7457,6 +7502,7 @@
                 filterTransferredAt: Number(a.filterTransferredAt)||0,
                 sourceWarehouse: a.sourceWarehouse==='filter'?'filter':'',
                 sourceBatch: a.sourceBatch?String(a.sourceBatch):'',
+                unbanReviewPending:a.unbanReviewPending===true,unbanCleared:a.unbanCleared===true,unbanReviewedAt:Number(a.unbanReviewedAt)||0,unbanReviewedBy:String(a.unbanReviewedBy||''),
                 lastUsedTime: Number(a.lastUsedTime) || 0,
                 useCount: Number(a.useCount) || 0,
                 category: a.category === "chungsuc" ? "chungsuc" : "rank",

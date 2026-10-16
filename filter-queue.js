@@ -65,11 +65,16 @@
     return BATCH_TONES.includes(group.batchTone)?group.batchTone:BATCH_TONES[hash%BATCH_TONES.length];
   }
   function filterGroupList(value) {
-    const groups=Object.values(colorFilterGroups(value?.__groups)).filter(g=>g&&g.id);
-    return groups.sort((a,b)=>a.number-b.number).map(g=>{
-      const remaining=Object.values(value||{}).filter(r=>r&&r.username&&r.groupId===g.id);
-      const source=remaining[0]||{};
-      return {...g,batchId:g.batchId||source.batchId||'',fileName:g.fileName||source.fileName||'',importedBy:g.importedBy||source.importedBy||'',createdAt:g.createdAt||source.importedAt||0,remaining:remaining.length,working:remaining.filter(r=>r.status!=='pending').length,workers:[...new Set(remaining.filter(r=>r.status!=='pending').map(r=>String(r.claimedBy||'Admin chưa rõ tên').trim()||'Admin chưa rõ tên'))]};
+    const grouped=new Map();
+    for(const row of Object.values(value||{})){
+      if(!row?.username)continue;
+      if(!grouped.has(row.groupId))grouped.set(row.groupId,{source:row,remaining:0,working:0,workers:new Set()});
+      const group=grouped.get(row.groupId);group.remaining++;
+      if(row.status!=='pending'){group.working++;group.workers.add(String(row.claimedBy||'Admin chưa rõ tên').trim()||'Admin chưa rõ tên');}
+    }
+    return Object.values(colorFilterGroups(value?.__groups)).filter(g=>g&&g.id).sort((a,b)=>a.number-b.number).map(g=>{
+      const stats=grouped.get(g.id)||{source:{},remaining:0,working:0,workers:new Set()},source=stats.source;
+      return {...g,batchId:g.batchId||source.batchId||'',fileName:g.fileName||source.fileName||'',importedBy:g.importedBy||source.importedBy||'',createdAt:g.createdAt||source.importedAt||0,remaining:stats.remaining,working:stats.working,workers:[...stats.workers]};
     });
   }
   function removeFilterGroup(value,id,approvedWorkingIds=[]) {
@@ -166,15 +171,19 @@
       if (!response.ok) throw new Error("Không tải được dữ liệu. Kiểm tra kết nối hoặc quyền Firebase.");
       return response.json();
     }
-    async function transaction(path, change) {
+    async function readVersion(path) {
+      const response=await request(base+'/'+path+'.json',{headers:{'X-Firebase-ETag':'true'}});
+      if(!response.ok)throw new Error('Không đọc được dữ liệu để cập nhật.');
+      const tag=response.headers.get('ETag');if(!tag)throw new Error('Máy chủ chưa cung cấp mã phiên bản, chưa cập nhật để tránh ghi đè.');
+      return {path,tag,value:await response.json()};
+    }
+    async function transaction(path, change, initial=null) {
       for (let attempt = 0; attempt < 4; attempt++) {
-        if (!canWrite()) throw new Error("Chỉ quản trị viên được thao tác.");
-        const response = await request(base + "/" + path + ".json", { headers: { "X-Firebase-ETag":"true" } });
-        if (!response.ok) throw new Error("Không đọc được dữ liệu để cập nhật.");
-        const tag = response.headers.get("ETag");
-        if (!tag) throw new Error("Máy chủ chưa cung cấp mã phiên bản, chưa cập nhật để tránh ghi đè.");
-        const value = change(await response.json());
-        if (!canWrite()) throw new Error("Phiên quản trị đã kết thúc.");
+        if (!canWrite()) throw new Error('Chỉ quản trị viên được thao tác.');
+        const snapshot=attempt===0&&initial?.path===path?initial:await readVersion(path),tag=snapshot.tag;
+        const value=change(snapshot.value);
+        if (!canWrite()) throw new Error('Phiên quản trị đã kết thúc.');
+        if(value===snapshot.value&&value!==null)return value;
         const saved = await request(base + "/" + path + ".json", { method:value === null ? "DELETE":"PUT",
           headers:{"Content-Type":"application/json","if-match":tag}, ...(value === null ? {} : {body:JSON.stringify(value)}) });
         if (saved.status === 412) continue;
@@ -188,7 +197,7 @@
       const response = await request(base + "/.json", {method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify(filterTransferPatch(row,destination,Date.now()))});
       if (!response.ok) throw new Error("Chưa chuyển được acc. Dòng nguồn vẫn được giữ lại.");
     }
-    return {read,transaction,transfer};
+    return {read,readVersion,transaction,transfer};
   }
   const pure = {colorFilterGroups,filterBatchTone,locateFilterAccount,findFilterDuplicates,removeFilterDuplicates,assignFilterGroups,filterGroupList,removeFilterGroup,parseFilterTxt,mergeFilterImport,validateFilterDestination,filterClaim,buildFilterDestination,filterTransferPatch,createFilterTransport,mergeMainAccounts};
   if (typeof module !== "undefined" && module.exports) module.exports = pure;
@@ -244,7 +253,8 @@
     try{localStorage.setItem('lq_filter_group',selectedGroup);}catch(_){}
     render();
   }
-  function selectGroup(id){selectedGroup=id;try{localStorage.setItem('lq_filter_group',id);}catch(_){}page=0;render();}
+  let groupChooserOpen=false, scrollToGroupList=false;
+  function selectGroup(id){selectedGroup=id;try{localStorage.setItem('lq_filter_group',id);}catch(_){}page=0;query='';mode='all';groupChooserOpen=false;scrollToGroupList=!!id;render();}
   const e = escapeHtml;
   const owner = () => getOrCreateDeviceId();
   const eligible = () => { if(!isAdmin)throw new Error("Chỉ quản trị viên được thao tác."); if(navigator.onLine===false)throw new Error("Cần có mạng để thao tác trong kho cần lọc."); };
@@ -264,8 +274,8 @@
       return;
     }
     document.getElementById("storage-pill-filter").textContent=Object.values(rows).filter(r=>r&&r.username).length;
-    document.getElementById("storage-pill-rank").textContent=accounts.filter(a=>(a.category||"rank")==="rank").length;
-    document.getElementById("storage-pill-chungsuc").textContent=accounts.filter(a=>a.category==="chungsuc").length;
+    document.getElementById("storage-pill-rank").textContent=accounts.filter(a=>(a.category||"rank")==="rank"&&!needsUnbanReview(a)).length;
+    document.getElementById("storage-pill-chungsuc").textContent=accounts.filter(a=>a.category==="chungsuc"&&!needsUnbanReview(a)).length;
     if (!isAdmin) document.getElementById('filter-transfer-modal').classList.remove('show');
     if (!active) return;
     const visibleRows=ordered(),workingCount=visibleRows.filter(r=>r.status!=="pending").length;
@@ -275,17 +285,19 @@
     host.setAttribute('aria-busy',String(busy||refreshing));
     const groups=filterGroupList(rows);
     if(rows.__groups&&!groups.some(g=>g.id===selectedGroup))selectedGroup='';
-    const all=ordered(), filtered=all.filter(r=>(!!selectedGroup&&r.groupId===selectedGroup)&&(!query||`${all.indexOf(r)+1} ${r.username} ${r.fileName}`.toLowerCase().includes(query))&&(mode!=="working"||r.status!=="pending")&&(mode!=="pending"||r.status==="pending"));
+    const all=visibleRows, rowNumbers=new Map(all.map((r,i)=>[r.id,i+1])), filtered=all.filter(r=>(!!selectedGroup&&r.groupId===selectedGroup)&&(!query||`${rowNumbers.get(r.id)} ${r.username} ${r.fileName}`.toLowerCase().includes(query))&&(mode!=="working"||r.status!=="pending")&&(mode!=="pending"||r.status==="pending"));
     page=Math.max(0,Math.min(page,Math.ceil(filtered.length/PAGE_SIZE)-1));
     const shown=filtered.slice(page*PAGE_SIZE,(page+1)*PAGE_SIZE);
     host.innerHTML=`<div class="fq-heading"><div><h3>📥 Kho acc cần lọc</h3><p>${all.length} acc · ${all.filter(r=>r.status!=="pending").length} đang lọc. Mỗi nhóm tối đa 100 acc, giữ nguyên nhóm khi chuyển hoặc xóa acc.</p></div><div class="fq-tools">${isAdmin?'<label class="btn btn-tool fq-import">＋ Nhập TXT<input id="fq-file" type="file" accept=".txt,text/plain" hidden></label>':''}${lastAccountId?'<button type="button" class="btn btn-tool fq-resume" id="fq-resume">▶ Tiếp tục lọc</button>':''}<button type="button" class="btn btn-tool" id="fq-scan" ${busy?'disabled':''}>🔎 Quét acc trùng</button><button type="button" class="btn btn-tool" id="fq-refresh">↻ Tải lại</button></div></div>
     <p class="fq-note">${isAdmin?'File dạng <b>stt.tk:mk</b> hoặc <b>tk:mk</b>, ví dụ <code>11.taikhoan:matkhau</code>. Web tự bỏ STT đầu dòng. Sao chép để nhận lọc; chuyển kho cần điền thông tin và xác nhận.':'Bạn đang xem danh sách. Chỉ quản trị viên được nhập file và thao tác.'}</p>
-    <div class="fq-groups">${groups.map(g=>`<div class="fq-group fq-batch-${filterBatchTone(g)} ${g.working>0?'is-filtering':''} ${selectedGroup===g.id?'is-selected':''}"><button type="button" data-group="${e(g.id)}" aria-pressed="${selectedGroup===g.id}"><strong class="fq-group-title">Nhóm ${String(g.number).padStart(2,'0')}${g.working>0?'<span class="fq-group-working">● Đang lọc · '+g.working+'</span>':''}${selectedGroup===g.id?'<span class="fq-group-selected">✓ Đang chọn</span>':''}</strong>${g.workers.length?`<span class="fq-group-workers" aria-label="Người đang lọc">${g.workers.map(name=>`<span class="fq-worker-tag">👤 ${e(name)}</span>`).join('')}</span>`:''}<span class="fq-group-source" title="${e(g.fileName||'Không còn thông tin file nguồn')}">📄 ${e(g.fileName||'File nguồn chưa xác định')}</span><small class="fq-group-import">Import · ${g.createdAt?e(new Date(Number(g.createdAt)).toLocaleString('vi-VN',{timeZone:'Asia/Ho_Chi_Minh',hour12:false})):'Chưa rõ thời gian'}${g.importedBy?' · '+e(g.importedBy):''}</small><span>${g.remaining} còn lại / ${g.total} acc</span><small>${g.working} đang lọc · ${g.remaining-g.working} chờ lọc · ${Math.max(0,g.total-g.remaining)} đã rời kho</small><progress max="${g.total||1}" value="${Math.max(0,g.total-g.remaining)}" aria-label="Tiến độ nhóm ${g.number}"></progress></button><button type="button" class="fq-delete fq-group-delete" data-delete-group="${e(g.id)}" ${busy?'disabled':''} aria-label="Xóa nhóm ${g.number}">🗑 Xóa nhóm</button></div>`).join('')||'<p>Chưa có nhóm. Nhập TXT để bắt đầu.</p>'}</div>
+    <details id="fq-group-picker" class="fq-group-picker" ${groupChooserOpen?'open':''}><summary><span><b>${selectedGroup?'Nhóm '+String(groups.find(g=>g.id===selectedGroup)?.number||'').padStart(2,'0'):'Chọn nhóm cần lọc'}</b> · ${selectedGroup?e(groups.find(g=>g.id===selectedGroup)?.fileName||'File nguồn chưa xác định'):groups.length+' nhóm'}</span><span class="fq-picker-action">${selectedGroup?'Đổi nhóm':'Mở danh sách'} ▾</span></summary><div class="fq-groups">${groups.map(g=>`<div class="fq-group fq-batch-${filterBatchTone(g)} ${g.working>0?'is-filtering':''} ${selectedGroup===g.id?'is-selected':''}"><button type="button" data-group="${e(g.id)}" aria-pressed="${selectedGroup===g.id}"><strong class="fq-group-title">Nhóm ${String(g.number).padStart(2,'0')}${g.working>0?'<span class="fq-group-working">● Đang lọc · '+g.working+'</span>':''}${selectedGroup===g.id?'<span class="fq-group-selected">✓ Đang chọn</span>':''}</strong>${g.workers.length?`<span class="fq-group-workers" aria-label="Người đang lọc">${g.workers.map(name=>`<span class="fq-worker-tag">👤 ${e(name)}</span>`).join('')}</span>`:''}<span class="fq-group-source" title="${e(g.fileName||'Không còn thông tin file nguồn')}">📄 ${e(g.fileName||'File nguồn chưa xác định')}</span><small class="fq-group-import">Import · ${g.createdAt?e(new Date(Number(g.createdAt)).toLocaleString('vi-VN',{timeZone:'Asia/Ho_Chi_Minh',hour12:false})):'Chưa rõ thời gian'}${g.importedBy?' · '+e(g.importedBy):''}</small><span class="fq-group-count">${g.remaining} còn lại / ${g.total} acc</span><small class="fq-group-progress-note">${g.working} đang lọc · ${g.remaining-g.working} chờ lọc · ${Math.max(0,g.total-g.remaining)} đã rời kho</small><progress max="${g.total||1}" value="${Math.max(0,g.total-g.remaining)}" aria-label="Tiến độ nhóm ${g.number}"></progress></button><button type="button" class="fq-delete fq-group-delete" data-delete-group="${e(g.id)}" ${busy?'disabled':''} aria-label="Xóa nhóm ${g.number}">🗑 Xóa nhóm</button></div>`).join('')||'<p>Chưa có nhóm. Nhập TXT để bắt đầu.</p>'}</div></details>
     ${!selectedGroup&&groups.length?'<p class="fq-note">Chọn một nhóm phía trên để xem và tiếp tục lọc. Nhóm gần nhất được ghi nhớ trên trình duyệt này.</p>':''}
-    <div class="fq-search"><input id="fq-search" type="search" placeholder="Tìm số dòng, tài khoản hoặc file…" aria-label="Tìm trong kho cần lọc"><select id="fq-mode" aria-label="Lọc trạng thái"><option value="all">Tất cả</option><option value="pending">Chưa lọc</option><option value="working">Đang lọc</option></select></div>
+    <div id="fq-account-list-start" class="fq-search" tabindex="-1"><input id="fq-search" type="search" placeholder="Tìm số dòng, tài khoản hoặc file…" aria-label="Tìm trong kho cần lọc"><select id="fq-mode" aria-label="Lọc trạng thái"><option value="all">Tất cả</option><option value="pending">Chưa lọc</option><option value="working">Đang lọc</option></select></div>
     <p class="fq-message" role="status">${e(error|| (refreshing?'Đang tải…':busy?'Đang lưu…':connected?'Đang cập nhật trực tiếp':'Bấm Tải lại nếu danh sách chưa cập nhật.'))}</p>
-    <div class="fq-list">${shown.map((r,i)=>`<article class="fq-row ${r.status!=="pending"?'is-working':''} ${r.id===focusedAccountId?'is-resumed':''}" data-account-id="${e(r.id)}" data-index="${i}"><div class="fq-number" title="STT trong danh sách">#${all.indexOf(r)+1}</div><div class="fq-account"><code>${e(r.username+':'+r.password)}</code><small>${e(r.fileName)}${r.status!=="pending"?` · <b>${r.status==='transferring'?'Đang chuyển':'Đang lọc'}: ${e(r.claimedBy||'Quản trị')}</b>${isAdmin?` <button type="button" class="fq-release" data-do="release" ${busy?'disabled':''}>Bỏ nhận</button>`:''}`:''}</small></div>${isAdmin?`<div class="fq-actions"><button type="button" data-do="copy" ${busy?'disabled':''}>📋 Sao chép</button><button type="button" data-do="move" ${busy?'disabled':''}>⇄ Chuyển kho</button><button type="button" data-do="delete" class="fq-delete" ${busy?'disabled':''} aria-label="Xóa acc dòng ${all.indexOf(r)+1}">🗑 Xóa</button></div>`:''}</article>`).join('')||'<div class="fq-empty">'+(refreshing?'Đang tải danh sách…':(selectedGroup?'Nhóm này không còn acc phù hợp.':'Chọn nhóm để xem danh sách acc.'))+'</div>'}</div>
+    <div class="fq-list">${shown.map((r,i)=>`<article class="fq-row ${r.status!=="pending"?'is-working':''} ${r.id===focusedAccountId?'is-resumed':''}" data-account-id="${e(r.id)}" data-index="${i}"><div class="fq-number" title="STT trong danh sách">#${rowNumbers.get(r.id)}</div><div class="fq-account"><code>${e(r.username+':'+r.password)}</code><small>${e(r.fileName)}${r.status!=="pending"?` · <b>${r.status==='transferring'?'Đang chuyển':'Đang lọc'}: ${e(r.claimedBy||'Quản trị')}</b>${isAdmin?` <button type="button" class="fq-release" data-do="release" ${busy?'disabled':''}>Bỏ nhận</button>`:''}`:''}</small></div>${isAdmin?`<div class="fq-actions"><button type="button" data-do="copy" ${busy?'disabled':''}>📋 Sao chép</button><button type="button" data-do="move" ${busy?'disabled':''}>⇄ Chuyển kho</button><button type="button" data-do="delete" class="fq-delete" ${busy?'disabled':''} aria-label="Xóa acc dòng ${rowNumbers.get(r.id)}">🗑 Xóa</button></div>`:''}</article>`).join('')||'<div class="fq-empty">'+(refreshing?'Đang tải danh sách…':(selectedGroup?'Nhóm này không còn acc phù hợp.':'Chọn nhóm để xem danh sách acc.'))+'</div>'}</div>
     <div class="fq-pagination"><button type="button" id="fq-prev" ${page===0?'disabled':''}>← Trước</button><span>Trang ${page+1}/${Math.max(1,Math.ceil(filtered.length/PAGE_SIZE))} · ${filtered.length} acc</span><button type="button" id="fq-next" ${(page+1)*PAGE_SIZE>=filtered.length?'disabled':''}>Sau →</button></div>`;
+    const picker=host.querySelector('#fq-group-picker');picker.addEventListener('toggle',()=>{if(picker.isConnected)groupChooserOpen=picker.open;});
+    if(scrollToGroupList){scrollToGroupList=false;(global.requestAnimationFrame||((fn)=>setTimeout(fn,0)))(()=>{if(!isAdmin||!active)return;const target=host.querySelector('#fq-account-list-start');target?.scrollIntoView?.({block:'start',behavior:'instant'});target?.focus?.({preventScroll:true});});}
     host.querySelectorAll('[data-group]').forEach(button=>button.onclick=()=>selectGroup(button.dataset.group));
     host.querySelectorAll('[data-delete-group]').forEach(button=>button.onclick=()=>deleteGroup(button.dataset.deleteGroup));
     const search=host.querySelector('#fq-search');search.value=query;search.addEventListener('input',()=>{query=search.value.toLowerCase();page=0;const position=search.selectionStart;render();const next=host.querySelector('#fq-search');next.focus();try{next.setSelectionRange(position,position);}catch(_){}});
@@ -308,12 +320,14 @@
     if(!isAdmin||refreshing)return;refreshing=true;render();
     try {const received=await transport.read('filter_queue');if(isAdmin&&Object.values(received||{}).some(r=>r&&r.username&&(!r.groupId||(!received.__groups?.[r.groupId]?.fileName&&r.fileName)||!received.__groups?.[r.groupId]?.batchTone))){const grouped=await transport.transaction('filter_queue',assignFilterGroups);rows=isAdmin?grouped:{};}else rows=isAdmin?(received||{}):{};error='';}catch(err){error=err.message;}finally{refreshing=false;if(isAdmin&&active&&restorePending&&!error)resumeFiltering();render();}
   }
+  let liveRenderPending=false;
+  function scheduleLiveRender(){if(liveRenderPending)return;liveRenderPending=true;(global.requestAnimationFrame||((fn)=>setTimeout(fn,0)))(()=>{liveRenderPending=false;render();});}
   function stop() {source?.close();source=null;connected=false;}
   function listen() {
     if(!isAdmin||!active||document.hidden||navigator.onLine===false||source||typeof EventSource==='undefined')return;
     source=new EventSource(FIREBASE_DB_URL+'/filter_queue.json');
     source.onopen=()=>{connected=true;};source.onerror=()=>{connected=false;};
-    const eventHandler=event=>{if(!isAdmin){stop();return;}try{const payload=JSON.parse(event.data);const path=String(payload.path||'/').split('/').filter(Boolean);if(!path.length){rows=event.type==='patch'?{...rows,...payload.data}:(payload.data||{});Object.keys(rows).forEach(k=>{if(rows[k]===null)delete rows[k];});}else{const id=path[0];if(['__proto__','constructor','prototype'].includes(id))return;if(path.length===1){if(payload.data===null)delete rows[id];else rows[id]=event.type==='patch'?{...rows[id],...payload.data}:payload.data;}else if(rows[id]&&!path.some(k=>['__proto__','constructor','prototype'].includes(k))){let ref=rows[id];for(let i=1;i<path.length-1;i++)ref=ref[path[i]]||(ref[path[i]]={});ref[path.at(-1)]=payload.data;}}render();}catch(_){}};
+    const eventHandler=event=>{if(!isAdmin){stop();return;}try{const payload=JSON.parse(event.data);const path=String(payload.path||'/').split('/').filter(Boolean);if(!path.length){rows=event.type==='patch'?{...rows,...payload.data}:(payload.data||{});Object.keys(rows).forEach(k=>{if(rows[k]===null)delete rows[k];});}else{const id=path[0];if(['__proto__','constructor','prototype'].includes(id))return;if(path.length===1){if(payload.data===null)delete rows[id];else rows[id]=event.type==='patch'?{...rows[id],...payload.data}:payload.data;}else if(rows[id]&&!path.some(k=>['__proto__','constructor','prototype'].includes(k))){let ref=rows[id];for(let i=1;i<path.length-1;i++)ref=ref[path[i]]||(ref[path[i]]={});ref[path.at(-1)]=payload.data;}}scheduleLiveRender();}catch(_){}};
     source.addEventListener('put',eventHandler);source.addEventListener('patch',eventHandler);
   }
   async function run(action) {
@@ -385,7 +399,7 @@
   }
   function copyRow(row) {return run(async()=>{
     if(isEmergencyLocked)throw new Error('Hệ thống đang khóa sao chép.');
-    const claimed=await transport.transaction('filter_queue/'+row.id,current=>filterClaim(current,owner(),getUserName(),Date.now()));rows[row.id]=claimed;render();
+    const claimed=await transport.transaction('filter_queue/'+row.id,current=>{if(current?.status==='working'&&current.owner===owner())return current;return filterClaim(current,owner(),getUserName(),Date.now());});rows[row.id]=claimed;
     await copyText(claimed.username+':'+claimed.password);rememberAccount(row.id);focusedAccountId=row.id;restorePending=false;playSound('copy');showToast(`Đã sao chép dòng ${displayNumber(row)} — đang lọc.`);
   });}
   function deleteRow(row) {
@@ -428,19 +442,19 @@
     await run(async()=>{
       await waitForMainSave();
       const destination=buildFilterDestination(row,category,metadata,getUserName(),Date.now());
-      const existing=await transport.read('app_data/accounts');
+      const [existing,sourceVersion]=await Promise.all([transport.read('app_data/accounts'),transport.readVersion('filter_queue/'+row.id)]);
       if(Object.values(existing||{}).some(a=>a&&keyOf(a.username)===keyOf(row.username)))throw new Error('Tài khoản đã có trong kho đích hoặc kho còn lại. Chưa chuyển; dòng nguồn vẫn còn để kiểm tra.');
-      const locked=await transport.transaction('filter_queue/'+row.id,current=>({...filterClaim(current,owner(),getUserName(),Date.now()),status:'transferring',transferStartedAt:Date.now()}));
+      const locked=await transport.transaction('filter_queue/'+row.id,current=>({...filterClaim(current,owner(),getUserName(),Date.now()),status:'transferring',transferStartedAt:Date.now()}),sourceVersion);
       let saved=false;
       try {await transport.transfer(locked,destination);saved=true;}
       catch(err){
         // A timeout can occur after an atomic write succeeded. Verify before retrying.
-        try{const remaining=await transport.read('filter_queue/'+row.id),target=await transport.read('app_data/accounts/'+destination.id);saved=!remaining&&!!target;}catch(_){}
+        try{const [remaining,target]=await Promise.all([transport.read('filter_queue/'+row.id),transport.read('app_data/accounts/'+destination.id)]);saved=!remaining&&!!target;}catch(_){}
         if(!saved){try{await transport.transaction('filter_queue/'+row.id,current=>{if(current?.owner===owner()&&current.status==='transferring')return {...current,status:'working'};throw new Error('Trạng thái đã thay đổi.');});}catch(_){}throw err;}
       }
       delete rows[row.id];accounts=[destination,...accounts.filter(a=>a.id!==destination.id)];
       try{saveData();}catch(_){error='Acc đã chuyển thành công trên cloud, nhưng bộ nhớ trình duyệt đầy. Hãy tải lại danh sách khi có mạng.';}
-      renderList();
+      if(currentStorage!=='filter')renderList();
       recordAdminAudit('move',destination,{from:'filter',to:category});playSound('success');modal.classList.remove('show');
       showToast('Đã chuyển sang '+(category==='rank'?'kho Rank':'kho Chung Sức')+'. Dòng nguồn đã được xóa.');void pullFromCloud(true);
     });
