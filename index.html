@@ -4227,6 +4227,20 @@
       function needsUnbanReview(item) {
         return !!item && (item.unbanReviewPending === true || checkBanStatus(item.unlockDate,item).isJustUnbanned === true);
       }
+      function accountWarehouse(item) {
+        return needsUnbanReview(item)?'unban':item?.category==='chungsuc'?'chungsuc':'rank';
+      }
+      window.revealAccountLocation=function(id){
+        const item=accounts.find(a=>a.id===id);if(!item)return false;
+        const destination=accountWarehouse(item);
+        if(destination==='unban'&&!isAdmin)return false;
+        activeRankFilter='all';currentSearchQuery='';
+        if(searchAccountInput)searchAccountInput.value='';
+        switchAccountStorage(destination,false);
+        document.querySelectorAll('.rank-nav-chip').forEach(chip=>chip.classList.toggle('active',chip.getAttribute('data-rank')==='all'));
+        if(destination!=='chungsuc')uncollapseRankGroup(parseRankGroup(item.rank).key);
+        renderList();triggerAccountGlowAndScroll(item.id,true);return true;
+      };
       function updateUnbanWarehouseUI() {
         const count=accounts.filter(needsUnbanReview).length,tab=document.getElementById('storage-tab-unban');
         if(tab){tab.hidden=!isAdmin||count===0;tab.classList.toggle('active',currentStorage==='unban');tab.setAttribute('aria-pressed',String(currentStorage==='unban'));}
@@ -4245,7 +4259,11 @@
           const stillBanned=checkBanStatus(current.unlockDate,current).isBanned;current.unbanCleared=!stillBanned;
           if(!stillBanned)current.unlockDate='';
           current.unbanReviewedAt=Date.now();current.unbanReviewedBy=getUserName();
-          saveData();recordAdminAudit('move',current,{from:'unban',to:destination});pushAccountNotification({...window.filterQueue.makeArrivalNotice([current],destination,getUserName()),kind:'transfer'});renderList();triggerAutoSync();showToast('Đã chuyển acc vào '+(destination==='rank'?'kho Rank.':'kho Chung Sức.'));
+          saveData();triggerAutoSync();
+          window.revealAccountLocation(current.id);
+          recordAdminAudit('move',current,{from:'unban',to:destination});
+          try{pushAccountNotification({...window.filterQueue.makeArrivalNotice([current],destination,getUserName()),kind:'transfer'});}catch(_){showToast('Acc đã chuyển; thông báo sẽ cập nhật sau khi đồng bộ.');}
+          showToast('Đã chuyển '+escapeHtml(current.username)+' vào '+(destination==='rank'?'kho Rank · '+escapeHtml(current.rank||'Chưa rank'):'kho Chung Sức')+'.');
         }});
       };
       window.returnUnbanAccountToRank=window.returnUnbanAccount;
@@ -4581,6 +4599,10 @@
           currentSearchQuery = this.value.trim().toLowerCase();
           if (btnClearSearch) {
             btnClearSearch.style.display = this.value ? "flex" : "none";
+          }
+          if(currentSearchQuery){
+            activeRankFilter='all';
+            document.querySelectorAll('.rank-nav-chip').forEach(chip=>chip.classList.toggle('active',chip.getAttribute('data-rank')==='all'));
           }
           renderList();
         });
@@ -5115,7 +5137,7 @@
 
           // Nhận diện phần tử đang hiển thị: trên mobile (<=820px) ưu tiên mobile card, desktop ưu tiên hàng bảng
           const isMobile = window.innerWidth <= 820;
-          const target = isMobile ? cardEl || rowEl : rowEl || cardEl;
+          const target = [cardEl,rowEl].find(el=>el&&el.getClientRects().length) || (isMobile ? cardEl || rowEl : rowEl || cardEl);
 
           if (target) {
             target.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -5286,13 +5308,8 @@
                 message: `Tài khoản <b>"${escapeHtml(dup.user)}"</b> đã có sẵn trên hệ thống!<br><small style="color: #94a3b8;">1 tài khoản định danh duy nhất 1 mật khẩu. Hệ thống đã tự động định vị đến tài khoản này.</small>`,
                 icon: "⚠️",
               });
-              // Nếu nick trùng nằm ở kho khác, chuyển sang kho đó để xem
-              const dupCat = dup.existing.category || "rank";
-              if (currentStorage !== dupCat) {
-                switchAccountStorage(dupCat, true);
-              }
-              // Cuộn mượt và phát sáng tài khoản đã tồn tại đó để người dùng nhận diện ngay
-              triggerAccountGlowAndScroll(dup.existing.id);
+              // Resolve virtual review storage as well as physical categories and clear stale filters.
+              window.revealAccountLocation(dup.existing.id);
             } else {
               showNotice({
                 title: "Tài Khoản Đã Tồn Tại",
@@ -5823,7 +5840,7 @@
         // 2. LỌC DANH SÁCH NICK THUỘC KHO HIỆN TẠI (TÁCH BIỆT HOÀN TOÀN)
         const storageAccounts = accounts.filter((a) => {
           const cat = a.category || "rank";
-          return currentStorage==='unban'?needsUnbanReview(a):cat===currentStorage&&!needsUnbanReview(a);
+          return accountWarehouse(a)===currentStorage;
         }).sort((a,b)=>(Number(b.createdTimestamp)||filterTransferTime(b))-(Number(a.createdTimestamp)||filterTransferTime(a)));
 
         let banCount = 0;
@@ -7018,10 +7035,10 @@
             if (!current || current.category === "chungsuc") return;
             current.category = "chungsuc";
             saveData();
+            triggerAutoSync();
+            window.revealAccountLocation(current.id);
             recordAdminAudit("move",current);
             pushAccountNotification({...window.filterQueue.makeArrivalNotice([current],"chungsuc",getUserName()),kind:'transfer'});
-            renderList();
-            triggerAutoSync();
             showToast(`Đã chuyển <b>${escapeHtml(current.username)}</b> sang kho Chung Sức.`);
           }
         });
