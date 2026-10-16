@@ -3659,8 +3659,9 @@
         }
       }
 
-      function pushAccountNotification(notiItem) {
+      function pushAccountNotification(notiItem, sync = true) {
         const list = getNotificationList();
+        if(list.some(item=>item.id===notiItem.id))return;
         list.unshift(notiItem);
         saveNotificationList(list);
         updateNotiBadge();
@@ -3669,7 +3670,8 @@
           renderNotificationList();
         }
         showLeftCornerToast(notiItem);
-        triggerAutoSync();
+        if(sync)triggerAutoSync();
+        window.warehouseTransferTele?.enqueue(notiItem);
       }
 
       window.showWelcomeBannerModal = function () {
@@ -4101,15 +4103,11 @@
         singlePasswordVisible[id] = !singlePasswordVisible[id];
         renderList();
       };
-      const ADD_PANEL_STORAGE_KEY = "lq_add_panel_expanded";
       function restoreInputBoxState() {
         const content = document.getElementById("collapse-content");
         if (!content) return;
-        let expanded = true;
-        try {
-          expanded = localStorage.getItem(ADD_PANEL_STORAGE_KEY) !== "false";
-        } catch (_) { /* Keep the form usable when browser storage is unavailable. */ }
-        content.classList.toggle("hidden", !expanded);
+        // Manual entry is secondary: start collapsed on each page load.
+        content.classList.add("hidden");
         updateInputBoxLabel();
       }
       function updateInputBoxLabel() {
@@ -4129,10 +4127,6 @@
         if (!collapseContent) return;
         collapseContent.classList.toggle("hidden");
         updateInputBoxLabel();
-        try {
-          localStorage.setItem(ADD_PANEL_STORAGE_KEY,
-            String(!collapseContent.classList.contains("hidden")));
-        } catch (_) { /* Toggling still works without browser storage. */ }
       };
 
       // CHỈ CHO PHÉP NHẬP SỐ VÀ TỰ ĐỘNG THÊM DẤU /
@@ -4251,7 +4245,7 @@
           const stillBanned=checkBanStatus(current.unlockDate,current).isBanned;current.unbanCleared=!stillBanned;
           if(!stillBanned)current.unlockDate='';
           current.unbanReviewedAt=Date.now();current.unbanReviewedBy=getUserName();
-          saveData();recordAdminAudit('move',current,{from:'unban',to:destination});renderList();triggerAutoSync();showToast('Đã chuyển acc vào '+(destination==='rank'?'kho Rank.':'kho Chung Sức.'));
+          saveData();recordAdminAudit('move',current,{from:'unban',to:destination});pushAccountNotification({...window.filterQueue.makeArrivalNotice([current],destination,getUserName()),kind:'transfer'});renderList();triggerAutoSync();showToast('Đã chuyển acc vào '+(destination==='rank'?'kho Rank.':'kho Chung Sức.'));
         }});
       };
       window.returnUnbanAccountToRank=window.returnUnbanAccount;
@@ -5373,17 +5367,7 @@
         const dd = String(now.getDate()).padStart(2, "0");
         const mo = String(now.getMonth() + 1).padStart(2, "0");
 
-        const notiItem = {
-          id: Date.now().toString() + Math.random().toString(36).substr(2, 4),
-          user: getUserName(),
-          count: newItems.length,
-          firstAccount: newItems[0].username,
-          category: targetCategory,
-          categoryName: storeLabel,
-          time: `${hh}:${mm} - ${dd}/${mo}`,
-          timestamp: Date.now(),
-          read: false,
-        };
+        const notiItem = window.filterQueue.makeArrivalNotice(newItems,targetCategory,getUserName());
         pushAccountNotification(notiItem);
 
         // Bắn thông báo tự động vào Kênh Telegram chung dạng tk:mk (nếu đã cấu hình)
@@ -7035,6 +7019,7 @@
             current.category = "chungsuc";
             saveData();
             recordAdminAudit("move",current);
+            pushAccountNotification({...window.filterQueue.makeArrivalNotice([current],"chungsuc",getUserName()),kind:'transfer'});
             renderList();
             triggerAutoSync();
             showToast(`Đã chuyển <b>${escapeHtml(current.username)}</b> sang kho Chung Sức.`);
@@ -7539,7 +7524,7 @@
             }
           }
 
-          if (raw && typeof raw === "object" && Array.isArray(raw.activities)) {
+          if (raw && typeof raw === "object" && (Array.isArray(raw.activities)||raw.warehouseNotices)) {
             const clearedTime =
               Number(localStorage.getItem("lq_activity_cleared_time")) || 0;
             let deletedIds = new Set();
@@ -7553,7 +7538,8 @@
             const currentNotis = getNotificationList();
             const existingIds = new Set(currentNotis.map((n) => n.id));
             let hasNewFromOther = false;
-            raw.activities.forEach((act) => {
+            const arrivals=[...(Array.isArray(raw.activities)?raw.activities:[]),...Object.values(raw.warehouseNotices||{})];
+            arrivals.forEach((act) => {
               if (!act || !act.id) return;
               if (deletedIds.has(act.id)) return;
               const actTime = Number(act.timestamp) || 0;
@@ -7569,7 +7555,7 @@
               }
             });
             if (hasNewFromOther) {
-              saveNotificationList(currentNotis);
+              saveNotificationList(currentNotis.sort((a,b)=>Number(b.timestamp)-Number(a.timestamp)));
               updateNotiBadge();
               const p = document.getElementById("noti-flyout-panel");
               if (p && p.classList.contains("show")) renderNotificationList();
@@ -7877,177 +7863,28 @@
         });
 
         const webNotifiedToday = sessionStorage.getItem("lq_web_unban_notified");
-        if (!webNotifiedToday && unbannedNow.length > 0) {
-          sessionStorage.setItem("lq_web_unban_notified", "true");
+        if (isAdmin && webNotifiedToday !== new Date().toDateString() && unbannedNow.length > 0) {
+          sessionStorage.setItem("lq_web_unban_notified", new Date().toDateString());
           setTimeout(() => {
             showNotice({
               title: "🎉 TÀI KHOẢN VỪA MỞ BAN!",
-              message: `Hệ thống ghi nhận có <b>${unbannedNow.length} tài khoản</b> đã hết hạn BAN!<br><br>Các tài khoản này đang được gắn nhãn nổi bật <b>[🎉 VỪA MỞ BAN]</b>.<br>👉 Khi bạn ấn nút <b>SAO CHÉP</b> trên nick đó, nhãn sẽ tự động chuyển về trạng thái <b>Hoạt Động</b>.`,
+              message: `Hệ thống ghi nhận có <b>${unbannedNow.length} tài khoản</b> đã hết hạn BAN!<br><br>Các tài khoản này nằm trong kho <b>🎉 Acc vừa mở BAN</b>.<br>👉 Sao chép để kiểm tra, rồi bấm <b>Chọn kho</b> để chuyển vào Rank hoặc Chung Sức.`,
               icon: "🎉",
               type: "info",
             });
           }, 1200);
         }
 
-        // 2. CHỈ QUẢN TRỊ VIÊN MỚI ĐƯỢC PHÉP BẮN THÔNG BÁO TELEGRAM (CHỐNG DUPLICATE / SPAM TỪ NHIỀU THIẾT BỊ KHÁCH)
-        if (!isAdmin) return;
-
-        // COOLDOWN CHỐNG SPAM KHI F5 / RELOAD TRANG: TỐI THIỂU 45 GIÂY GIỮA 2 LẦN QUÉT TELEGRAM
-        const nowMs = Date.now();
-        const lastCheckMs = Number(localStorage.getItem("lq_tele_last_check_ms") || 0);
-        if (nowMs - lastCheckMs < 45000) return;
-        localStorage.setItem("lq_tele_last_check_ms", nowMs.toString());
-
-        const config = getTeleConfig();
-        if (!config.token || !config.chatId) return;
-
-        isCheckingTeleUnban = true;
-        try {
-          // Lấy nhật ký thông báo từ LocalStorage và Firebase Realtime Database
-          let localNotified = {};
-          try {
-            localNotified = JSON.parse(localStorage.getItem("lq_tele_notified_today") || "{}");
-          } catch (e) {}
-
-          let cloudNotified = {};
-          try {
-            const res = await fetch(`${FIREBASE_DB_URL}/tele_notified.json?t=${Date.now()}`);
-            if (res.ok) {
-              const rawCloud = await res.json();
-              if (rawCloud && typeof rawCloud === "object") {
-                cloudNotified = flattenTeleNotifiedObject(rawCloud);
-              }
-            }
-          } catch (e) {}
-
-          const allNotified = { ...localNotified, ...cloudNotified };
-          const today = getTodayFormatted();
-          const tomorrow = getTomorrowFormatted();
-
-          // Lọc danh sách nick duy nhất (không bao giờ lặp lại cùng 1 username)
-          const seenUsersInRun = new Set();
-          const uniqueAccounts = [];
-          accounts.forEach((acc) => {
-            if (!acc || !acc.unlockDate) return;
-            const uKey = (acc.username || "").trim().toLowerCase();
-            if (!uKey || seenUsersInRun.has(uKey)) return;
-            seenUsersInRun.add(uKey);
-            uniqueAccounts.push(acc);
-          });
-
-          // Phân loại tài khoản theo 3 mốc thông báo:
-          // Mốc 1: Đã mở BAN hôm nay (diffHours <= 0)
-          // Mốc 2: Đếm ngược Trước 6 tiếng (0 < diffHours <= 6)
-          // Mốc 3: Nhắc Trước 1 ngày (6 < diffHours <= 24)
-          const unbannedTodayList = [];
-          const warn6hList = [];
-          const warn1DayList = [];
-          const newNotifiedKeys = {};
-
-          uniqueAccounts.forEach((a) => {
-            const targetMs = parseUnlockTargetTimestamp(a.unlockDate);
-            if (!targetMs) return;
-
-            const diffHours = (targetMs - nowMs) / (1000 * 60 * 60);
-
-            // Mốc 1: VỪA MỞ BAN HÔM NAY (diffHours <= 0)
-            if (diffHours <= 0) {
-              const status = checkBanStatus(a.unlockDate, a);
-              if (status.isJustUnbanned) {
-                if (!isTeleAccountNotified(a, "today", allNotified, today)) {
-                  unbannedTodayList.push(a);
-                  const key = getTeleNotifiedKey(a.username, a.unlockDate, "today");
-                  newNotifiedKeys[key] = today;
-                  allNotified[key] = today;
-                }
-              }
-              return;
-            }
-
-            // Mốc 2: TRƯỚC 6 TIẾNG (0 < diffHours <= 6)
-            if (diffHours > 0 && diffHours <= 6) {
-              if (!isTeleAccountNotified(a, "6h", allNotified, today)) {
-                warn6hList.push({
-                  ...a,
-                  remainingHours: Math.max(1, Math.round(diffHours)),
-                });
-                const key = getTeleNotifiedKey(a.username, a.unlockDate, "6h");
-                newNotifiedKeys[key] = today;
-                allNotified[key] = today;
-              }
-              return;
-            }
-
-            // Mốc 3: TRƯỚC 1 NGÀY (6 < diffHours <= 24)
-            if (diffHours > 6 && diffHours <= 24) {
-              if (!isTeleAccountNotified(a, "1day", allNotified, today)) {
-                warn1DayList.push(a);
-                const key = getTeleNotifiedKey(a.username, a.unlockDate, "1day");
-                newNotifiedKeys[key] = today;
-                allNotified[key] = today;
-              }
-              return;
-            }
-          });
-
-          // GHI NHỚ NGAY VÀO LOCALSTORAGE TRƯỚC KHI GỬI (CHỐNG RACE-CONDITION HOÀN TOÀN)
-          if (Object.keys(newNotifiedKeys).length > 0) {
-            localStorage.setItem("lq_tele_notified_today", JSON.stringify(allNotified));
-          }
-
-          // Gửi Mốc 1: VỪA MỞ BAN HÔM NAY
-          if (unbannedTodayList.length > 0) {
-            let msg = `🎉 <b>THÔNG BÁO: CÓ ${unbannedTodayList.length} NICK VỪA MỞ BAN HÔM NAY (${today})!</b>\n\n`;
-            unbannedTodayList.forEach((a, i) => {
-              const combo = a.password ? `${a.username}:${a.password}` : a.username;
-              const rankStr = a.rank ? ` | Rank: <b>${escapeHtml(a.rank)}</b>` : "";
-              msg += `${i + 1}. 🟢 <code>${escapeHtml(combo)}</code>${rankStr}\n`;
-            });
-            msg += `\n👉 <i>Chạm vào tài khoản (dạng <code>tk:mk</code>) để sao chép nhanh và vào game!</i>`;
-            await sendTelegramMessage(config.token, config.chatId, msg);
-          }
-
-          // Gửi Mốc 2: ĐẾM NGƯỢC TRƯỚC 6 TIẾNG
-          if (warn6hList.length > 0) {
-            let msg = `⚡ <b>ĐẾM NGƯỢC: CÓ ${warn6hList.length} NICK SẮP MỞ BAN TRONG 6 TIẾNG NỮA!</b>\n\n`;
-            warn6hList.forEach((a, i) => {
-              const combo = a.password ? `${a.username}:${a.password}` : a.username;
-              const rankStr = a.rank ? ` | Rank: <b>${escapeHtml(a.rank)}</b>` : "";
-              msg += `${i + 1}. 🟠 <code>${escapeHtml(combo)}</code>${rankStr} (Còn ~${a.remainingHours}h)\n`;
-            });
-            msg += `\n👉 <i>Chỉ còn ít giờ nữa là vào game được rồi, chạm vào <code>tk:mk</code> để sẵn sàng nhé!</i>`;
-            await sendTelegramMessage(config.token, config.chatId, msg);
-          }
-
-          // Gửi Mốc 3: NHẮC TRƯỚC 1 NGÀY (NGÀY MAI)
-          if (warn1DayList.length > 0) {
-            let msg = `⏳ <b>NHẮC NHỞ: CÓ ${warn1DayList.length} NICK SẮP MỞ BAN VÀO NGÀY MAI (${tomorrow})!</b>\n\n`;
-            warn1DayList.forEach((a, i) => {
-              const combo = a.password ? `${a.username}:${a.password}` : a.username;
-              const rankStr = a.rank ? ` | Rank: <b>${escapeHtml(a.rank)}</b>` : "";
-              msg += `${i + 1}. 🟡 <code>${escapeHtml(combo)}</code>${rankStr}\n`;
-            });
-            msg += `\n👉 <i>Chạm vào tài khoản (dạng <code>tk:mk</code>) để sao chép nhanh!</i>`;
-            await sendTelegramMessage(config.token, config.chatId, msg);
-          }
-
-          // Đồng bộ lại nhật ký đã thông báo lên Firebase Cloud (Key sạch không chứa dấu /)
-          if (Object.keys(newNotifiedKeys).length > 0) {
-            try {
-              await fetch(`${FIREBASE_DB_URL}/tele_notified.json`, {
-                method: "PATCH",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(newNotifiedKeys),
-              });
-            } catch (e) {}
-          }
-        } catch (err) {
-          console.warn("Lỗi autoCheckUnbannedAccounts:", err);
-        } finally {
-          setTimeout(() => {
-            isCheckingTeleUnban = false;
-          }, 3000);
-        }
+        // One shared daily post per notification type; subsequent scans edit it.
+        if(!isAdmin||document.hidden||navigator.onLine===false||!window.telegramDaily)return;
+        const config=getTeleConfig();if(!config.token||!config.chatId)return;
+        const now=Date.now(),last=Number(localStorage.getItem('lq_tele_last_check_ms')||0);
+        if(now-last<45000)return;
+        localStorage.setItem('lq_tele_last_check_ms',String(now));
+        isCheckingTeleUnban=true;
+        try{await window.telegramDaily.scan(accounts,config);}
+        catch(_){showToast('Chưa cập nhật được bản tin BAN trên Telegram. Hệ thống sẽ thử lại.');}
+        finally{isCheckingTeleUnban=false;}
       }
 
       // HIỆU ỨNG ĐÁNH MÁY TIÊU ĐỀ THƯƠNG HIỆU (TYPEWRITER EFFECT)
@@ -8327,5 +8164,7 @@
     <script src="filter-queue.js"></script>
     <script src="account-privacy.js"></script>
     <script src="admin-account-tools.js"></script>
+    <script src="telegram-daily.js"></script>
+    <script src="telegram-transfers.js"></script>
   </body>
 </html>

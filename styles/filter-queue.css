@@ -360,3 +360,11 @@
 .storage-mode-unban .mobile-card-list .m-creds-row>*,.storage-mode-unban .mobile-card-list .m-action-row>.tbl-input { min-width:0; }
 .storage-mode-unban .mobile-card-list .m-created-row { flex-wrap:wrap; gap:6px 10px; }
 @media(max-width:360px){.storage-mode-unban .mobile-card-list .m-admin-actions { grid-template-columns:minmax(0,1fr) minmax(92px,1fr) 40px; gap:6px; }.storage-mode-unban .mobile-card-list .m-admin-actions .m-btn-del { width:40px; }}
+
+.fq-active-groups { display:flex; flex-wrap:wrap; align-items:center; gap:7px; margin:10px 0 14px; }
+.fq-active-label { color:#f1cc80; font-size:.75rem; font-weight:700; margin-right:3px; }
+.fq-active-group-tag { display:inline-flex; flex-wrap:wrap; align-items:center; gap:5px 8px; max-width:100%; padding:7px 9px; border:1px solid #826735; border-radius:8px; background:rgba(244,181,65,.08); color:#ffe5b6; cursor:pointer; font:inherit; font-size:.74rem; text-align:left; }
+.fq-active-group-tag span { overflow-wrap:anywhere; min-width:0; }
+.fq-active-group-tag small { color:#cabb9e; }
+.fq-active-group-tag:focus-visible { outline:2px solid #f1cc80; outline-offset:2px; }
+@media(hover:hover){.fq-active-group-tag:hover { background:rgba(244,181,65,.16); border-color:#d6ac61; }}
