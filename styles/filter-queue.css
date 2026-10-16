@@ -251,3 +251,13 @@
 
 #storage-switcher-bar.has-filter-access { grid-template-columns:repeat(3,minmax(0,1fr)); }
 #storage-tab-filter[hidden] { display:none!important; }
+
+.fq-groups { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:10px; margin:16px 0; }
+.fq-group { min-width:0; border:1px solid #38445b; border-radius:10px; background:#141e30; padding:10px; }
+.fq-group.is-selected { border-color:#a78bfa; background:#29223f; }
+.fq-group>button[data-group] { display:flex; flex-direction:column; gap:7px; width:100%; text-align:left; background:transparent; color:inherit; border:0; padding:4px; cursor:pointer; font:inherit; }
+.fq-group small { color:#b6c5dc; line-height:1.5; }
+.fq-group progress { width:100%; height:6px; accent-color:#a78bfa; }
+.fq-group-delete { margin-top:10px; min-height:36px; padding:5px 10px; border:1px solid #8e4659; border-radius:6px; color:#ffb2bf; background:#38212c; cursor:pointer; }
+.fq-group:has(button[data-group]:hover) { border-color:#8d80bd; }
+@media(max-width:500px) { .fq-groups { grid-template-columns:1fr; } }
