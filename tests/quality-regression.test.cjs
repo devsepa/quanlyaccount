@@ -86,3 +86,10 @@ test('emergency restrictions apply only to guests, including role changes',()=>{
 test('admin password privacy remains available during guest emergency lock',()=>{
  const source=fs.readFileSync(root+'account-privacy.js','utf8');assert.ok(!source.includes('isEmergencyLocked'));assert.ok(source.includes('if(!isAdmin)'));assert.ok(html.includes('if (isGuestEmergencyLocked())'));
 });
+
+test('PIN opens after navigation closes and focuses within the same user gesture',()=>{
+ const events=[],input={value:'old',focus(){events.push('focus')}},modal={classList:{add(value){events.push(value)}}};
+ const c={window:{},CustomEvent:class{constructor(type){this.type=type}},document:{dispatchEvent(event){events.push(event.type)},getElementById(id){return id==='pin-modal'?modal:input}},setTimeout(){throw new Error('Delayed focus loses iOS user activation')}};
+ vm.createContext(c);vm.runInContext(html.slice(html.indexOf('      window.openPinModal ='),html.indexOf('      window.closePinModal =')),c);
+ c.window.openPinModal();assert.deepEqual(events,['dashboard:close-navigation','show','focus']);assert.equal(input.value,'');
+});

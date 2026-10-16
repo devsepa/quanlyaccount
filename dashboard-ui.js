@@ -19,6 +19,9 @@
   if(settings){settings.classList.add('dashboard-native-nav');settings.innerHTML='<span aria-hidden="true">⚙</span><span>Cài đặt</span><span id="menu-notify-dot" class="menu-notify-dot" style="display:none"></span>';sidebar.querySelector('[data-nav="settings"]').replaceWith(settings);}
   if(analytics){analytics.classList.add('dashboard-native-nav');analytics.innerHTML='<span id="analytics-icon" aria-hidden="true">▥</span><span>Thống kê</span>';sidebar.querySelector('[data-nav="analytics"]').replaceWith(analytics);}
   const dropdown=byId('option-menu-dropdown');if(dropdown)document.body.appendChild(dropdown);
+  // Floating notifications must escape the animated header's stacking context.
+  const notificationPanel=byId('noti-flyout-panel');
+  if(notificationPanel)document.body.appendChild(notificationPanel);
   const motionToggle=document.createElement('button');motionToggle.type='button';motionToggle.id='btn-header-motion';motionToggle.className='option-menu-item';
   let headerMotionEnabled=true;
   try{headerMotionEnabled=localStorage.getItem('lq_header_motion')!=='off';}catch(_){}
@@ -40,8 +43,9 @@
   const context=document.createElement('div');context.className='dashboard-page-context';context.innerHTML='<span>QUẢN LÝ KHO</span><strong>Tài khoản game</strong>';shell.querySelector('header').prepend(context);
   function placeBrand(){if(!brand)return;if(narrow.matches)brandAnchor.after(brand);else sidebar.prepend(brand);}
   narrow.addEventListener('change',placeBrand);placeBrand();
-  function closeNav(){if(document.body.classList.contains('dashboard-nav-open'))window.closeOptionMenu?.();const restore=narrow.matches&&sidebar.contains(document.activeElement);document.body.classList.remove('dashboard-nav-open');menu.setAttribute('aria-expanded','false');sidebar.inert=narrow.matches;if(restore)menu.focus({preventScroll:true});}
+  function closeNav(){if(document.body.classList.contains('dashboard-nav-open'))window.closeOptionMenu?.();const restore=narrow.matches&&sidebar.contains(document.activeElement);document.body.classList.remove('dashboard-nav-open');menu.setAttribute('aria-expanded','false');sidebar.inert=narrow.matches;if(restore)(matchMedia('(max-width:600px)').matches?settings:menu)?.focus({preventScroll:true});}
   narrow.addEventListener('change',closeNav);closeNav();
+  document.addEventListener('dashboard:close-navigation',closeNav);
   menu.addEventListener('click',()=>{const open=document.body.classList.toggle('dashboard-nav-open');menu.setAttribute('aria-expanded',String(open));sidebar.inert=narrow.matches&&!open;if(open)sidebar.querySelector('button:not([hidden])')?.focus();});
   analytics?.addEventListener('click',closeNav);
   dropdown?.addEventListener('click',event=>{if(event.target.closest('.option-menu-item'))closeNav();});
@@ -99,6 +103,7 @@
   document.body.appendChild(bottomNav);
   const adminButton=byId('btn-toggle-admin');
   const adminAnchor=document.createComment('Desktop role control');adminButton?.before(adminAnchor);
+  adminButton?.addEventListener('click',()=>{if(narrow.matches){window.closeOptionMenu?.();closeNav();}},true);
   const roleArea=document.createElement('div');roleArea.className='dashboard-drawer-role';
   roleArea.innerHTML='<span>Vai trò & quyền truy cập</span>';
   sidebar.insertBefore(roleArea,sidebar.querySelector('.dashboard-sidebar-footer'));
@@ -107,10 +112,17 @@
     byId('zone-player-divider').appendChild(statuses);
     brandInfo.appendChild(brandSub);
     if(phoneHeader.matches){
+      closeNav();
       bottomNav.appendChild(mainNav);
       if(adminButton)roleArea.appendChild(adminButton);
+      const heading=dropdown?.querySelector('.option-menu-header');
+      if(heading)heading.after(roleArea);else dropdown?.prepend(roleArea);
+      if(syncBar)roleArea.after(syncBar);
     }else{
+      const footer=sidebar.querySelector('.dashboard-sidebar-footer');
+      sidebar.insertBefore(roleArea,footer);
       sidebar.insertBefore(mainNav,roleArea);
+      if(syncBar)footer.appendChild(syncBar);
       if(adminButton)adminAnchor.after(adminButton);
     }
   }

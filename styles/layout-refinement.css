@@ -122,3 +122,28 @@
 }
 
 .app-layout>header.has-combined-motion>:not(.header-combined-motion) { position:relative; z-index:1; }
+
+/* Keep PIN entry above drawer/backdrop layers and inside the keyboard viewport. */
+#pin-modal { z-index:100020; }
+#pin-modal.show { visibility:visible; pointer-events:auto; }
+#pin-modal #admin-pin-input { box-sizing:border-box; width:100%; min-width:0; min-height:44px; border:1px solid #3c5272; border-radius:8px; background:#0b1423; color:#f8fafc; }
+#pin-modal #admin-pin-input:focus { outline:2px solid #60a5fa; outline-offset:2px; }
+
+/* Independent flyout above content/drawers, below confirmation and PIN modals. */
+#noti-flyout-panel { position:fixed; z-index:10004; width:min(360px,calc(100vw - 24px)); max-width:calc(100vw - 24px); border-radius:12px; background:#111b2d; }
+
+/* Phone settings owns role and cloud controls; no mostly empty side drawer. */
+@media(max-width:600px) {
+ .app-layout>header .dashboard-nav-toggle { display:none!important; }
+ .app-layout>header { grid-template-columns:minmax(0,1fr) 38px!important; column-gap:12px!important; }
+ .app-layout>header .header-brand { grid-column:1!important; }
+ .app-layout>header .header-left { grid-column:2!important; }
+ .dashboard-sidebar,.dashboard-nav-backdrop { display:none!important; }
+ #option-menu-dropdown { overflow-y:auto; overscroll-behavior:contain; }
+ #option-menu-dropdown>.dashboard-drawer-role { display:flex; flex:0 0 auto; margin:8px 0; padding:12px; gap:8px; background:#101d30; }
+ #option-menu-dropdown #btn-toggle-admin { display:flex; align-items:center; justify-content:center; gap:7px; min-height:44px; width:100%; }
+ #option-menu-dropdown>#sync-status-bar { display:flex; flex:0 0 auto; flex-wrap:wrap; gap:8px; margin:0 0 10px; padding:10px 12px; border:1px solid #2d415b; border-radius:9px; background:#101d30; font-size:.7rem; line-height:1.6; }
+ #option-menu-dropdown #sync-status-text { flex-basis:100%; }
+ #option-menu-dropdown #sync-status-bar button { min-height:36px; padding:6px 10px; border:1px solid #3c5578; border-radius:6px; background:#192c46; color:#dbeafe; font:inherit; }
+ #option-menu-dropdown #sync-status-bar button[hidden] { display:none; }
+}
