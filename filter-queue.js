@@ -41,16 +41,31 @@
       if(source)groups[group.id]={...group,batchId:source.batchId||'legacy_'+source.importedAt,fileName:source.fileName||'',importedBy:source.importedBy||'',createdAt:source.importedAt||group.createdAt||0};
     });
     groups.__next=number;
-    result.__groups=groups;
+    result.__groups=colorFilterGroups(groups);
+    return result;
+  }
+  const BATCH_TONES=['cyan','violet','mint','amber','blue','rose'];
+  function colorFilterGroups(groups) {
+    const result={...(groups||{})}, ordered=Object.values(result).filter(g=>g&&g.id).sort((a,b)=>a.number-b.number);
+    const byBatch=new Map();
+    const batchKey=g=>String(g.batchId||'legacy:'+g.createdAt+':'+g.fileName);
+    ordered.forEach(g=>{if(BATCH_TONES.includes(g.batchTone)&&!byBatch.has(batchKey(g)))byBatch.set(batchKey(g),g.batchTone);});
+    let next=Number(result.__nextTone)||0;
+    ordered.forEach(g=>{
+      const key=batchKey(g);
+      if(!byBatch.has(key)){byBatch.set(key,BATCH_TONES[next%BATCH_TONES.length]);next++;}
+      result[g.id]={...g,batchTone:byBatch.get(key)};
+    });
+    result.__nextTone=next;
     return result;
   }
   function filterBatchTone(group) {
     const key=String(group.batchId||group.createdAt||group.fileName||'legacy');
     let hash=0;for(let i=0;i<key.length;i++)hash=(Math.imul(hash,31)+key.charCodeAt(i))>>>0;
-    return ['cyan','violet','mint','amber','blue','rose'][hash%6];
+    return BATCH_TONES.includes(group.batchTone)?group.batchTone:BATCH_TONES[hash%BATCH_TONES.length];
   }
   function filterGroupList(value) {
-    const groups=Object.values(value?.__groups||{}).filter(g=>g&&g.id);
+    const groups=Object.values(colorFilterGroups(value?.__groups)).filter(g=>g&&g.id);
     return groups.sort((a,b)=>a.number-b.number).map(g=>{
       const remaining=Object.values(value||{}).filter(r=>r&&r.username&&r.groupId===g.id);
       const source=remaining[0]||{};
@@ -175,7 +190,7 @@
     }
     return {read,transaction,transfer};
   }
-  const pure = {filterBatchTone,locateFilterAccount,findFilterDuplicates,removeFilterDuplicates,assignFilterGroups,filterGroupList,removeFilterGroup,parseFilterTxt,mergeFilterImport,validateFilterDestination,filterClaim,buildFilterDestination,filterTransferPatch,createFilterTransport,mergeMainAccounts};
+  const pure = {colorFilterGroups,filterBatchTone,locateFilterAccount,findFilterDuplicates,removeFilterDuplicates,assignFilterGroups,filterGroupList,removeFilterGroup,parseFilterTxt,mergeFilterImport,validateFilterDestination,filterClaim,buildFilterDestination,filterTransferPatch,createFilterTransport,mergeMainAccounts};
   if (typeof module !== "undefined" && module.exports) module.exports = pure;
   if (typeof document === "undefined") return;
   const host = document.getElementById("filter-queue-panel"); if (!host) return;
@@ -291,7 +306,7 @@
   }
   async function refresh() {
     if(!isAdmin||refreshing)return;refreshing=true;render();
-    try {const received=await transport.read('filter_queue');if(isAdmin&&Object.values(received||{}).some(r=>r&&r.username&&(!r.groupId||(!received.__groups?.[r.groupId]?.fileName&&r.fileName)))){const grouped=await transport.transaction('filter_queue',assignFilterGroups);rows=isAdmin?grouped:{};}else rows=isAdmin?(received||{}):{};error='';}catch(err){error=err.message;}finally{refreshing=false;if(isAdmin&&active&&restorePending&&!error)resumeFiltering();render();}
+    try {const received=await transport.read('filter_queue');if(isAdmin&&Object.values(received||{}).some(r=>r&&r.username&&(!r.groupId||(!received.__groups?.[r.groupId]?.fileName&&r.fileName)||!received.__groups?.[r.groupId]?.batchTone))){const grouped=await transport.transaction('filter_queue',assignFilterGroups);rows=isAdmin?grouped:{};}else rows=isAdmin?(received||{}):{};error='';}catch(err){error=err.message;}finally{refreshing=false;if(isAdmin&&active&&restorePending&&!error)resumeFiltering();render();}
   }
   function stop() {source?.close();source=null;connected=false;}
   function listen() {
