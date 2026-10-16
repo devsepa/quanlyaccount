@@ -285,3 +285,10 @@
 .fq-group>button[data-group]:focus-visible { outline:2px solid #e0d8ff; outline-offset:2px; border-radius:5px; }
 
 .badge-filter-transfer { color:#b6f1e0; background:rgba(45,173,139,.12); border:1px solid rgba(100,210,177,.3); font-size:.65rem; line-height:1.4; white-space:normal; }
+
+/* Working status overrides the background; the top border keeps the import color. */
+.fq-group.is-filtering { background:linear-gradient(135deg,rgba(244,181,65,.15),rgba(244,181,65,.06)),#141e30; border-left-color:#a77c35; border-right-color:#a77c35; border-bottom-color:#a77c35; }
+.fq-group-working { display:inline-flex; align-items:center; padding:3px 6px; border-radius:5px; color:#ffe0a0; background:rgba(244,181,65,.15); border:1px solid rgba(244,181,65,.35); font-size:.68rem; line-height:1.4; }
+
+.fq-group-workers { display:flex; flex-wrap:wrap; gap:5px; width:100%; }
+.fq-worker-tag { display:inline-flex; max-width:100%; box-sizing:border-box; padding:3px 7px; border:1px solid rgba(244,181,65,.28); border-radius:6px; color:#ffe7b8; background:rgba(244,181,65,.1); font-size:.72rem; line-height:1.4; overflow-wrap:anywhere; }
