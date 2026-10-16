@@ -810,6 +810,7 @@
           <span class="rank-nav-chip rank-tier-chip" data-rank="KHAC"
             >Khác</span
           >
+          <button type="button" class="rank-nav-chip chip-banned-watch" id="tab-banned-watch" data-rank="banned" hidden>🚫 Acc đang BAN (<span id="banned-watch-count">0</span>)</button>
           </div><div class="filter-section history-filters"><span class="filter-label">Lịch sử</span>
           <span
             class="rank-nav-chip chip-recent"
@@ -4600,7 +4601,7 @@
           if (btnClearSearch) {
             btnClearSearch.style.display = this.value ? "flex" : "none";
           }
-          if(currentSearchQuery){
+          if(currentSearchQuery&&activeRankFilter!=='banned'){
             activeRankFilter='all';
             document.querySelectorAll('.rank-nav-chip').forEach(chip=>chip.classList.toggle('active',chip.getAttribute('data-rank')==='all'));
           }
@@ -5808,6 +5809,17 @@
         });
       };
 
+      function renderBannedWatch(items) {
+        const now=Date.now();
+        const banned=items.filter(item=>checkBanStatus(item.unlockDate,item).isBanned)
+          .filter(item=>!currentSearchQuery||String(item.username||'').toLowerCase().includes(currentSearchQuery))
+          .sort((a,b)=>(parseUnlockTargetTimestamp(a.unlockDate)||Infinity)-(parseUnlockTargetTimestamp(b.unlockDate)||Infinity));
+        displayArea.innerHTML=`<section class="ban-watch"><h3>🚫 Acc đang BAN · ${banned.length} acc</h3><p>Chỉ theo dõi, sắp theo ngày mở BAN gần nhất. Đến ngày mở BAN, acc tự chuyển sang kho chờ kiểm tra.</p><div class="ban-watch-list">${banned.map(item=>{
+          const target=parseUnlockTargetTimestamp(item.unlockDate),days=target?Math.max(0,Math.ceil((target-now)/86400000)):null;
+          return `<article class="ban-watch-row"><strong>${escapeHtml(item.username)}</strong><span>Rank: <b>${escapeHtml(item.rank||'Chưa rank')}</b></span><span>Uy tín: ${escapeHtml(item.uyTin||'—')}</span><span class="ban-watch-date">Mở BAN: <b>${escapeHtml(item.unlockDate)}</b></span><span class="ban-watch-remaining">${days===null?'Chưa rõ thời hạn':'Còn '+days+' ngày'}</span></article>`;
+        }).join('')||'<div class="fq-empty">Không có tài khoản đang BAN phù hợp.</div>'}</div></section>`;
+      }
+
       // HIỂN THỊ DANH SÁCH
       function renderList() {
         const pendingUnbanCount=updateUnbanWarehouseUI();
@@ -5815,6 +5827,7 @@
         if (currentStorage === "filter" && !isAdmin) { switchAccountStorage("rank"); return; }
         window.filterQueue?.setActive(currentStorage === "filter");
         if (currentStorage === "filter") return;
+        if(activeRankFilter==='banned'&&(!isAdmin||currentStorage!=='rank'))activeRankFilter='all';
         const fRank = activeRankFilter;
         const isChungSuc = currentStorage === "chungsuc";
         const isUnbanStorage = currentStorage === 'unban';
@@ -5848,6 +5861,10 @@
           if (checkBanStatus(a.unlockDate).isBanned) banCount++;
         });
         const activeCount = storageAccounts.length - banCount;
+        const watchTab=document.getElementById('tab-banned-watch');
+        if(watchTab)watchTab.hidden=!isAdmin||currentStorage!=='rank';
+        const watchCount=document.getElementById('banned-watch-count');if(watchCount)watchCount.textContent=banCount;
+
 
         const storeTagLabel =
           currentStorage === "unban" ? "Vừa mở BAN" : currentStorage === "chungsuc" ? "Chung Sức" : "Chơi Rank";
@@ -5878,6 +5895,8 @@
         const createdTabCount = document.getElementById("created-tab-count");
         if (createdTabCount)
           createdTabCount.textContent = storageAccounts.length;
+
+        if(fRank==='banned'&&isAdmin&&currentStorage==='rank'){renderBannedWatch(storageAccounts);return;}
 
         displayArea.innerHTML = "";
 

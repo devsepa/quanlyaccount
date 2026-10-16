@@ -368,3 +368,13 @@
 .fq-active-group-tag small { color:#cabb9e; }
 .fq-active-group-tag:focus-visible { outline:2px solid #f1cc80; outline-offset:2px; }
 @media(hover:hover){.fq-active-group-tag:hover { background:rgba(244,181,65,.16); border-color:#d6ac61; }}
+
+#tab-banned-watch[hidden] { display:none!important; }
+.chip-banned-watch { color:#ffacb7; border-color:#854655; }
+.ban-watch { margin:16px 0; }
+.ban-watch>p { color:#abbdd5; font-size:.83rem; line-height:1.6; }
+.ban-watch-list { display:flex; flex-direction:column; gap:9px; }
+.ban-watch-row { display:grid; grid-template-columns:minmax(130px,1.5fr) minmax(90px,1fr) minmax(80px,.7fr) minmax(130px,1fr) minmax(90px,.7fr); align-items:center; gap:10px; padding:13px 15px; border:1px solid #5e3945; border-left:3px solid #d66b7f; border-radius:9px; background:rgba(148,46,68,.07); font-size:.82rem; overflow-wrap:anywhere; }
+.ban-watch-date { color:#ffc1c9; }
+.ban-watch-remaining { color:#e8bf81; }
+@media(max-width:700px){.ban-watch-row { grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px; padding:12px; }.ban-watch-row>strong { grid-column:1/-1; }.ban-watch-remaining { grid-column:2; }}
