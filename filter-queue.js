@@ -158,11 +158,34 @@
     return { ["app_data/warehouseNotices/"+notice.id]:notice, ["app_data/accounts/" + destination.id]: destination, "app_data/updatedAt": now, ["filter_queue/" + row.id]: null };
   }
   function mergeMainAccounts(remote, local, baseline) {
+    const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
     const prior=new Map((baseline||[]).map(a=>[String(a.id),a]));
     const latest=new Map((remote||[]).filter(Boolean).map(a=>[String(a.id),a]));
     const localIds=new Set(local.map(a=>String(a.id)));
-    prior.forEach((_,id)=>{if(!localIds.has(id))latest.delete(id);});
-    local.forEach(a=>{const before=prior.get(String(a.id));if(!before||JSON.stringify(a)!==JSON.stringify(before))latest.set(String(a.id),a);});
+    const conflict=()=>{throw new Error('Acc vừa được sửa trên thiết bị khác. Chưa ghi đè; giữ bản trên máy để đối chiếu trước khi đồng bộ lại.');};
+    prior.forEach((before,id)=>{
+      if(!localIds.has(id)){
+        if(latest.has(id)&&!same(latest.get(id),before))conflict();
+        latest.delete(id);
+      }
+    });
+    local.forEach(a=>{
+      const id=String(a.id),before=prior.get(id),current=latest.get(id);
+      if(before&&same(a,before))return;
+      if(!before){
+        if(current&&!same(current,a))conflict();
+        if([...latest.values()].some(other=>String(other.id)!==id&&keyOf(other.username)===keyOf(a.username)))conflict();
+        latest.set(id,a);return;
+      }
+      if(!current)conflict();
+      const merged={...current};
+      for(const field of new Set([...Object.keys(before),...Object.keys(a)])){
+        if(same(a[field],before[field]))continue;
+        if(!same(current[field],before[field])&&!same(current[field],a[field]))conflict();
+        if(Object.hasOwn(a,field))merged[field]=a[field];else delete merged[field];
+      }
+      latest.set(id,merged);
+    });
     return [...latest.values()];
   }
   function createFilterTransport(base, fetcher, canWrite) {
@@ -363,7 +386,7 @@
         outcome=removeFilterDuplicates(current,latest,approved);return outcome.value;
       },'Xóa acc trùng');
       rows=isAdmin?next:{};
-      if(outcome.removed.length)recordAdminAudit('delete',outcome.removed.map(r=>({...r,category:'filter'})));
+      if(outcome.removed.length)recordAdminAudit('delete',outcome.removed.map(r=>({...r,category:'filter'})),{cloudConfirmed:true});
       const retained=approved.length-outcome.removed.length;
       showNotice({title:'Đã xử lý acc trùng',message:`Đã xóa <b>${outcome.removed.length} acc trùng</b> khỏi kho cần lọc.${retained?'<br>'+retained+' acc đã thay đổi hoặc không còn trùng nên không xóa.':''}<br>Kho Rank và Chung Sức được giữ nguyên.`});
     })}: {})});
@@ -380,7 +403,7 @@
       },'Xóa Nhóm '+String(group.number).padStart(2,'0'));
       rows=isAdmin?next:{};
       if(selectedGroup===id)selectGroup('');
-      if(removed.length)recordAdminAudit('delete',removed.map(r=>({...r,category:'filter'})));
+      if(removed.length)recordAdminAudit('delete',removed.map(r=>({...r,category:'filter'})),{cloudConfirmed:true});
       showToast('Đã xóa nhóm và '+removed.length+' acc còn lại trong kho cần lọc.');
     })});
   }
@@ -398,7 +421,7 @@
         const raw=await transport.read('app_data/accounts'),ready=Object.values(raw||{});let merged;
         await transport.transaction('filter_queue',existing=>{merged=mergeFilterImport(existing,incoming,ready);return merged.value;});
         await refresh();showToast(`Đã nhập ${merged.added} acc; bỏ qua ${merged.skipped+parsed.duplicates} acc trùng.`);
-        if(merged.added)recordAdminAudit('add',incoming.filter(a=>rows[a.id]).map(a=>({...a,category:'filter'})));
+        if(merged.added)recordAdminAudit('add',incoming.filter(a=>rows[a.id]).map(a=>({...a,category:'filter'})),{cloudConfirmed:true});
       })});
     }catch(err){message(err.message);}
   }
@@ -415,7 +438,7 @@
     if(!isAdmin)return;
     showNotice({title:'Xóa khỏi kho cần lọc?',type:'danger',message:`Xóa dòng <b>${displayNumber(row)}</b> — <b>${e(row.username)}</b>? Danh sách sẽ được đánh lại STT sau khi xóa.`,onConfirm:()=>run(async()=>{
       rows=await global.adminAccountTools.deleteFilter(transport,queue=>{const current=queue?.[row.id];if(!current)throw new Error('Acc đã rời kho.');if(current.status==='transferring')throw new Error('Acc đang chuyển kho.');if(current.owner&&current.owner!==owner())throw new Error('Acc đang được quản trị khác lọc.');const next={...queue};delete next[row.id];return next;},'Xóa acc '+row.username);
-      delete rows[row.id];recordAdminAudit('delete',{...row,category:'filter'});showToast('Đã xóa dòng khỏi kho cần lọc.');
+      delete rows[row.id];recordAdminAudit('delete',{...row,category:'filter'},{cloudConfirmed:true});showToast('Đã xóa dòng khỏi kho cần lọc.');
     })});
   }
   function releaseRow(row) {
@@ -465,7 +488,7 @@
       try{saveData();}catch(_){error='Acc đã chuyển thành công trên cloud, nhưng bộ nhớ trình duyệt đầy. Hãy tải lại danh sách khi có mạng.';}
       if(currentStorage!=='filter')renderList();
       if(typeof pushAccountNotification==='function')pushAccountNotification({...makeArrivalNotice([destination],category,destination.createdBy,destination.createdTimestamp),kind:'transfer'},false);
-      recordAdminAudit('move',destination,{from:'filter',to:category});playSound('success');modal.classList.remove('show');
+      recordAdminAudit('move',destination,{from:'filter',to:category,cloudConfirmed:true});playSound('success');modal.classList.remove('show');
       showToast('Đã chuyển sang '+(category==='rank'?'kho Rank':'kho Chung Sức')+'. Dòng nguồn đã được xóa.');void pullFromCloud(true);
     });
     button.disabled=false;if(error)document.getElementById('fq-transfer-error').textContent=error;

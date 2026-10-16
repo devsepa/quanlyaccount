@@ -71,7 +71,7 @@
     }
     // Keep skipped accounts available until expiry; never overwrite another restore's trash edits.
     await transaction('account_trash/'+id,current=>{if(!current)return null;const restored=new Set(plan.kept.map(r=>r.id));const remaining=(current.rows||[]).filter(r=>!restored.has(r.id));return remaining.length?{...current,rows:remaining}:null;});
-    if(plan.kept.length)recordAdminAudit('restore',plan.kept.map(r=>({...r,category:entry.source==='filter'?'filter':r.category||'rank'})));
+    if(plan.kept.length)recordAdminAudit('restore',plan.kept.map(r=>({...r,category:entry.source==='filter'?'filter':r.category||'rank'})),{cloudConfirmed:true});
     await pullFromCloud(true);if(currentStorage==='filter')await global.filterQueue.refresh();await loadTrash();node('aat-message').textContent='Đã khôi phục '+plan.kept.length+' acc; bỏ qua '+plan.skipped.length+' acc trùng.';
   }
   node('aat-close').onclick=close;node('aat-search').onclick=()=>open('search');node('aat-trash').onclick=()=>open('trash');node('aat-submit').onclick=()=>run(search);node('aat-query').onkeydown=event=>{if(event.key==='Enter')void run(search);};node('aat-prev').onclick=()=>{if(mode==='search')searchPage--;else trashPage--;render();};node('aat-next').onclick=()=>{if(mode==='search')searchPage++;else trashPage++;render();};document.addEventListener('keydown',event=>{if(event.key==='Escape')close();});

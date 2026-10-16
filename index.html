@@ -19,10 +19,10 @@
       rel="stylesheet"
     />
     <!-- Ordered stylesheets: preserve base → workspace → controls cascade. -->
-    <link rel="stylesheet" href="styles/core.css" />
-    <link rel="stylesheet" href="styles/workspace.css" />
-    <link rel="stylesheet" href="styles/controls.css" />
-    <link rel="stylesheet" href="styles/filter-queue.css?v=20261016-ban-watch-2" />
+    <link rel="stylesheet" href="styles/core.css?v=20261016-hide-tele-status-1" />
+    <link rel="stylesheet" href="styles/workspace.css?v=20261016-hide-tele-status-1" />
+    <link rel="stylesheet" href="styles/controls.css?v=20261016-hide-tele-status-1" />
+    <link rel="stylesheet" href="styles/filter-queue.css?v=20261016-hide-tele-status-1" />
     <style>
       #page-loader {display:none;}
       html.page-loading #page-loader {display:flex;position:fixed;inset:0;z-index:100000;align-items:center;justify-content:center;flex-direction:column;gap:14px;background:#0d1422;color:#c5d0e3;font:13px/1.5 system-ui,sans-serif;}
@@ -547,7 +547,7 @@
         />
       </header>
 
-      <div class="sync-status-bar" id="sync-status-bar" data-state="loading"><span id="sync-status-text" role="status" aria-live="polite">Đang kết nối dữ liệu…</span><button type="button" id="sync-retry" hidden>Thử lại</button></div>
+      <div class="sync-status-bar" id="sync-status-bar" data-state="loading"><span id="sync-status-text" role="status" aria-live="polite">Đang kết nối dữ liệu…</span><button type="button" id="sync-retry" hidden>Thử lại</button><button type="button" id="sync-use-cloud" hidden>Dùng bản cloud</button></div>
       <!-- THANH CHÀO MỪNG NGƯỜI DÙNG Ở TRANG CHỦ -->
       <div class="user-greeting-bar" id="user-greeting-bar">
         <div class="user-greeting-left">
@@ -2353,7 +2353,7 @@
     <!-- CONTAINER THẺ THÔNG BÁO GÓC DƯỚI BÊN TRÁI KHI THÊM ACC MỚI -->
     <div id="activity-toast-container" class="activity-toast-container"></div>
 
-    <script src="analytics-report.js"></script>
+    <script src="analytics-report.js?v=20261016-hide-tele-status-1"></script>
     <script>
       // BẮT MỌI LỖI RUNTIME NẾU CÓ ĐỂ KHÔNG BAO GIỜ BỊ ĐƠ WEB
       window.addEventListener("error", function (e) {
@@ -4225,10 +4225,17 @@
         return `<span class="badge badge-filter-transfer" data-filter-transfer-until="${until}">Vừa chuyển từ kho lọc</span>`;
       }
 
+      function accountState(item) {
+        if (item?.category === 'filter') return 'filter';
+        const ban = checkBanStatus(item?.unlockDate, item);
+        if (item?.unbanReviewPending === true || ban.isJustUnbanned === true) return 'unban';
+        return ban.isBanned ? 'banned' : 'usable';
+      }
       function needsUnbanReview(item) {
-        return !!item && (item.unbanReviewPending === true || checkBanStatus(item.unlockDate,item).isJustUnbanned === true);
+        return !!item && accountState(item) === 'unban';
       }
       function accountWarehouse(item) {
+        if(accountState(item)==='filter')return 'filter';
         if(needsUnbanReview(item))return 'unban';
         if(item?.category==='chungsuc')return 'chungsuc';
         return checkBanStatus(item?.unlockDate,item).isBanned?'banned':'rank';
@@ -4267,7 +4274,7 @@
           window.revealAccountLocation(current.id);
           recordAdminAudit('move',current,{from:'unban',to:destination});
           try{pushAccountNotification({...window.filterQueue.makeArrivalNotice([current],destination,getUserName()),kind:'transfer'});}catch(_){showToast('Acc đã chuyển; thông báo sẽ cập nhật sau khi đồng bộ.');}
-          showToast('Đã chuyển '+escapeHtml(current.username)+' vào '+(destination==='rank'?'kho Rank · '+escapeHtml(current.rank||'Chưa rank'):'kho Chung Sức')+'.');
+          showToast('Đã cập nhật trên máy, đang chờ lưu: '+escapeHtml(current.username)+' vào '+(destination==='rank'?'kho Rank · '+escapeHtml(current.rank||'Chưa rank'):'kho Chung Sức')+'.');
         }});
       };
       window.returnUnbanAccountToRank=window.returnUnbanAccount;
@@ -5455,18 +5462,30 @@
         try { localStorage.setItem("lq_admin_audit",JSON.stringify(getAdminAuditState())); return true; }
         catch (_) { adminAuditMessage="Không lưu được nhật ký trên máy. Hãy giữ trang mở và thử đồng bộ lại."; return false; }
       }
+      let accountAuditSaveError = "";
+      let pendingAccountAudits = [];
+      try { pendingAccountAudits = JSON.parse(localStorage.getItem('lq_account_audit_waiting') || '[]'); } catch (_) {}
+      if (!Array.isArray(pendingAccountAudits)) pendingAccountAudits=[];
+      function saveWaitingAudits() {
+        try { localStorage.setItem('lq_account_audit_waiting',JSON.stringify(pendingAccountAudits)); } catch (_) {}
+      }
       function recordAdminAudit(action, items, details = {}) {
-        try { return appendAdminAudit(action,items,details); }
-        catch (_) { showToast("Không ghi được nhật ký cho thao tác vừa rồi. Dữ liệu tài khoản vẫn được xử lý riêng."); }
+        try {
+          if (!isAdmin) return;
+          if (details.cloudConfirmed) return appendAdminAudit(action,items,details);
+          const list=(Array.isArray(items)?items:[items]).map(a=>({id:a?.id,username:a?.username,category:a?.category}));
+          pendingAccountAudits.push({id:globalThis.crypto?.randomUUID?.() || String(Date.now())+Math.random(),action,items:list,details:{...details},timestamp:Date.now(),actor:String(getUserName()).slice(0,60)});
+          saveWaitingAudits(); renderAdminAudit();
+        } catch (_) { showToast("Không ghi được nhật ký cho thao tác vừa rồi."); }
       }
       function appendAdminAudit(action, items, details = {}) {
         if (!isAdmin || !adminAuditLabels[action]) return;
         const state=getAdminAuditState();
         if (state.pending.length >= 1000) { showToast("Nhật ký chưa đồng bộ quá nhiều. Mở Nhật ký quản trị để thử lại."); return; }
         const list=Array.isArray(items)?items:[items];
-        const stamp=Date.now();
-        const entry={id:stamp+"_"+(globalThis.crypto?.randomUUID?.() || Math.random().toString(36).slice(2)),timestamp:stamp,
-          actor:String(getUserName()).slice(0,60),action,count:list.length,
+        const stamp=Number(details.timestamp)||Date.now();
+        const entry={id:details.auditId || stamp+"_"+(globalThis.crypto?.randomUUID?.() || Math.random().toString(36).slice(2)),timestamp:stamp,
+          actor:String(details.actor || getUserName()).slice(0,60),action,count:list.length,
           targets:list.slice(0,100).map(a=>({id:String(a?.id||"").slice(0,100),username:String(a?.username||"").slice(0,120),category:["filter","chungsuc"].includes(a?.category)?a.category:"rank"})),
           field:["username","password","rank","uyTin","unlockDate"].includes(details.field)?details.field:""};
         if (action==="edit" && entry.field && entry.field!=="password") {
@@ -5474,7 +5493,7 @@
         }
         if (action==="move") {entry.from=["filter","unban"].includes(details.from)?details.from:"rank";entry.to=details.to==="rank"?"rank":"chungsuc";}
         if (action==="restore") entry.previousCount=Number(details.previousCount)||0;
-        state.entries=[entry,...state.entries].slice(0,200); state.pending.push(entry);
+        state.entries=[entry,...state.entries.filter(e=>e.id!==entry.id)].slice(0,200); if(!state.pending.some(e=>e.id===entry.id))state.pending.push(entry);
         if (!saveAdminAuditState()) showToast("Nhật ký đang giữ tạm trong phiên, chưa lưu được trên máy.");
         renderAdminAudit(); void flushAdminAudit();
       }
@@ -5504,7 +5523,7 @@
         const modal=document.getElementById("admin-audit-modal");
         if (modal && !modal.classList.contains("show")) return;
         const state=getAdminAuditState(),pending=new Set(state.pending.map(e=>e.id));
-        status.textContent=adminAuditLoading?"Đang tải nhật ký…":adminAuditMessage || (pending.size?`${pending.size} mục đang chờ đồng bộ nhật ký.`:"Nhật ký hiện có đã đồng bộ.");
+        status.textContent=adminAuditLoading?"Đang tải nhật ký…":accountAuditSaveError || adminAuditMessage || (pendingAccountAudits.length ? `${pendingAccountAudits.length} thao tác đang chờ Firebase xác nhận; chưa ghi thành công.` : pending.size?`${pending.size} mục đang chờ đồng bộ nhật ký.`:"Nhật ký hiện có đã đồng bộ.");
         const search=(document.getElementById("admin-audit-search")?.value||"").trim().toLowerCase();
         const filter=document.getElementById("admin-audit-filter")?.value||"all";
         const entries=state.entries.filter(e=>adminAuditLabels[e.action]&&(filter==="all"||e.action===filter)&&(!search||`${e.actor} ${(e.targets||[]).map(a=>a.username).join(" ")}`.toLowerCase().includes(search)));
@@ -5826,12 +5845,12 @@
         const banned=items.filter(item=>checkBanStatus(item.unlockDate,item).isBanned)
           .filter(item=>!currentSearchQuery||String(item.username||'').toLowerCase().includes(currentSearchQuery))
           .sort((a,b)=>(parseUnlockTargetTimestamp(a.unlockDate)||Infinity)-(parseUnlockTargetTimestamp(b.unlockDate)||Infinity));
-        displayArea.innerHTML=`<section class="ban-watch"><h3>🚫 Acc đang BAN · ${banned.length} acc</h3><p>Danh sách theo dõi riêng, sắp theo ngày mở BAN gần nhất. Đến ngày mở BAN, acc tự chuyển sang kho chờ kiểm tra.</p><div class="ban-watch-list">${banned.map(item=>{
+        displayArea.innerHTML=`<section class="ban-watch"><h3>🚫 Acc đang BAN · ${banned.length} acc</h3><p>Sắp theo ngày mở BAN gần nhất · Đến hạn tự chuyển sang kho chờ kiểm tra.</p><div class="ban-watch-list">${banned.map(item=>{
           const target=parseUnlockTargetTimestamp(item.unlockDate),days=target?Math.max(0,Math.ceil((target-now)/86400000)):null;
           return `<article class="ban-watch-row" id="acc-row-${item.id}">
             <div class="ban-watch-account"><strong>${escapeHtml(item.username)}</strong><span class="ban-watch-status">🚫 Đang BAN</span></div>
             <div class="ban-watch-meta"><div><span>Rank</span><b>${escapeHtml(item.rank||'Chưa rank')}</b></div><div><span>Uy tín</span><b>${escapeHtml(item.uyTin||'—')}</b></div></div>
-            <div class="ban-watch-date"><span>Ngày mở BAN</span><b>${escapeHtml(item.unlockDate)}</b></div>
+            <div class="ban-watch-date"><span>Mở BAN</span><b>${escapeHtml(item.unlockDate)}</b></div>
             <div class="ban-watch-footer"><span class="ban-watch-remaining">${days===null?'Chưa rõ thời hạn':'Còn '+days+' ngày'}</span><button type="button" class="ban-watch-edit" onclick="editBannedAccountDate('${item.id}')">✎ Sửa ngày BAN</button></div>
           </article>`;
         }).join('')||'<div class="fq-empty">Không có tài khoản đang BAN phù hợp.</div>'}</div></section>`;
@@ -7077,7 +7096,7 @@
             window.revealAccountLocation(current.id);
             recordAdminAudit("move",current);
             pushAccountNotification({...window.filterQueue.makeArrivalNotice([current],"chungsuc",getUserName()),kind:'transfer'});
-            showToast(`Đã chuyển <b>${escapeHtml(current.username)}</b> sang kho Chung Sức.`);
+            showToast(`Đã cập nhật trên máy, đang chờ lưu <b>${escapeHtml(current.username)}</b> sang kho Chung Sức.`);
           }
         });
       };
@@ -7329,25 +7348,31 @@
         return clean;
       }
 
-      async function sendTelegramMessage(token, chatId, text) {
+      async function sendTelegramMessage(token, chatId, text, deliveryId = null) {
+        const id=deliveryId || 'direct_'+(globalThis.crypto?.randomUUID?.() || Date.now()+'_'+Math.random());
+        const notice={id,category:'rank',firstAccount:'Thông báo thêm acc / cảnh báo / kiểm tra',timestamp:Date.now()};
+        const delivery=window.warehouseTransferTele;
+        delivery?.trackState(notice,'sending');
         try {
           const finalChatId = normalizeTelegramChatId(chatId);
-          const res = await fetch(
-            `https://api.telegram.org/bot${token}/sendMessage`,
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                chat_id: finalChatId,
-                text: text,
-                parse_mode: "HTML",
-              }),
-            },
-          );
-          const data = await res.json();
-          return data.ok;
-        } catch (err) {
-          console.error("Lỗi gửi Telegram:", err);
+          const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`,{
+            method:'POST',headers:{'Content-Type':'application/json'},signal:AbortSignal.timeout(15000),
+            body:JSON.stringify({chat_id:finalChatId,text,parse_mode:'HTML'})
+          });
+          const data=await res.json();
+          if(data.ok){delivery?.trackState(notice,'sent');delivery?.registerRetry(id,null);return true;}
+          const retryAt=Date.now()+Math.max(30000,Number(data.parameters?.retry_after||0)*1000);
+          delivery?.registerRetry(id,async()=>{
+            if(!isAdmin)return;
+            if(Date.now()<retryAt){showToast('Telegram yêu cầu chờ thêm trước khi gửi lại.');return;}
+            delivery?.registerRetry(id,null);
+            await sendTelegramMessage(token,chatId,text,id);
+          });
+          delivery?.trackState(notice,'retry','Telegram từ chối gửi (mã '+(Number(data.error_code)||0)+'). Có thể thử lại trong phiên này; sau khi tải lại cần thực hiện lại thao tác gửi.');
+          return false;
+        } catch (_) {
+          delivery?.registerRetry(id,null);
+          delivery?.trackState(notice,'uncertain','Mất phản hồi; kiểm tra kênh Telegram trước khi gửi lại.');
           return false;
         }
       }
@@ -7433,6 +7458,8 @@
           offline: syncPending ? "Mất mạng — còn thay đổi chưa đồng bộ trên máy" : "Đang mất mạng — dữ liệu có thể chưa cập nhật",
         };
         bar.dataset.state = state; text.textContent = labels[state] || labels.loading;
+        const conflictButton=document.getElementById('sync-use-cloud');
+        if(conflictButton)conflictButton.hidden=!isAdmin||pushInFlight||offline||!accountAuditSaveError.includes('thiết bị khác');
         if (cloudStatusIcon) cloudStatusIcon.textContent = ({ loading: "⏳", saving: "⏳", saved: "🟢", updated: "🟢", pending: "⏳", error: "⚠️", offline: "📴" })[state];
         if (cloudBtnText) cloudBtnText.textContent = ({ loading: "Đang kết nối…", saving: "Đang lưu…", saved: "Đã lưu lên cloud", updated: "Đồng bộ dữ liệu", pending: "Chờ đồng bộ", error: "Chưa đồng bộ — thử lại", offline: "Đang mất mạng" })[state];
         retry.hidden = offline || pushInFlight || !(pending || state === "error");
@@ -7440,6 +7467,24 @@
       }
       document.getElementById("sync-retry")?.addEventListener("click", () => {
         if (syncPending) pushToCloud(false); else pullFromCloud(false);
+      });
+      document.getElementById('sync-use-cloud')?.addEventListener('click',()=>{
+        if(!isAdmin||pushInFlight)return;
+        showNotice({title:'Dùng dữ liệu mới nhất trên cloud?',type:'confirm',message:'Bản đang sửa trên máy sẽ được lưu vào bản sao lưu tự động trước khi thay bằng bản cloud. Các thao tác chưa lưu sẽ không được ghi thành công.',onConfirm:async()=>{
+          if(!isAdmin||pushInFlight)return;
+          const revision=localSyncRevision;
+          try{
+            const response=await fetch(FIREBASE_ENDPOINT,{cache:'no-store',signal:AbortSignal.timeout(15000)});
+            if(!response.ok)throw new Error('Chưa tải được bản cloud.');
+            const data=await response.json();const list=Array.isArray(data)?data:Object.values(data?.accounts||{});
+            if(!Array.isArray(list)||list.some(a=>!a||!a.id||!a.username))throw new Error('Dữ liệu cloud chưa hợp lệ.');
+            if(!isAdmin||pushInFlight||revision!==localSyncRevision)throw new Error('Có thay đổi mới trên máy; chưa thay danh sách.');
+            if(!createAutoSnapshot(accounts))throw new Error('Chưa sao lưu được bản trên máy; chưa thay danh sách. Hãy tải file sao lưu trước.');
+            clearTimeout(autoSyncTimer);accounts=list;window.filterQueue?.observeAccounts(list);saveData();
+            pendingAccountAudits=[];saveWaitingAudits();accountAuditSaveError='';markSyncPending(false);syncState='updated';renderList();renderSyncStatus();renderAdminAudit();
+            showToast('Đã dùng bản cloud. Bản cũ được giữ trong sao lưu tự động.');
+          }catch(error){showToast(escapeHtml(error.message));}
+        }});
       });
       window.addEventListener("online", renderSyncStatus);
       window.addEventListener("offline", renderSyncStatus);
@@ -7666,6 +7711,7 @@
         if (navigator.onLine === false) { renderSyncStatus(); return; }
         pushInFlight = true;
         const revision = localSyncRevision;
+        const auditBatch = pendingAccountAudits.slice();
         const pushController = new AbortController();
         const pushTimeout = setTimeout(() => pushController.abort(), 20000);
         if (btnPushCloud) {
@@ -7677,7 +7723,7 @@
         try {
           const currentPin = localStorage.getItem("lq_admin_pin") || ADMIN_PIN_DEFAULT;
           const payload = {
-            accounts: accounts,
+            accounts: JSON.parse(JSON.stringify(accounts)),
             updatedAt: Date.now(),
             isEmergencyLocked: isEmergencyLocked,
             activities: getNotificationList().slice(0, 30),
@@ -7693,6 +7739,21 @@
               });
 
           if (res.ok) {
+            accountAuditSaveError="";
+            const submittedAccounts=new Map(payload.accounts.map(a=>[String(a.id),a]));
+            for (const job of auditBatch) {
+              const applied=job.items.every(target=>{
+                const saved=submittedAccounts.get(String(target.id));
+                if(job.action==='delete')return !saved;
+                if(!saved||saved.category!==target.category)return false;
+                if(job.action==='edit'&&job.details.field!=='password')return String(saved[job.details.field]??'')===String(job.details.after??'');
+                return true;
+              });
+              if(applied)appendAdminAudit(job.action,job.items,{...job.details,timestamp:job.timestamp,actor:job.actor,auditId:job.id});
+            }
+            const confirmedAudits=new Set(auditBatch.map(job=>job.id));
+            pendingAccountAudits=pendingAccountAudits.filter(job=>!confirmedAudits.has(job.id));
+            saveWaitingAudits();
             if (revision === localSyncRevision) markSyncPending(false);
             updateCloudUI("🟢", "Đám Mây Tự Động");
             if (!silent) {
@@ -7701,6 +7762,7 @@
             }
           } else {
             const err = await res.json().catch(() => ({}));
+            accountAuditSaveError="Firebase từ chối lưu. Thao tác còn trên máy, chưa ghi thành công. Hãy thử đồng bộ lại.";
             updateCloudUI("⚠️", "Lỗi quyền Firebase");
             if (!silent) {
               showNotice({
@@ -7712,17 +7774,19 @@
           }
         } catch (err) {
           console.error("Lỗi pushToCloud:", err);
+          accountAuditSaveError=err.message || "Mất kết nối. Thao tác chưa được Firebase xác nhận.";
           updateCloudUI("⚠️", "Lỗi kết nối");
           if (!silent) {
             showNotice({
               title: "Lỗi Kết Nối",
-              message: "Không thể kết nối đến máy chủ Firebase!",
+              message: escapeHtml(err.message || "Không thể kết nối đến máy chủ Firebase!"),
               icon: "❌",
             });
           }
         } finally {
           clearTimeout(pushTimeout);
           pushInFlight = false;
+          renderAdminAudit();
           if (!syncPending) syncState = "saved";
           renderSyncStatus();
           if (syncPending && revision !== localSyncRevision && navigator.onLine !== false) {
@@ -8216,10 +8280,10 @@
       if (isAdmin) void flushAdminAudit();
       setTimeout(autoCheckUnbannedAccounts, 2000);
     </script>
-    <script src="filter-queue.js"></script>
-    <script src="account-privacy.js"></script>
-    <script src="admin-account-tools.js"></script>
-    <script src="telegram-daily.js"></script>
-    <script src="telegram-transfers.js"></script>
+    <script src="filter-queue.js?v=20261016-hide-tele-status-1"></script>
+    <script src="account-privacy.js?v=20261016-hide-tele-status-1"></script>
+    <script src="admin-account-tools.js?v=20261016-hide-tele-status-1"></script>
+    <script src="telegram-daily.js?v=20261016-hide-tele-status-1"></script>
+    <script src="telegram-transfers.js?v=20261016-hide-tele-status-1"></script>
   </body>
 </html>

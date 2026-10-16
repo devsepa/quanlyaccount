@@ -68,7 +68,7 @@
     const chatId=normalizeTelegramChatId(config.chatId);const grouped=classify(list,Date.now(),parseUnlockTargetTimestamp,checkBanStatus),day=dayKey(Date.now());
     const fingerprint=JSON.stringify([day,chatId,config.token,grouped]);if(fingerprint===lastFingerprint)return;
     let complete=true;
-    for(const kind of ['today','six','tomorrow']){if(!grouped[kind].length)continue;const result=await client.upsert({...config,chatId},day,kind,grouped[kind]);if(['busy','failed','uncertain'].includes(result))complete=false;if(result==='uncertain')showToast('Chưa xác minh được bản tin Telegram. Hệ thống không gửi tin mới để tránh trùng.');}
+    for(const kind of ['today','six','tomorrow']){if(!grouped[kind].length)continue;const notice={id:'daily_'+day+'_'+kind,category:'rank',firstAccount:'Bản tin BAN '+({today:'hôm nay',six:'6 giờ tới',tomorrow:'ngày mai'}[kind]),timestamp:Date.now()};global.warehouseTransferTele?.trackState(notice,'sending');let result;try{result=await client.upsert({...config,chatId},day,kind,grouped[kind]);}catch(_){result='failed';}global.warehouseTransferTele?.trackState(notice,result==='uncertain'?'uncertain':['busy','failed'].includes(result)?'retry':'sent');if(['busy','failed','uncertain'].includes(result))complete=false;if(result==='uncertain')showToast('Chưa xác minh được bản tin Telegram. Hệ thống không gửi tin mới để tránh trùng.');}
     if(complete)lastFingerprint=fingerprint;
   }};
   setInterval(()=>{if(isAdmin&&!document.hidden&&navigator.onLine!==false)void autoCheckUnbannedAccounts();},60000);
