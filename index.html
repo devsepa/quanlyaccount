@@ -4066,8 +4066,8 @@
         if (icon) icon.textContent = isGlobalPasswordMasked ? "👁️" : "🙈";
         if (text)
           text.textContent = isGlobalPasswordMasked
-            ? "Hiện tất cả Pass"
-            : "Ẩn tất cả Pass";
+            ? "Che mật khẩu"
+            : "Che mật khẩu";
         if (btn) {
           btn.classList.toggle("is-showing", !isGlobalPasswordMasked);
         }
@@ -6863,6 +6863,7 @@
         const item = accounts.find((a) => a.id === id);
         if (!item) return;
 
+        window.accountPrivacy?.record("copy", String(id));
         const textToCopy = `${item.username}:${item.password}`;
 
         const now = new Date();
@@ -8271,5 +8272,6 @@
       setTimeout(autoCheckUnbannedAccounts, 2000);
     </script>
     <script src="filter-queue.js"></script>
+    <script src="account-privacy.js"></script>
   </body>
 </html>
