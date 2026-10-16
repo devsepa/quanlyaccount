@@ -1,0 +1,253 @@
+#storage-switcher-bar {
+  max-width:1000px;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+}
+#storage-tab-filter.active {
+  border-color:#a78bfa;
+  background:#2b2344;
+}
+.filter-mode #input-container {
+  display:none!important;
+}
+.filter-mode .account-workspace.has-admin-tools {
+  display:block;
+}
+.filter-mode .account-list-workspace>:not(.storage-picker-heading):not(#storage-switcher-bar):not(#filter-queue-panel) {
+  display:none!important;
+}
+#filter-queue-panel[hidden] {
+  display:none;
+}
+.fq-heading {
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:10px;
+}
+.fq-heading h3 {
+  font-size:1rem;
+  margin:0 0 5px;
+}
+.fq-heading p,.fq-note {
+  color:var(--text-sub);
+  font-size:.77rem;
+  line-height:1.65;
+}
+.fq-tools,.fq-actions,.fq-search,.fq-pagination,.fq-transfer-actions {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.fq-import {
+  cursor:pointer;
+  min-height:40px;
+}
+.fq-search {
+  margin:14px 0 8px;
+}
+.fq-search input {
+  flex:1 1 260px;
+}
+.fq-search input,.fq-search select,.fq-transfer-card input,.fq-transfer-card select {
+  min-width:0;
+  max-width:100%;
+  padding:10px;
+  background:#111c2d;
+  border:1px solid #485872;
+  border-radius:8px;
+  color:#eef3ff;
+  font:inherit;
+}
+.fq-message {
+  font-size:.77rem;
+  color:#efcc8b;
+  min-height:20px;
+  margin:8px 0;
+  overflow-wrap:anywhere;
+}
+.fq-list {
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.fq-row {
+  display:grid;
+  grid-template-columns:70px minmax(0,1fr) auto;
+  gap:12px;
+  align-items:center;
+  border:1px solid #35445a;
+  border-radius:9px;
+  padding:11px 12px;
+  background:#131c2b;
+}
+.fq-row.is-working {
+  background:#332b1b;
+  border-color:#a47a36;
+  box-shadow:inset 3px 0 0 #e5b85b;
+}
+.fq-number {
+  font-size:.78rem;
+  font-weight:800;
+  color:#a7b9d3;
+  font-variant-numeric:tabular-nums;
+  overflow-wrap:anywhere;
+}
+.fq-account {
+  min-width:0;
+}
+.fq-account code {
+  font:600 .85rem/1.6 "JetBrains Mono",monospace;
+  color:#f0f5ff;
+  overflow-wrap:anywhere;
+  user-select:all;
+}
+.fq-account small {
+  display:block;
+  color:#95a8c2;
+  font-size:.68rem;
+  overflow-wrap:anywhere;
+  margin-top:3px;
+}
+.fq-account small b {
+  color:#f2d089;
+  font-weight:650;
+}
+.fq-actions button,.fq-pagination button {
+  padding:8px 10px;
+  min-height:36px;
+  border:1px solid #57617e;
+  border-radius:7px;
+  background:#28243e;
+  color:#f0eaff;
+  cursor:pointer;
+  font-family:inherit;
+  font-size:.72rem;
+  font-weight:600;
+  line-height:1.4;
+}
+.fq-actions button:first-child {
+  background:#4f3e99;
+  border-color:#9783d5;
+}
+.fq-actions .fq-delete {
+  background:#351e2a;
+  border-color:#8a4c5d;
+  color:#ffa7bc;
+}
+.fq-actions button:disabled,.fq-pagination button:disabled {
+  opacity:.45;
+  cursor:default;
+}
+.fq-pagination {
+  justify-content:flex-end;
+  margin-top:14px;
+  font-size:.73rem;
+  color:#aab9d0;
+}
+.fq-empty {
+  padding:30px 12px;
+  text-align:center;
+  color:var(--text-sub);
+}
+#filter-transfer-modal>.fq-transfer-card {
+  width:100%;
+  max-width:min(460px,calc(100vw - 24px))!important;
+  text-align:left;
+}
+.fq-transfer-card label {
+  display:block;
+  font-size:.78rem;
+  color:#bfcee4;
+  margin:12px 0 5px;
+}
+.fq-transfer-card input,.fq-transfer-card select {
+  width:100%;
+}
+.fq-transfer-account {
+  font-size:.84rem;
+  color:#c6b8ff;
+  margin:8px 0;
+  overflow-wrap:anywhere;
+}
+.fq-meta-grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.fq-transfer-actions {
+  justify-content:flex-end;
+  margin-top:16px;
+}
+.fq-actions button:focus-visible,.fq-pagination button:focus-visible {
+  outline:2px solid #c1adff;
+  outline-offset:3px;
+}
+@media(max-width:700px) {
+  #storage-switcher-bar {
+    gap:7px;
+  }
+  #storage-switcher-bar .storage-tab-btn {
+    padding:9px;
+    min-width:0;
+  }
+  #storage-switcher-bar .storage-tab-btn.active {
+    padding:8px;
+  }
+  #storage-switcher-bar .storage-tab-title {
+    font-size:.7rem;
+    overflow-wrap:anywhere;
+  }
+  #storage-switcher-bar .storage-tab-btn::after {
+    font-size:.6rem;
+  }
+  .fq-row {
+    grid-template-columns:48px minmax(0,1fr);
+    gap:8px;
+    padding:11px;
+  }
+  .fq-actions {
+    grid-column:1/-1;
+    display:grid;
+    grid-template-columns:1.1fr 1.1fr .8fr;
+  }
+  .fq-actions button {
+    min-height:44px;
+    font-size:.7rem;
+    padding:8px 5px;
+  }
+  .fq-search input,.fq-search select,.fq-transfer-card input,.fq-transfer-card select {
+    font-size:16px;
+  }
+}
+.fq-release {
+  margin-left:5px;
+  padding:2px 5px;
+  border:0;
+  background:transparent;
+  color:#c7b8e7;
+  text-decoration:underline;
+  cursor:pointer;
+  font:inherit;
+}
+#filter-queue-panel[aria-busy=true] .fq-import {
+  pointer-events:none;
+  opacity:.5;
+}
+@media(max-width:700px) {
+  .fq-release {
+    min-height:32px;
+    padding:5px;
+  }
+}
+.filter-mode #stat-active {
+  color:#efc778;
+}
+.filter-mode #stat-ban {
+  color:#a9b8ce;
+}
+
+#storage-switcher-bar.has-filter-access { grid-template-columns:repeat(3,minmax(0,1fr)); }
+#storage-tab-filter[hidden] { display:none!important; }

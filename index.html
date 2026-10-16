@@ -22,6 +22,7 @@
     <link rel="stylesheet" href="styles/core.css" />
     <link rel="stylesheet" href="styles/workspace.css" />
     <link rel="stylesheet" href="styles/controls.css" />
+    <link rel="stylesheet" href="styles/filter-queue.css" />
     <style>
       #page-loader {display:none;}
       html.page-loading #page-loader {display:flex;position:fixed;inset:0;z-index:100000;align-items:center;justify-content:center;flex-direction:column;gap:14px;background:#0d1422;color:#c5d0e3;font:13px/1.5 system-ui,sans-serif;}
@@ -749,9 +750,11 @@
           </div>
           <span class="storage-tab-pill" id="storage-pill-chungsuc">0</span>
         </button>
+        <button type="button" class="storage-tab-btn" id="storage-tab-filter" hidden aria-pressed="false" onclick="switchAccountStorage('filter')"><span class="storage-tab-icon">📥</span><div class="storage-tab-text-wrap"><span class="storage-tab-title">Kho acc cần lọc</span><span class="storage-tab-sub">Nhập TXT, kiểm tra và phân loại</span></div><span class="storage-tab-pill" id="storage-pill-filter">…</span></button>
       </div>
 
 
+      <section id="filter-queue-panel" hidden aria-label="Kho tài khoản cần lọc"></section>
       <div
         class="zone-divider-header zone-player-divider"
         id="zone-player-divider"
@@ -1848,6 +1851,12 @@
     </div>
 
     <!-- MODAL THÔNG BÁO -->
+    <div id="filter-transfer-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="fq-transfer-title"><div class="modal-card fq-transfer-card">
+      <h3 id="fq-transfer-title">Chuyển acc đã lọc</h3><p id="fq-transfer-account" class="fq-transfer-account"></p>
+      <label for="fq-destination">Kho đích</label><select id="fq-destination"><option value="rank">🎮 Kho Nick Chơi Rank</option><option value="chungsuc">🤝 Kho Chung Sức</option></select>
+      <div id="fq-rank-fields"><label for="fq-rank">Rank</label><input id="fq-rank" maxlength="40" placeholder="BK, KC, TA, CT, ĐCT…"><div class="fq-meta-grid"><div><label for="fq-trust">Uy tín</label><input id="fq-trust" inputmode="numeric" placeholder="0–100 (tùy chọn)" maxlength="3"></div><div><label for="fq-unlock">Ngày mở BAN</label><input id="fq-unlock" inputmode="numeric" maxlength="5" placeholder="dd/MM (tùy chọn)"></div></div></div>
+      <p class="fq-note">Xác nhận sẽ lưu acc vào kho đích và bỏ dòng nguồn khỏi kho cần lọc. Chuyển sang Chung Sức không cần Rank, uy tín hoặc ngày BAN.</p><p id="fq-transfer-error" class="fq-message" role="status"></p><div class="fq-transfer-actions"><button type="button" class="btn btn-tool" id="fq-cancel-transfer">Hủy</button><button type="button" class="btn btn-primary" id="fq-confirm-transfer">Xác nhận chuyển</button></div>
+    </div></div>
     <div id="admin-audit-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="admin-audit-title">
       <div class="modal-card audit-card">
         <div class="audit-heading"><h3 id="admin-audit-title">📋 Nhật ký quản trị</h3><button type="button" class="btn btn-tool" onclick="closeAdminAudit()" aria-label="Đóng nhật ký">✕</button></div>
@@ -2770,6 +2779,7 @@
 
         updateGreetingUI();
         syncCurrentDevice();
+        window.filterQueue?.render();
       }
 
       // ==========================================
@@ -4342,8 +4352,8 @@
       // ==========================================
       // QUẢN LÝ KHO TÀI KHOẢN (RANK & SỰ KIỆN CHUNG SỨC)
       // ==========================================
-      let currentStorage = localStorage.getItem("lq_current_storage") || "rank"; // "rank" hoặc "chungsuc"
-      let currentAddStorage = currentStorage || "rank"; // Kho được chọn trong form thêm nick
+      let currentStorage = ["rank","chungsuc","filter"].includes(localStorage.getItem("lq_current_storage")) ? localStorage.getItem("lq_current_storage") : "rank"; // "rank", "chungsuc" hoặc "filter"
+      let currentAddStorage = currentStorage === "chungsuc" ? "chungsuc" : "rank"; // Kho được chọn trong form thêm nick
 
       function updateAddFormMode(storageType) {
         const formGrid = document.getElementById("add-form-grid");
@@ -4366,7 +4376,7 @@
       }
 
       window.switchAccountStorage = function (type, reRender = true) {
-        currentStorage = type === "chungsuc" ? "chungsuc" : "rank";
+        currentStorage = ["rank","chungsuc","filter"].includes(type) && (type !== "filter" || isAdmin) ? type : "rank";
         localStorage.setItem("lq_current_storage", currentStorage);
 
         const tabRank = document.getElementById("storage-tab-rank");
@@ -4386,7 +4396,7 @@
         tabChungSuc?.setAttribute("aria-pressed", String(currentStorage === "chungsuc"));
 
         // Đồng bộ 2 nút chọn kho trong form thêm nick
-        currentAddStorage = currentStorage;
+        currentAddStorage = currentStorage === "chungsuc" ? "chungsuc" : "rank";
         const btnAddRank = document.getElementById("btn-add-store-rank");
         const btnAddChungSuc = document.getElementById("btn-add-store-chungsuc");
         if (btnAddRank)
@@ -5394,12 +5404,12 @@
         const stamp=Date.now();
         const entry={id:stamp+"_"+(globalThis.crypto?.randomUUID?.() || Math.random().toString(36).slice(2)),timestamp:stamp,
           actor:String(getUserName()).slice(0,60),action,count:list.length,
-          targets:list.slice(0,100).map(a=>({id:String(a?.id||"").slice(0,100),username:String(a?.username||"").slice(0,120),category:a?.category==="chungsuc"?"chungsuc":"rank"})),
+          targets:list.slice(0,100).map(a=>({id:String(a?.id||"").slice(0,100),username:String(a?.username||"").slice(0,120),category:["filter","chungsuc"].includes(a?.category)?a.category:"rank"})),
           field:["username","password","rank","uyTin","unlockDate"].includes(details.field)?details.field:""};
         if (action==="edit" && entry.field && entry.field!=="password") {
           entry.before=String(details.before??"").slice(0,120); entry.after=String(details.after??"").slice(0,120);
         }
-        if (action==="move") {entry.from="rank";entry.to="chungsuc";}
+        if (action==="move") {entry.from=details.from==="filter"?"filter":"rank";entry.to=details.to==="rank"?"rank":"chungsuc";}
         if (action==="restore") entry.previousCount=Number(details.previousCount)||0;
         state.entries=[entry,...state.entries].slice(0,200); state.pending.push(entry);
         if (!saveAdminAuditState()) showToast("Nhật ký đang giữ tạm trong phiên, chưa lưu được trên máy.");
@@ -5436,7 +5446,7 @@
         const filter=document.getElementById("admin-audit-filter")?.value||"all";
         const entries=state.entries.filter(e=>adminAuditLabels[e.action]&&(filter==="all"||e.action===filter)&&(!search||`${e.actor} ${(e.targets||[]).map(a=>a.username).join(" ")}`.toLowerCase().includes(search)));
         const fieldLabels={username:"Tên tài khoản",password:"Mật khẩu (ẩn nội dung)",rank:"Rank",uyTin:"Uy tín",unlockDate:"Ngày mở BAN"};
-        list.innerHTML=entries.map(e=>`<article class="audit-entry"><div class="audit-entry-title"><b>${escapeHtml(adminAuditLabels[e.action])}</b><time>${escapeHtml(new Date(e.timestamp).toLocaleString("vi-VN"))}</time></div><p>👤 ${escapeHtml(e.actor||"Chưa đặt tên")} · ${Number(e.count)||0} acc ${pending.has(e.id)?"· Chờ đồng bộ nhật ký":""}</p><p>${(e.targets||[]).slice(0,8).map(a=>escapeHtml(a.username)).join(", ")}${Number(e.count)>8?"…":""}</p>${e.action==="edit"?`<p>${escapeHtml(fieldLabels[e.field]||"Thông tin")}${e.field!=="password"&&e.before!==undefined?`: ${escapeHtml(e.before||"Trống")} → ${escapeHtml(e.after||"Trống")}`:""}</p>`:""}${e.action==="move"?"<p>Kho Rank → Kho Chung Sức</p>":""}${e.action==="restore"?`<p>Danh sách trước: ${Number(e.previousCount)||0} acc → sau: ${Number(e.count)||0} acc</p>`:""}</article>`).join("")||"<p>Chưa có nhật ký phù hợp.</p>";
+        list.innerHTML=entries.map(e=>`<article class="audit-entry"><div class="audit-entry-title"><b>${escapeHtml(adminAuditLabels[e.action])}</b><time>${escapeHtml(new Date(e.timestamp).toLocaleString("vi-VN"))}</time></div><p>👤 ${escapeHtml(e.actor||"Chưa đặt tên")} · ${Number(e.count)||0} acc ${pending.has(e.id)?"· Chờ đồng bộ nhật ký":""}</p><p>${(e.targets||[]).slice(0,8).map(a=>escapeHtml(a.username)).join(", ")}${Number(e.count)>8?"…":""}</p>${e.action==="edit"?`<p>${escapeHtml(fieldLabels[e.field]||"Thông tin")}${e.field!=="password"&&e.before!==undefined?`: ${escapeHtml(e.before||"Trống")} → ${escapeHtml(e.after||"Trống")}`:""}</p>`:""}${e.action==="move"?`<p>${e.from==="filter"?"Kho cần lọc":"Kho Rank"} → ${e.to==="rank"?"Kho Rank":"Kho Chung Sức"}</p>`:""}${e.action==="restore"?`<p>Danh sách trước: ${Number(e.previousCount)||0} acc → sau: ${Number(e.count)||0} acc</p>`:""}</article>`).join("")||"<p>Chưa có nhật ký phù hợp.</p>";
       };
       window.refreshAdminAudit = async function () {
         if (!isAdmin || adminAuditLoading) return;
@@ -5740,6 +5750,9 @@
 
       // HIỂN THỊ DANH SÁCH
       function renderList() {
+        if (currentStorage === "filter" && !isAdmin) { switchAccountStorage("rank"); return; }
+        window.filterQueue?.setActive(currentStorage === "filter");
+        if (currentStorage === "filter") return;
         const fRank = activeRankFilter;
         const isChungSuc = currentStorage === "chungsuc";
 
@@ -6693,6 +6706,10 @@
             sortedGroupKeys.forEach((key) => {
               const grp = groups[key];
               if (grp.items.length === 0) return;
+              const justUnbannedCount = grp.items.filter(item => checkBanStatus(item.unlockDate,item).isJustUnbanned).length;
+              const justUnbannedBadge = justUnbannedCount > 0
+                ? `<span class="rank-group-unban-note" title="Acc vừa hết BAN, còn nhãn VỪA MỞ BAN. Mở nhóm để kiểm tra; nhãn được bỏ khi sao chép acc."><b>${justUnbannedCount}</b><span>vừa mở BAN</span></span>`
+                : "";
 
               if (renderedGroupCount > 0) {
                 tableHtml += `
@@ -6712,14 +6729,14 @@
                 <tr class="acc-group-header-row clickable-group-header ${isCollapsed ? "is-collapsed" : ""}" onclick="toggleRankGroupCollapse('${key}')" title="${isCollapsed ? "Click để mở rộng nhóm " + grp.config.name : "Click để thu gọn nhóm " + grp.config.name}" style="background: ${grp.config.bgGradient}; border-left: 3px solid ${grp.config.color}; --rank-accent: ${grp.config.color}; cursor: pointer; user-select: none;">
                   <td colspan="${totalCols}" style="padding: 9px 14px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; position: relative; overflow: hidden;">
                     ${weatherTrackHtml}
-                    <div style="display: flex; align-items: center; justify-content: space-between; position: relative; z-index: 4;">
+                    <div class="rank-group-heading" style="display: flex; align-items: center; justify-content: space-between; position: relative; z-index: 4;">
                       <span class="rank-group-title" style="font-weight: 800; font-size: 0.92rem; display: flex; align-items: center; gap: 8px;">
                         <span class="group-collapse-icon" style="display: inline-block; transition: transform 0.2s ease; font-size: 0.75rem; color: #cbd5e1;">${isCollapsed ? "▶" : "▼"}</span>
                         <span>${grp.config.icon}</span> <span class="rank-title-text">NHÓM RANK:</span> <span class="badge ${grp.config.class}">${grp.config.name}</span>
                       </span>
-                      <div style="display: flex; align-items: center; gap: 8px;">
-                        <span style="font-size: 0.72rem; color: #94a3b8; font-weight: 600;">${isCollapsed ? "📁 Đang đóng" : "📂 Đang mở"}</span>
-                        <span style="font-size: 0.8rem; color: #cbd5e1; font-weight: 700; background: rgba(0,0,0,0.3); padding: 3px 10px; border-radius: 12px;">${grp.items.length} nick</span>
+                      <div class="rank-group-status-summary" style="display: flex; align-items: center; gap: 8px;">
+                        <span class="rank-group-total">${grp.items.length} acc</span>
+                        ${justUnbannedBadge}
                       </div>
                     </div>
                   </td>
@@ -6747,9 +6764,9 @@
                   <span>${grp.config.icon}</span>
                   <span class="badge ${grp.config.class}">${grp.config.name}</span>
                 </div>
-                <div style="display: flex; align-items: center; gap: 6px; position: relative; z-index: 4;">
-                  <span style="font-size: 0.68rem; color: #94a3b8; font-weight: 600;">${isCollapsed ? "📁" : "📂"}</span>
-                  <span class="rank-group-count" style="color: #fff; background: rgba(0,0,0,0.3);">${grp.items.length} nick</span>
+                <div class="rank-group-status-summary" style="display: flex; align-items: center; gap: 6px; position: relative; z-index: 4;">
+                  <span class="rank-group-total">${grp.items.length} acc</span>
+                  ${justUnbannedBadge}
                 </div>
               `;
               mobileWrapper.appendChild(mobileBanner);
@@ -7410,6 +7427,7 @@
               })),
           );
 
+          if(canReplaceLocal && pullRevision===localSyncRevision && !syncPending && !pushInFlight) window.filterQueue?.observeAccounts(normalized);
           // Đồng bộ nếu danh sách từ Cloud khác danh sách trên máy (áp dụng cả khi Cloud đã xoá hết nick về 0)
           if (canReplaceLocal && pullRevision === localSyncRevision && !syncPending && !pushInFlight && JSON.stringify(normalized) !== JSON.stringify(accounts)) {
             createAutoSnapshot(accounts);
@@ -7543,12 +7561,12 @@
             adminPin: currentPin,
           };
 
-          const res = await fetch(FIREBASE_ENDPOINT, {
-            method: "PUT",
-            signal: pushController.signal,
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-          });
+          const res = window.filterQueue
+            ? await window.filterQueue.writeMainPayload(payload,pushController.signal)
+            : await fetch(FIREBASE_ENDPOINT, {
+                method: "PUT",signal:pushController.signal,
+                headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)
+              });
 
           if (res.ok) {
             if (revision === localSyncRevision) markSyncPending(false);
@@ -8223,5 +8241,6 @@
       if (isAdmin) void flushAdminAudit();
       setTimeout(autoCheckUnbannedAccounts, 2000);
     </script>
+    <script src="filter-queue.js"></script>
   </body>
 </html>
