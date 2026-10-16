@@ -19,10 +19,10 @@
       rel="stylesheet"
     />
     <!-- Ordered stylesheets: preserve base → workspace → controls cascade. -->
-    <link rel="stylesheet" href="styles/core.css?v=20261016-hide-tele-status-1" />
-    <link rel="stylesheet" href="styles/workspace.css?v=20261016-hide-tele-status-1" />
-    <link rel="stylesheet" href="styles/controls.css?v=20261016-hide-tele-status-1" />
-    <link rel="stylesheet" href="styles/filter-queue.css?v=20261016-hide-tele-status-1" />
+    <link rel="stylesheet" href="styles/core.css?v=20261016-filter-no-search-1" />
+    <link rel="stylesheet" href="styles/workspace.css?v=20261016-filter-no-search-1" />
+    <link rel="stylesheet" href="styles/controls.css?v=20261016-filter-no-search-1" />
+    <link rel="stylesheet" href="styles/filter-queue.css?v=20261016-filter-no-search-1" />
     <style>
       #page-loader {display:none;}
       html.page-loading #page-loader {display:flex;position:fixed;inset:0;z-index:100000;align-items:center;justify-content:center;flex-direction:column;gap:14px;background:#0d1422;color:#c5d0e3;font:13px/1.5 system-ui,sans-serif;}
@@ -2353,7 +2353,7 @@
     <!-- CONTAINER THẺ THÔNG BÁO GÓC DƯỚI BÊN TRÁI KHI THÊM ACC MỚI -->
     <div id="activity-toast-container" class="activity-toast-container"></div>
 
-    <script src="analytics-report.js?v=20261016-hide-tele-status-1"></script>
+    <script src="analytics-report.js?v=20261016-filter-no-search-1"></script>
     <script>
       // BẮT MỌI LỖI RUNTIME NẾU CÓ ĐỂ KHÔNG BAO GIỜ BỊ ĐƠ WEB
       window.addEventListener("error", function (e) {
@@ -8280,10 +8280,10 @@
       if (isAdmin) void flushAdminAudit();
       setTimeout(autoCheckUnbannedAccounts, 2000);
     </script>
-    <script src="filter-queue.js?v=20261016-hide-tele-status-1"></script>
-    <script src="account-privacy.js?v=20261016-hide-tele-status-1"></script>
-    <script src="admin-account-tools.js?v=20261016-hide-tele-status-1"></script>
-    <script src="telegram-daily.js?v=20261016-hide-tele-status-1"></script>
-    <script src="telegram-transfers.js?v=20261016-hide-tele-status-1"></script>
+    <script src="filter-queue.js?v=20261016-filter-no-search-1"></script>
+    <script src="account-privacy.js?v=20261016-filter-no-search-1"></script>
+    <script src="admin-account-tools.js?v=20261016-filter-no-search-1"></script>
+    <script src="telegram-daily.js?v=20261016-filter-no-search-1"></script>
+    <script src="telegram-transfers.js?v=20261016-filter-no-search-1"></script>
   </body>
 </html>
