@@ -22,7 +22,7 @@
     <link rel="stylesheet" href="styles/core.css" />
     <link rel="stylesheet" href="styles/workspace.css" />
     <link rel="stylesheet" href="styles/controls.css" />
-    <link rel="stylesheet" href="styles/filter-queue.css" />
+    <link rel="stylesheet" href="styles/filter-queue.css?v=20261016-ban-watch-2" />
     <style>
       #page-loader {display:none;}
       html.page-loading #page-loader {display:flex;position:fixed;inset:0;z-index:100000;align-items:center;justify-content:center;flex-direction:column;gap:14px;background:#0d1422;color:#c5d0e3;font:13px/1.5 system-ui,sans-serif;}
@@ -5828,7 +5828,12 @@
           .sort((a,b)=>(parseUnlockTargetTimestamp(a.unlockDate)||Infinity)-(parseUnlockTargetTimestamp(b.unlockDate)||Infinity));
         displayArea.innerHTML=`<section class="ban-watch"><h3>🚫 Acc đang BAN · ${banned.length} acc</h3><p>Danh sách theo dõi riêng, sắp theo ngày mở BAN gần nhất. Đến ngày mở BAN, acc tự chuyển sang kho chờ kiểm tra.</p><div class="ban-watch-list">${banned.map(item=>{
           const target=parseUnlockTargetTimestamp(item.unlockDate),days=target?Math.max(0,Math.ceil((target-now)/86400000)):null;
-          return `<article class="ban-watch-row" id="acc-row-${item.id}"><strong>${escapeHtml(item.username)}</strong><span>Rank: <b>${escapeHtml(item.rank||'Chưa rank')}</b></span><span>Uy tín: ${escapeHtml(item.uyTin||'—')}</span><span class="ban-watch-date">Mở BAN: <b>${escapeHtml(item.unlockDate)}</b></span><span class="ban-watch-remaining">${days===null?'Chưa rõ thời hạn':'Còn '+days+' ngày'}</span><button type="button" class="btn btn-tool ban-watch-edit" onclick="editBannedAccountDate('${item.id}')">✎ Sửa ngày BAN</button></article>`;
+          return `<article class="ban-watch-row" id="acc-row-${item.id}">
+            <div class="ban-watch-account"><strong>${escapeHtml(item.username)}</strong><span class="ban-watch-status">🚫 Đang BAN</span></div>
+            <div class="ban-watch-meta"><div><span>Rank</span><b>${escapeHtml(item.rank||'Chưa rank')}</b></div><div><span>Uy tín</span><b>${escapeHtml(item.uyTin||'—')}</b></div></div>
+            <div class="ban-watch-date"><span>Ngày mở BAN</span><b>${escapeHtml(item.unlockDate)}</b></div>
+            <div class="ban-watch-footer"><span class="ban-watch-remaining">${days===null?'Chưa rõ thời hạn':'Còn '+days+' ngày'}</span><button type="button" class="ban-watch-edit" onclick="editBannedAccountDate('${item.id}')">✎ Sửa ngày BAN</button></div>
+          </article>`;
         }).join('')||'<div class="fq-empty">Không có tài khoản đang BAN phù hợp.</div>'}</div></section>`;
       }
 

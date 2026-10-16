@@ -371,14 +371,29 @@
 
 #tab-banned-watch[hidden] { display:none!important; }
 .chip-banned-watch { color:#ffacb7; border-color:#854655; }
-.ban-watch { margin:16px 0; }
-.ban-watch>p { color:#abbdd5; font-size:.83rem; line-height:1.6; }
-.ban-watch-list { display:flex; flex-direction:column; gap:9px; }
-.ban-watch-row { display:grid; grid-template-columns:minmax(130px,1.5fr) minmax(90px,1fr) minmax(80px,.7fr) minmax(130px,1fr) minmax(90px,.7fr); align-items:center; gap:10px; padding:13px 15px; border:1px solid #5e3945; border-left:3px solid #d66b7f; border-radius:9px; background:rgba(148,46,68,.07); font-size:.82rem; overflow-wrap:anywhere; }
-.ban-watch-date { color:#ffc1c9; }
-.ban-watch-remaining { color:#e8bf81; }
-@media(max-width:700px){.ban-watch-row { grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px; padding:12px; }.ban-watch-row>strong { grid-column:1/-1; }.ban-watch-remaining { grid-column:2; }}
-
-.ban-watch-row { grid-template-columns:minmax(130px,1.4fr) minmax(80px,.8fr) minmax(70px,.7fr) minmax(115px,1fr) minmax(85px,.7fr) auto; }
-.ban-watch-edit { white-space:nowrap; min-height:38px; font-size:.75rem; }
-@media(max-width:850px){.ban-watch-row { grid-template-columns:repeat(2,minmax(0,1fr)); }.ban-watch-row>strong { grid-column:1/-1; }.ban-watch-edit { justify-self:start; grid-column:1/-1; }}
+.ban-watch { margin:16px 0; min-width:0; max-width:100%; }
+.ban-watch h3 { margin:0 0 8px; line-height:1.5; }
+.ban-watch>p { color:#abbdd5; font-size:.83rem; line-height:1.6; margin:0 0 16px; }
+.ban-watch-list { display:flex; flex-direction:column; gap:12px; min-width:0; }
+.ban-watch .ban-watch-row { display:grid; grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) minmax(110px,.7fr) minmax(210px,1fr); align-items:center; gap:16px; padding:14px 16px; margin:0; border:1px solid #623e4d; border-left:3px solid #d86f83; border-radius:11px; background:#19202e; box-sizing:border-box; min-width:0; max-width:100%; color:#dfe8f6; font-size:.82rem; }
+.ban-watch-row>div { min-width:0; }
+.ban-watch-account { display:flex; flex-wrap:wrap; align-items:center; gap:7px 10px; }
+.ban-watch-account strong { font:700 .88rem/1.5 'JetBrains Mono',monospace; overflow-wrap:anywhere; }
+.ban-watch-status { display:inline-flex; padding:3px 7px; border-radius:5px; border:1px solid #864353; background:#432430; color:#ffc0ca; font-size:.68rem; white-space:nowrap; }
+.ban-watch-meta { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+.ban-watch-meta>div { display:flex; flex-direction:column; gap:4px; min-width:0; }
+.ban-watch-meta span,.ban-watch-date>span { color:#9caec6; font-size:.73rem; }
+.ban-watch-meta b { overflow-wrap:anywhere; }
+.ban-watch-date { display:flex; flex-direction:column; gap:4px; color:#ffc1c9; }
+.ban-watch-date>b { font-size:.95rem; }
+.ban-watch-footer { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.ban-watch-remaining { display:inline-flex; color:#edca91; font-size:.77rem; white-space:nowrap; }
+.ban-watch-edit { display:inline-flex; justify-content:center; align-items:center; min-height:44px; padding:8px 12px; border:1px solid #626b86; border-radius:8px; background:#293247; color:#e2e9f6; font-family:inherit; font-size:.75rem; font-weight:700; line-height:1.4; white-space:nowrap; cursor:pointer; }
+.ban-watch-edit:focus-visible { outline:2px solid #b5a4f5; outline-offset:3px; }
+@media(max-width:1000px) {
+ .ban-watch .ban-watch-row { display:flex; flex-direction:column; align-items:stretch; gap:12px; padding:14px; }
+ .ban-watch-account { justify-content:space-between; }
+ .ban-watch-meta>div { padding:8px 10px; border:1px solid #354057; border-radius:7px; background:#131d2b; }
+ .ban-watch-date { flex-direction:row; justify-content:space-between; align-items:center; padding:0 2px; }
+ .ban-watch-footer { padding-top:11px; border-top:1px solid #3b455a; }
+}
