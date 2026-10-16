@@ -501,7 +501,6 @@ body { background-image:radial-gradient(ellipse at 70% 0,rgba(59,130,246,.035),t
  .fq-heading { flex-direction:column; align-items:stretch; gap:10px; }
  .fq-tools { width:100%; gap:7px; }
  .fq-tools>.btn,.fq-tools>button,.fq-tools>label { min-height:40px; flex:1 1 auto; justify-content:center; }
- .noti-flyout-panel { position:fixed!important; top:calc(env(safe-area-inset-top,0px) + 94px)!important; left:12px!important; right:12px!important; width:auto!important; max-width:none!important; max-height:calc(100dvh - 118px); overflow-y:auto; }
  .footer-top-row { gap:20px; }
  .footer-brand-header { gap:10px; align-items:center; }
  .footer-brand-title { flex-wrap:wrap; gap:5px; font-size:1rem; }
@@ -515,3 +514,213 @@ body { background-image:radial-gradient(ellipse at 70% 0,rgba(59,130,246,.035),t
  .app-layout #storage-switcher-bar .mobile-wide-tile .storage-tab-text-wrap { grid-column:2; grid-row:1; }
  .app-layout > header #stat-count { display:block; width:100%; text-align:left!important; }
 }
+
+/* Footer follows the dashboard content edges, without a second centered container. */
+.app-layout>.app-footer { width:100%; min-width:0; margin-top:24px!important; background:transparent; border-top:1px solid #263244; }
+.app-layout>.app-footer .footer-container { box-sizing:border-box; width:100%; max-width:none; margin:0; padding:20px 0 16px; gap:16px; }
+.app-layout>.app-footer .footer-top-row { grid-template-columns:minmax(0,1fr) auto; align-items:start; gap:24px; }
+.app-layout>.app-footer .footer-brand-side { max-width:none; gap:10px; }
+.app-layout>.app-footer .footer-brand-header { align-items:center; gap:10px; }
+.app-layout>.app-footer .footer-logo-box { width:38px; height:38px; border-width:1px; box-shadow:none; }
+.app-layout>.app-footer .footer-brand-title { flex-wrap:wrap; font-size:1rem; gap:6px; line-height:1.5; }
+.app-layout>.app-footer .footer-brand-title .brand-sub { font-size:.78rem; font-weight:600; color:#94a3b8; }
+.app-layout>.app-footer .verified-tick-badge { flex-shrink:0; margin:0 0 0 2px!important; box-shadow:none; }
+.app-layout>.app-footer .footer-warehouse-status { margin-top:3px; line-height:1.6; }
+.app-layout>.app-footer .footer-action-side { justify-self:end; align-items:flex-end; gap:8px; padding-top:2px; }
+.app-layout>.app-footer .footer-tele-cta { padding:9px 12px; border-radius:8px; font-size:.78rem; }
+.app-layout>.app-footer .footer-author-card { padding:5px 9px; font-size:.7rem; border-radius:7px; }
+.app-layout>.app-footer .footer-bottom-row { justify-content:flex-start; text-align:left; padding-top:12px; font-size:.68rem; line-height:1.6; }
+@media(max-width:700px) {
+ .app-layout>.app-footer .footer-container { padding:16px 0 max(16px,env(safe-area-inset-bottom)); gap:14px; }
+ .app-layout>.app-footer .footer-top-row { grid-template-columns:minmax(0,1fr); gap:14px; }
+ .app-layout>.app-footer .footer-action-side { justify-self:stretch; align-items:center; flex-direction:row; flex-wrap:wrap; width:100%; padding:0; gap:8px; }
+ .app-layout>.app-footer .footer-action-side>* { min-height:40px; display:inline-flex; align-items:center; justify-content:center; }
+ .app-layout>.app-footer .footer-tele-cta { flex:1 1 auto; }
+ .app-layout>.app-footer .footer-brand-title { font-size:.94rem; gap:5px; }
+ .app-layout>.app-footer .footer-brand-title .brand-sub { font-size:.7rem; }
+ .app-layout>.app-footer .footer-bottom-row { justify-content:flex-start; text-align:left; overflow-wrap:anywhere; }
+}
+
+/* Make clipboard import easy to spot beside the primary save action. */
+.app-layout #input-container #btn-quick-paste {
+ display:flex; align-items:center; justify-content:center; gap:8px;
+ min-height:40px; padding:9px 12px; border:1px solid #8b7cf8;
+ border-radius:8px; background:linear-gradient(135deg,#42318a,#34356f);
+ color:#f5f3ff; font-size:.78rem; font-weight:700; line-height:1.4;
+ box-shadow:0 2px 8px #6366f11a;
+ transition:background-color .16s ease,border-color .16s ease,box-shadow .16s ease;
+}
+.app-layout #input-container #btn-quick-paste>span:first-child { font-size:1rem; }
+.app-layout #input-container #btn-quick-paste:focus-visible { outline:2px solid #c4b5fd; outline-offset:3px; }
+@media(hover:hover) and (pointer:fine) {
+ .app-layout #input-container #btn-quick-paste:hover { background:linear-gradient(135deg,#5340a6,#42448b); border-color:#b5a4ff; box-shadow:0 3px 12px #8b5cf630; }
+}
+.app-layout #input-container #btn-quick-paste:active { background:#37306b; border-color:#c4b5fd; }
+@media(max-width:600px) { .app-layout #input-container #btn-quick-paste { min-height:44px; font-size:.8rem; } }
+@media(prefers-reduced-motion:reduce) { .app-layout #input-container #btn-quick-paste { transition:none; } }
+
+/* Override legacy centered mobile brand rules as one consistent header block. */
+@media(max-width:600px) {
+ .app-layout > header { grid-template-columns:36px minmax(0,1fr) auto!important; column-gap:8px!important; min-height:84px; }
+ .app-layout > header .dashboard-nav-toggle { grid-column:1; grid-row:1; width:36px; min-width:36px; height:40px; }
+ .app-layout > header .header-brand { width:100%!important; min-width:0!important; justify-self:stretch; }
+ .app-layout > header .header-brand-info { width:100%!important; min-width:0!important; gap:3px!important; }
+ .app-layout > header #brand-typewriter-wrap { width:auto!important; max-width:100%!important; margin:0!important; justify-content:flex-start!important; text-align:left!important; gap:3px!important; }
+ .app-layout > header #brand-typewriter-text { font-size:17px!important; line-height:22px!important; font-weight:800!important; text-align:left!important; }
+ .app-layout > header .header-sub { display:block!important; width:100%!important; margin:0!important; padding:0!important; }
+ .app-layout > header .header-sub .stats-badge { display:flex!important; width:100%!important; max-width:none!important; justify-content:flex-start!important; margin:0!important; padding:0!important; text-align:left!important; }
+ .app-layout > header .header-sub #stat-count { display:block!important; width:auto!important; margin:0!important; padding:0!important; font-size:11px!important; line-height:16px!important; text-align:left!important; }
+ .app-layout > header .brand-warehouse-status { justify-content:flex-start; font-size:10px; line-height:15px; gap:2px 8px; }
+ .app-layout > header .header-left { display:flex!important; align-self:center; gap:5px!important; }
+ .app-layout > header .header-left #btn-toggle-admin { min-width:0; min-height:38px; padding:7px!important; font-size:10px!important; white-space:nowrap; }
+ .app-layout > header #btn-open-noti { width:36px; min-width:36px; height:38px; min-height:38px; }
+ .app-layout > header .header-action-group:has(.header-menu-container:empty) { display:none!important; }
+}
+
+/* Keep BAN tracking visible instead of hiding it at the end of the Rank strip. */
+@media(max-width:600px) {
+ .account-list-workspace .history-filters { flex-wrap:wrap; overflow-x:visible; gap:6px; }
+ .account-list-workspace #tab-banned-watch { color:#fda4af; border-color:#7f3b50; background:#301d2b; }
+ .account-list-workspace #tab-banned-watch.active { border-color:#fb7185; background:#58263a; color:#fff1f2; }
+}
+
+/* Compact footer: identity and warehouse context above a quiet credit line. */
+.app-layout>.app-footer { margin-top:28px!important; border-top:1px solid #29364a; background:linear-gradient(180deg,#111c2c55,transparent); }
+.app-layout>.app-footer .footer-container { padding:20px 0 18px; gap:16px; }
+.app-layout>.app-footer .footer-top-row { align-items:center; gap:20px; }
+.app-layout>.app-footer .footer-brand-side { gap:6px; }
+.app-layout>.app-footer .footer-brand-header { gap:12px; }
+.app-layout>.app-footer .footer-logo-box { width:40px; height:40px; border-radius:11px; border:1px solid #345273; }
+.app-layout>.app-footer .footer-brand-text { gap:3px; }
+.app-layout>.app-footer .footer-brand-title { font-size:1rem; font-weight:750; }
+.app-layout>.app-footer .footer-desc { margin:0 0 0 52px; color:#8393aa; font-size:.72rem; }
+.app-layout>.app-footer .footer-warehouse-status { gap:5px 8px; margin-top:2px; font-size:.66rem; }
+.app-layout>.app-footer .footer-warehouse-status>span { padding:2px 7px; border-radius:5px; background:#172338; line-height:1.6; }
+.app-layout>.app-footer .footer-warehouse-status .warehouse-counter-stat-active { color:#6ee7b7; background:#14332d; }
+.app-layout>.app-footer .footer-warehouse-status .warehouse-counter-stat-ban { color:#fda4af; background:#34212d; }
+.app-layout>.app-footer .footer-action-side { padding:0; }
+.app-layout>.app-footer .footer-tele-cta { min-height:42px; padding:9px 14px; border:1px solid #315884; border-radius:9px; background:#13263d; color:#7dd3fc; font-weight:650; box-shadow:none; }
+.app-layout>.app-footer .footer-bottom-row { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:8px 20px; padding-top:12px; border-top:1px solid #1d2a3c; font-size:.65rem; color:#7f90a8; }
+.app-layout>.app-footer .footer-credit { display:inline-flex; flex-wrap:wrap; gap:4px; }
+.app-layout>.app-footer .footer-credit b { color:#b7c6dc; font-weight:600; }
+.app-layout>.app-footer .footer-credit>span { color:#7386a3; }
+@media(max-width:700px) {
+ .app-layout>.app-footer .footer-container { padding-top:16px; padding-bottom:max(22px,env(safe-area-inset-bottom)); gap:14px; }
+ .app-layout>.app-footer .footer-top-row { gap:14px; }
+ .app-layout>.app-footer .footer-brand-title { font-size:.95rem; }
+ .app-layout>.app-footer .footer-brand-header { gap:10px; }
+ .app-layout>.app-footer .footer-desc { margin-left:50px; }
+ .app-layout>.app-footer .footer-action-side { width:100%; }
+ .app-layout>.app-footer .footer-tele-cta { width:100%; flex:1; justify-content:space-between; min-height:44px; }
+ .app-layout>.app-footer .footer-bottom-row { align-items:flex-start; flex-direction:column; gap:5px; padding-right:48px; }
+}
+
+/* Keep the user's logo visible in the phone header. */
+@media(max-width:600px) {
+ .app-layout > header .header-brand { gap:7px!important; align-items:center!important; }
+ .app-layout > header .header-brand .logo-box { display:flex!important; width:28px!important; height:28px!important; min-width:28px!important; flex:0 0 28px!important; margin:0!important; border:1px solid #345273!important; border-radius:8px!important; box-shadow:none!important; }
+ .app-layout > header .header-brand-info { flex:1 1 auto; width:auto!important; min-width:0!important; }
+ .app-layout > header #brand-typewriter-text { font-size:16px!important; }
+ .app-layout > header .header-sub #stat-count { font-size:10px!important; }
+ .app-layout > header .brand-warehouse-status { font-size:9px; gap:2px 5px; }
+}
+@media(max-width:380px) {
+ .app-layout > header { column-gap:6px!important; }
+ .app-layout > header .header-brand .logo-box { width:25px!important; height:25px!important; min-width:25px!important; flex-basis:25px!important; }
+ .app-layout > header .header-brand { gap:5px!important; }
+ .app-layout > header .header-left #admin-text { display:none; }
+ .app-layout > header .header-left #btn-toggle-admin { min-width:34px; }
+}
+
+/* Brief open/close transitions; discrete display changes fall back safely on older browsers. */
+@media(prefers-reduced-motion:no-preference) {
+ #option-menu-dropdown,#noti-flyout-panel,#rank-popover {
+  transition:opacity .16s ease,display .16s allow-discrete!important;
+  transition-behavior:allow-discrete!important;
+ }
+ #option-menu-dropdown:not(.show),#noti-flyout-panel:not(.show),#rank-popover:not(.show) { opacity:0!important; pointer-events:none; }
+ #option-menu-dropdown.show,#noti-flyout-panel.show,#rank-popover.show { opacity:1!important; }
+ .app-layout .account-workspace>#input-container {
+  transition:opacity .18s ease,transform .18s ease,display .18s allow-discrete;
+  transition-behavior:allow-discrete;
+ }
+ .app-layout .account-workspace>#input-container:has(#collapse-content.hidden) { opacity:0; transform:translateY(-5px); }
+ .modal-overlay { transition:opacity .18s ease,visibility .18s!important; visibility:hidden; }
+ .modal-overlay.show { visibility:visible; }
+ .modal-overlay>.modal-card,.modal-overlay>.modal-card-analytics,.modal-overlay>.fq-transfer-card {
+  transition:transform .2s cubic-bezier(.2,.75,.25,1),opacity .18s ease!important;
+ }
+ .modal-overlay:not(.show)>.modal-card,.modal-overlay:not(.show)>.modal-card-analytics,.modal-overlay:not(.show)>.fq-transfer-card { opacity:0; transform:translateY(8px) scale(.99); }
+ .modal-overlay.show>.modal-card,.modal-overlay.show>.modal-card-analytics,.modal-overlay.show>.fq-transfer-card { opacity:1; transform:none; animation:none!important; }
+ .dashboard-nav-backdrop { transition:opacity .18s ease,visibility .18s,display .18s allow-discrete; }
+ .app-layout #input-container #collapse-arrow-btn { transition:background-color .16s ease,border-color .16s ease; }
+ @starting-style {
+  #option-menu-dropdown.show,#noti-flyout-panel.show,#rank-popover.show { opacity:0!important; }
+  .app-layout .account-workspace>#input-container:not(:has(#collapse-content.hidden)) { opacity:0; transform:translateY(-5px); }
+ }
+}
+@media(prefers-reduced-motion:reduce) {
+ #option-menu-dropdown,#noti-flyout-panel,#rank-popover,.modal-overlay,.modal-overlay>.modal-card,.modal-overlay>.modal-card-analytics,.app-layout .account-workspace>#input-container { transition:none!important; }
+}
+
+/* Warehouse search needs the same input styling as the main dashboard. */
+#account-tools-modal>.aat-card { max-width:560px; padding:20px; }
+#account-tools-modal .aat-heading { gap:12px; margin-bottom:16px; }
+#account-tools-modal .aat-heading h3 { font-size:1rem; line-height:1.5; }
+#account-tools-modal #aat-search-form>label { display:block; margin-bottom:7px; color:#cbd5e1; font-size:.78rem; font-weight:600; }
+#account-tools-modal .aat-query { display:flex; flex-wrap:nowrap; align-items:stretch; gap:8px; }
+#account-tools-modal #aat-query { appearance:none; -webkit-appearance:none; box-sizing:border-box; flex:1; min-width:0; width:100%; min-height:42px; padding:10px 12px; border:1px solid #3a4b64; border-radius:8px; outline:none; background:#0b1423; color:#f1f5f9; font:inherit; line-height:1.4; transition:border-color .16s ease,box-shadow .16s ease; }
+#account-tools-modal #aat-query::placeholder { color:#8494ac; opacity:1; }
+#account-tools-modal #aat-query:focus { border-color:#60a5fa; box-shadow:0 0 0 3px #3b82f622; }
+#account-tools-modal #aat-submit { flex:0 0 auto; min-height:42px; padding:9px 16px; border:1px solid #4776c4; border-radius:8px; background:#254c88; color:#eff6ff; font-weight:650; }
+#account-tools-modal #aat-message { font-size:.76rem; margin:10px 0; }
+#account-tools-modal .aat-pagination { padding-top:12px; border-top:1px solid #263449; gap:10px; }
+@media(max-width:600px) {
+ #account-tools-modal>.aat-card { padding:16px; }
+ #account-tools-modal #aat-query { font-size:16px; min-height:44px; }
+ #account-tools-modal #aat-submit { min-height:44px; padding:9px 12px; }
+}
+
+/* Two clear header rows on phones: identity/actions, then warehouse summary. */
+.mobile-header-summary { display:none; }
+@media(max-width:600px) {
+ .app-layout>header { grid-template-columns:36px minmax(0,1fr) auto!important; row-gap:12px!important; padding:12px 0 14px!important; min-height:0; }
+ .app-layout>header .header-brand { gap:8px!important; }
+ .app-layout>header .header-brand .logo-box { width:32px!important; height:32px!important; min-width:32px!important; flex-basis:32px!important; }
+ .app-layout>header #brand-typewriter-text { font-size:18px!important; line-height:24px!important; }
+ .app-layout>header #brand-typewriter-wrap { min-height:24px!important; }
+ .app-layout>header .header-left #btn-toggle-admin { min-width:36px; min-height:40px; font-size:11px!important; padding:8px!important; }
+ .app-layout>header #btn-open-noti { width:36px; min-width:36px; height:40px; min-height:40px; }
+ .app-layout>header .mobile-header-summary { grid-column:1/-1; grid-row:2; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:7px 12px; padding:10px 12px; border:1px solid #27374f; border-radius:9px; background:#111c2d; }
+ .app-layout>header .mobile-header-summary .header-sub { width:auto!important; flex:1 1 auto; margin:0!important; }
+ .app-layout>header .mobile-header-summary .header-sub .stats-badge { width:auto!important; }
+ .app-layout>header .mobile-header-summary .header-sub #stat-count { font-size:12px!important; line-height:18px!important; font-weight:650; color:#e2e8f0; }
+ .app-layout>header .mobile-header-summary .brand-warehouse-status { display:flex; flex-wrap:wrap; gap:6px 10px; font-size:11px; line-height:18px; }
+ .app-layout>header .mobile-header-summary .warehouse-counter-stat-active { color:#6ee7b7; }
+ .app-layout>header .mobile-header-summary .warehouse-counter-stat-ban { color:#fda4af; }
+}
+@media(max-width:380px) {
+ .app-layout>header .header-left #admin-text { display:none; }
+ .app-layout>header #brand-typewriter-text { font-size:17px!important; }
+ .app-layout>header .header-brand .logo-box { width:30px!important; height:30px!important; min-width:30px!important; flex-basis:30px!important; }
+}
+
+/* Put live warehouse status beside page context, not inside the brand cluster. */
+.dashboard-page-context { display:grid; grid-template-columns:auto auto; align-items:center; column-gap:18px; row-gap:4px; justify-content:start; }
+.dashboard-page-context>span { grid-column:1; grid-row:1; }
+.dashboard-page-context>strong { grid-column:1; grid-row:2; }
+.dashboard-page-context>.dashboard-list-status { grid-column:2; grid-row:1/3; margin:0; gap:7px; }
+.dashboard-page-context>.dashboard-list-status>span { font-size:.7rem; padding:5px 9px; }
+@media(max-width:1100px) and (min-width:601px) {
+ .dashboard-page-context { display:none; }
+ header>.header-brand .header-brand-info>.dashboard-list-status { margin-top:4px; }
+}
+@media(max-width:600px) {
+ .app-layout>header .mobile-header-summary { padding:0; border:0; background:none; }
+ .app-layout>header .mobile-header-summary .header-sub #stat-count { color:#94a3b8; font-size:11px!important; }
+ .user-greeting-text-wrap>.dashboard-list-status { margin-top:7px; gap:6px; }
+ .user-greeting-text-wrap>.dashboard-list-status>span { font-size:.66rem; padding:4px 7px; }
+ .app-layout .user-greeting-bar { align-items:flex-start; margin-top:4px; margin-bottom:18px; }
+}
+
+@media(max-width:1100px) { .dashboard-page-context { display:none; } }

@@ -30,13 +30,13 @@
   }
   function conceal(){const changed=visible.size||!isGlobalPasswordMasked||Object.keys(singlePasswordVisible).length;visible.clear();syncVisibility();schedule();if(changed)renderList();}
   function toggle(id){
-    if(!isAdmin||isEmergencyLocked){showToast('Không có quyền xem mật khẩu hoặc hệ thống đang khóa.');return;}
+    if(!isAdmin){showToast('Chỉ Quản Trị viên mới có quyền xem mật khẩu.');return;}
     id=String(id);if(id.startsWith('filter:'))return;
     if(visible.has(id))visible.delete(id);
     else{while(visible.size>=LIMIT)visible.delete(visible.keys().next().value);visible.set(id,Date.now()+DURATION);record('open',id);}
     syncVisibility();schedule();renderList();
   }
-  global.accountPrivacy={toggle,record,isVisible:id=>isAdmin&&!isEmergencyLocked&&(visible.get(String(id))||0)>Date.now(),conceal};
+  global.accountPrivacy={toggle,record,isVisible:id=>isAdmin&&(visible.get(String(id))||0)>Date.now(),conceal};
   global.toggleSinglePassword=toggle;
   global.toggleAllPasswordVisibility=()=>{conceal();showToast('Chỉ hiện tối đa 2 mật khẩu. Bấm biểu tượng mắt ở từng acc; tự che sau 15 giây.');};
   const label=document.getElementById('admin-pass-toggle-text');if(label)label.textContent='Che mật khẩu';

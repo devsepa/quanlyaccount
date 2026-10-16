@@ -620,7 +620,7 @@
   border:1px solid #285365; border-radius:14px; padding:18px 20px;
 }
 #header-aurora {position:absolute;inset:0;width:100%;height:100%;border-radius:13px;pointer-events:none;z-index:0;}
-.app-layout > header > :not(#header-aurora) {position:relative;z-index:1;}
+.app-layout > header > :not(#header-aurora):not(.header-combined-motion) {position:relative;z-index:1;}
 @media(max-width:600px){.app-layout > header {padding:14px 12px;}}
 
 /* Compact rank-group counts: total first, then remaining unban notes. */

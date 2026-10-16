@@ -1,6 +1,6 @@
 ﻿# Stylesheets
 
-Load in this order: core.css, workspace.css, controls.css, filter-queue.css, dashboard.css, analytics.css.
+Load in this order: core.css, workspace.css, controls.css, filter-queue.css, dashboard.css, analytics.css, layout-refinement.css.
 
 - core.css: original theme, common elements and feature styles.
 - workspace.css: working layout, tables, typography and analytics layout.
@@ -12,3 +12,5 @@ The original cascade order is preserved. Six exact duplicate rules were removed 
 - dashboard.css: final Minimal Dark theme, sidebar, overview and mobile layout. Keep this last; it intentionally replaces legacy shell styling without changing account logic.
 
 - analytics.css: report modal presentation, responsive KPIs, report tabs, charts and scrollable tables. Scoped to #analytics-modal; keep report calculations in analytics-report.js unchanged.
+
+- layout-refinement.css: reference dashboard composition; phone header, docked navigation, warehouse cards, search/filter controls and list status placement. Load last. Reuses the original DOM controls and their handlers.

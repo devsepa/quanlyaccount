@@ -77,3 +77,12 @@ test('device statistics match management eligibility and accept an empty registr
  const c=deviceStatsContext();const stats=c.analyticsDeviceGroups({a:null,b:{userName:''},c:{userName:'khách'},d:{status:'blocked'},e:{isAdmin:true}});
  assert.equal(stats.groups,2);assert.equal(stats.browsers,2);assert.equal(c.analyticsDeviceGroups(null).groups,0);
 });
+
+test('emergency restrictions apply only to guests, including role changes',()=>{
+ const c={isAdmin:false,isEmergencyLocked:true};vm.createContext(c);
+ vm.runInContext(html.slice(html.indexOf('      function isGuestEmergencyLocked()'),html.indexOf('      function updateAdminUI()')),c);
+ assert.equal(c.isGuestEmergencyLocked(),true);c.isAdmin=true;assert.equal(c.isGuestEmergencyLocked(),false);c.isAdmin=false;assert.equal(c.isGuestEmergencyLocked(),true);c.isEmergencyLocked=false;assert.equal(c.isGuestEmergencyLocked(),false);
+});
+test('admin password privacy remains available during guest emergency lock',()=>{
+ const source=fs.readFileSync(root+'account-privacy.js','utf8');assert.ok(!source.includes('isEmergencyLocked'));assert.ok(source.includes('if(!isAdmin)'));assert.ok(html.includes('if (isGuestEmergencyLocked())'));
+});

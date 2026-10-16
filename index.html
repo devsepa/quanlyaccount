@@ -19,12 +19,13 @@
       rel="stylesheet"
     />
     <!-- Ordered stylesheets: preserve base → workspace → controls cascade. -->
-    <link rel="stylesheet" href="styles/core.css?v=20261016-mobile-unified-1" />
-    <link rel="stylesheet" href="styles/workspace.css?v=20261016-mobile-unified-1" />
-    <link rel="stylesheet" href="styles/controls.css?v=20261016-mobile-unified-1" />
-    <link rel="stylesheet" href="styles/filter-queue.css?v=20261016-mobile-unified-1" />
-    <link rel="stylesheet" href="styles/dashboard.css?v=20261016-mobile-unified-1" />
-    <link rel="stylesheet" href="styles/analytics.css?v=20261016-mobile-unified-1" />
+    <link rel="stylesheet" href="styles/core.css?v=20261016-header-visible-1" />
+    <link rel="stylesheet" href="styles/workspace.css?v=20261016-header-visible-1" />
+    <link rel="stylesheet" href="styles/controls.css?v=20261016-header-visible-1" />
+    <link rel="stylesheet" href="styles/filter-queue.css?v=20261016-header-visible-1" />
+    <link rel="stylesheet" href="styles/dashboard.css?v=20261016-header-visible-1" />
+    <link rel="stylesheet" href="styles/analytics.css?v=20261016-header-visible-1" />
+    <link rel="stylesheet" href="styles/layout-refinement.css?v=20261016-header-visible-1" />
     <style>
       #page-loader {display:none;}
       html.page-loading #page-loader {display:flex;position:fixed;inset:0;z-index:100000;align-items:center;justify-content:center;flex-direction:column;gap:14px;background:#0d1422;color:#c5d0e3;font:13px/1.5 system-ui,sans-serif;}
@@ -812,8 +813,8 @@
           <span class="rank-nav-chip rank-tier-chip" data-rank="KHAC"
             >Khác</span
           >
-          <button type="button" class="rank-nav-chip chip-banned-watch" id="tab-banned-watch" data-rank="banned" hidden>🚫 Acc đang BAN (<span id="banned-watch-count">0</span>)</button>
           </div><div class="filter-section history-filters"><span class="filter-label">Lịch sử</span>
+          <button type="button" class="rank-nav-chip chip-banned-watch" id="tab-banned-watch" data-rank="banned" hidden>🚫 Acc đang BAN (<span id="banned-watch-count">0</span>)</button>
           <span
             class="rank-nav-chip chip-recent"
             data-rank="recent"
@@ -905,12 +906,7 @@
                   </div>
                 </div>
               </div>
-              <p class="footer-desc">Hệ thống quản lý & chia sẻ sự giải trí.</p>
-              <div class="footer-author-card">
-                <span>👑 Phát triển bởi:</span>
-                <b>Nguyễn Chí Duy</b>
-                <span>(@devsepa)</span>
-              </div>
+              <p class="footer-desc">Quản lý kho tài khoản game.</p>
             </div>
 
             <!-- Khối hành động & Liên hệ (Bên phải) -->
@@ -937,23 +933,15 @@
                 </div>
                 <span>↗</span>
               </a>
-              <button
-                type="button"
-                class="footer-btn-top"
-                onclick="window.scrollTo({ top: 0, behavior: 'smooth' })"
-                title="Cuộn lên đầu trang"
-              >
-                <span>⬆️</span>
-                <span>Lên đầu trang</span>
-              </button>
             </div>
           </div>
 
           <!-- Dòng bản quyền đáy -->
           <div class="footer-bottom-row">
             <span
-              >devsepa © 2026 • AOV Account Manager • All Rights Reserved.</span
+              >© 2026 devsepa · AOV Account Manager</span
             >
+            <span class="footer-credit">Phát triển bởi <b>Nguyễn Chí Duy</b> <span>@devsepa</span></span>
           </div>
         </div>
       </footer>
@@ -1010,7 +998,7 @@
     </div>
 
     <!-- NÚT CUỘN LÊN ĐẦU TRANG -->
-    <button id="btn-back-top" title="Cuộn lên đầu trang">▲</button>
+    <button id="btn-back-top" type="button" title="Về đầu trang" aria-label="Về đầu trang"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 4h14M12 20V8m-6 6 6-6 6 6"/></svg></button>
 
     <!-- MODAL ĐỒNG BỘ CLOUD FIREBASE (PC & MOBILE DÙNG CHUNG) -->
     <div id="cloud-modal" class="modal-overlay">
@@ -2356,7 +2344,7 @@
     <!-- CONTAINER THẺ THÔNG BÁO GÓC DƯỚI BÊN TRÁI KHI THÊM ACC MỚI -->
     <div id="activity-toast-container" class="activity-toast-container"></div>
 
-    <script src="analytics-report.js?v=20261016-mobile-unified-1"></script>
+    <script src="analytics-report.js?v=20261016-header-visible-1"></script>
     <script>
       // BẮT MỌI LỖI RUNTIME NẾU CÓ ĐỂ KHÔNG BAO GIỜ BỊ ĐƠ WEB
       window.addEventListener("error", function (e) {
@@ -2686,6 +2674,8 @@
       let isEmergencyLocked =
         localStorage.getItem("lq_emergency_locked") === "true";
 
+      function isGuestEmergencyLocked() { return isEmergencyLocked && !isAdmin; }
+
       function updateAdminUI() {
         const adminIcon = document.getElementById("admin-icon");
         const adminText = document.getElementById("admin-text");
@@ -2706,10 +2696,10 @@
         }
         if (inputContainer) {
           inputContainer.style.display =
-            isAdmin && !isEmergencyLocked ? "block" : "none";
+            isAdmin ? "block" : "none";
         }
         document.getElementById("account-workspace")?.classList.toggle(
-          "has-admin-tools", isAdmin && !isEmergencyLocked,
+          "has-admin-tools", isAdmin,
         );
         if (tabCreatedHistory) {
           tabCreatedHistory.style.display = isAdmin ? "inline-flex" : "none";
@@ -2729,7 +2719,7 @@
 
         if (zoneAdminDivider) {
           zoneAdminDivider.style.display =
-            isAdmin && !isEmergencyLocked ? "flex" : "none";
+            isAdmin ? "flex" : "none";
         }
         if (btnOpenDevices) {
           btnOpenDevices.style.display = isAdmin ? "flex" : "none";
@@ -3839,7 +3829,7 @@
           showNotice({
             title: "Kích Hoạt Khóa Khẩn Cấp",
             message:
-              "Bạn có chắc muốn <b>KHÓA KHẨN CẤP</b> hệ thống không?<br><br>⚠️ Khi kích hoạt, <b>khách và mọi người sẽ KHÔNG THỂ sao chép tài khoản:mật khẩu</b> cho đến khi bạn mở lại!",
+              "Bạn có chắc muốn <b>KHÓA KHẨN CẤP</b> hệ thống không?<br><br>⚠️ Khi kích hoạt, <b>khách sẽ KHÔNG THỂ sao chép tài khoản:mật khẩu; Admin vẫn hoạt động bình thường</b> cho đến khi bạn mở lại!",
             icon: "🚨",
             type: "danger",
             onConfirm: () => {
@@ -4035,7 +4025,7 @@
           return;
         }
 
-        if (isEmergencyLocked) {
+        if (isGuestEmergencyLocked()) {
           playSound("delete");
           showToast("🚨 Hệ thống đang khóa khẩn cấp!");
           return;
@@ -4062,7 +4052,7 @@
           showToast("🔒 Chỉ Quản Trị viên mới có quyền xem mật khẩu!");
           return;
         }
-        if (isEmergencyLocked) {
+        if (isGuestEmergencyLocked()) {
           playSound("delete");
           showToast("🚨 Hệ thống đang khóa khẩn cấp!");
           return;
@@ -4110,7 +4100,7 @@
           showToast("🔒 Chỉ Quản Trị viên mới có quyền xem mật khẩu!");
           return;
         }
-        if (isEmergencyLocked) {
+        if (isGuestEmergencyLocked()) {
           playSound("delete");
           showToast("🚨 Hệ thống đang khóa khẩn cấp!");
           return;
@@ -6535,8 +6525,8 @@
                   : ""
               }
               <td style="text-align: center;">
-                <button class="btn-copy-action ${isEmergencyLocked ? "btn-copy-locked" : ""}" id="btn-copy-${item.id}" style="background: ${isEmergencyLocked ? "rgba(239, 68, 68, 0.2)" : copyBtnGrad}; color: ${isEmergencyLocked ? "#fca5a5" : "#ffffff"} !important; ${isEmergencyLocked ? "border-color: rgba(239, 68, 68, 0.4); cursor: not-allowed;" : ""}" onclick="copyCombo('${item.id}', this)" title="${isEmergencyLocked ? "Hệ thống đang khóa khẩn cấp" : "Sao chép tài khoản"}">
-                  ${isEmergencyLocked ? "🔒 ĐÃ KHÓA" : "📋 SAO CHÉP"}
+                <button class="btn-copy-action ${isGuestEmergencyLocked() ? "btn-copy-locked" : ""}" id="btn-copy-${item.id}" style="background: ${isGuestEmergencyLocked() ? "rgba(239, 68, 68, 0.2)" : copyBtnGrad}; color: ${isGuestEmergencyLocked() ? "#fca5a5" : "#ffffff"} !important; ${isGuestEmergencyLocked() ? "border-color: rgba(239, 68, 68, 0.4); cursor: not-allowed;" : ""}" onclick="copyCombo('${item.id}', this)" title="${isGuestEmergencyLocked() ? "Hệ thống đang khóa khẩn cấp" : "Sao chép tài khoản"}">
+                  ${isGuestEmergencyLocked() ? "🔒 ĐÃ KHÓA" : "📋 SAO CHÉP"}
                 </button>
               </td>
               ${
@@ -6732,13 +6722,13 @@
               `
                   : ""
               }
-              ${isAdmin && !isUnbanStorage && !isChungSuc ? `<button type="button" class="btn-transfer-account m-btn-transfer-compact" onclick="moveAccountToChungSuc('${item.id}')" title="Chuyển sang Chung Sức" aria-label="Chuyển tài khoản sang kho Chung Sức"><span aria-hidden="true">⇄</span></button>` : !isAdmin ? `<button class="m-btn-copy ${isEmergencyLocked ? "btn-copy-locked" : ""}" id="m-btn-copy-${item.id}" style="background: ${isEmergencyLocked ? "rgba(239, 68, 68, 0.2)" : copyBtnGrad}; color: ${isEmergencyLocked ? "#fca5a5" : "#ffffff"} !important; ${isEmergencyLocked ? "border: 1px solid rgba(239, 68, 68, 0.4); cursor: not-allowed;" : ""} flex: 1;" onclick="copyCombo('${item.id}', this)" title="${isEmergencyLocked ? "Hệ thống đang khóa khẩn cấp" : "Sao chép"}">
-                ${isEmergencyLocked ? "🔒 KHÓA" : "📋 COPY"}
+              ${isAdmin && !isUnbanStorage && !isChungSuc ? `<button type="button" class="btn-transfer-account m-btn-transfer-compact" onclick="moveAccountToChungSuc('${item.id}')" title="Chuyển sang Chung Sức" aria-label="Chuyển tài khoản sang kho Chung Sức"><span aria-hidden="true">⇄</span></button>` : !isAdmin ? `<button class="m-btn-copy ${isGuestEmergencyLocked() ? "btn-copy-locked" : ""}" id="m-btn-copy-${item.id}" style="background: ${isGuestEmergencyLocked() ? "rgba(239, 68, 68, 0.2)" : copyBtnGrad}; color: ${isGuestEmergencyLocked() ? "#fca5a5" : "#ffffff"} !important; ${isGuestEmergencyLocked() ? "border: 1px solid rgba(239, 68, 68, 0.4); cursor: not-allowed;" : ""} flex: 1;" onclick="copyCombo('${item.id}', this)" title="${isGuestEmergencyLocked() ? "Hệ thống đang khóa khẩn cấp" : "Sao chép"}">
+                ${isGuestEmergencyLocked() ? "🔒 KHÓA" : "📋 COPY"}
               </button>` : ""}
               ${isAdmin ? `
                 <div class="m-admin-actions">
-                  <button class="m-btn-copy ${isEmergencyLocked ? "btn-copy-locked" : ""}" id="m-btn-copy-${item.id}" style="background: ${isEmergencyLocked ? "rgba(239, 68, 68, 0.2)" : copyBtnGrad}; color: ${isEmergencyLocked ? "#fca5a5" : "#ffffff"} !important; ${isEmergencyLocked ? "border: 1px solid rgba(239, 68, 68, 0.4); cursor: not-allowed;" : ""} flex: 1;" onclick="copyCombo('${item.id}', this)" title="${isEmergencyLocked ? "Hệ thống đang khóa khẩn cấp" : "Sao chép"}">
-                ${isEmergencyLocked ? "🔒 KHÓA" : "📋 COPY"}
+                  <button class="m-btn-copy ${isGuestEmergencyLocked() ? "btn-copy-locked" : ""}" id="m-btn-copy-${item.id}" style="background: ${isGuestEmergencyLocked() ? "rgba(239, 68, 68, 0.2)" : copyBtnGrad}; color: ${isGuestEmergencyLocked() ? "#fca5a5" : "#ffffff"} !important; ${isGuestEmergencyLocked() ? "border: 1px solid rgba(239, 68, 68, 0.4); cursor: not-allowed;" : ""} flex: 1;" onclick="copyCombo('${item.id}', this)" title="${isGuestEmergencyLocked() ? "Hệ thống đang khóa khẩn cấp" : "Sao chép"}">
+                ${isGuestEmergencyLocked() ? "🔒 KHÓA" : "📋 COPY"}
               </button>
                   ${isUnbanStorage ? `<button type="button" class="btn-return-rank" onclick="returnUnbanAccount('${item.id}')">↩ Chọn kho</button>` : ''}
                   ${isRecent ? `
@@ -6932,7 +6922,7 @@
         tableHtml += `</tbody></table>`;
         desktopWrapper.innerHTML = tableHtml;
 
-        if (isEmergencyLocked) {
+        if (isGuestEmergencyLocked()) {
           const bannerEl = document.createElement("div");
           bannerEl.className = "emergency-banner";
           bannerEl.innerHTML = `
@@ -6940,7 +6930,7 @@
               <span style="font-size: 1.4rem; animation: pulseIcon 1.2s infinite; display: inline-block;">🚨</span>
               <div>
                 <div style="font-weight: 800; font-size: 0.92rem; color: #fca5a5; letter-spacing: 0.3px;">HỆ THỐNG ĐANG KHÓA KHẨN CẤP</div>
-                <div style="font-size: 0.78rem; color: #cbd5e1; margin-top: 2px;">Toàn bộ chức năng sao chép tài khoản & mật khẩu đã bị tạm khóa để bảo vệ tài khoản.</div>
+                <div style="font-size: 0.78rem; color: #cbd5e1; margin-top: 2px;">Chức năng sao chép tài khoản & mật khẩu dành cho khách đã bị tạm khóa.</div>
               </div>
             </div>
             ${
@@ -6969,12 +6959,12 @@
       // COPY TK:MK
       const accountCopiesInFlight = new Set();
       window.copyCombo = async function (id, btnEl = null) {
-        if (isEmergencyLocked) {
+        if (isGuestEmergencyLocked()) {
           playSound("delete");
           showNotice({
             title: "Khóa Khẩn Cấp",
             message:
-              "Hệ thống đang ở chế độ <b>Khóa Khẩn Cấp</b>!<br><br>Quản trị viên đã tạm khóa toàn bộ chức năng sao chép tài khoản và mật khẩu.",
+              "Hệ thống đang ở chế độ <b>Khóa Khẩn Cấp</b>!<br><br>Quản trị viên đã tạm khóa chức năng sao chép tài khoản và mật khẩu dành cho khách.",
             icon: "🚨",
             type: "danger",
             onConfirm: isAdmin ? () => toggleEmergencyLock() : null,
@@ -8297,11 +8287,11 @@
       if (isAdmin) void flushAdminAudit();
       setTimeout(autoCheckUnbannedAccounts, 2000);
     </script>
-    <script src="filter-queue.js?v=20261016-mobile-unified-1"></script>
-    <script src="account-privacy.js?v=20261016-mobile-unified-1"></script>
-    <script src="admin-account-tools.js?v=20261016-mobile-unified-1"></script>
-    <script src="telegram-daily.js?v=20261016-mobile-unified-1"></script>
-    <script src="telegram-transfers.js?v=20261016-mobile-unified-1"></script>
-    <script src="dashboard-ui.js?v=20261016-mobile-unified-1"></script>
+    <script src="filter-queue.js?v=20261016-header-visible-1"></script>
+    <script src="account-privacy.js?v=20261016-header-visible-1"></script>
+    <script src="admin-account-tools.js?v=20261016-header-visible-1"></script>
+    <script src="telegram-daily.js?v=20261016-header-visible-1"></script>
+    <script src="telegram-transfers.js?v=20261016-header-visible-1"></script>
+    <script src="dashboard-ui.js?v=20261016-header-visible-1"></script>
   </body>
 </html>

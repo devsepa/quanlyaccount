@@ -94,3 +94,14 @@ Lịch sử Telegram hiển thị 100 mục gần nhất trên thiết bị, g�
 - Telegram background outbox waits for synchronization with silent:true. A known conflict is not automatically retried at the same local revision; foreground conflict dialogs appear once per unchanged revision and use the correct title.
 - Success or explicit use-cloud recovery clears the conflict state. Local data and pending audits are retained on failure.
 - 27/27 regression tests passed, including 10 new tests covering unban moves, normalized types/defaults, actual conflicts, lost responses and silent background behavior. No live Firebase data was modified during verification.
+
+
+## Reference desktop and phone layout — 16/10/2026
+
+- Dedicated styles/layout-refinement.css composes the approved layout without changing cloud/account storage logic.
+- Desktop keeps warehouse cards in one row when all four Admin warehouses are present. Phones use two columns, retain the logo/typewriter/bell, move the original role button into the drawer and retain the greeting role badge.
+- The same original navigation DOM moves into a three-item phone bottom bar, then back to the sidebar above 600px. No duplicate Statistics/Settings IDs or action handlers.
+- Original active/BAN counters sit beside the list heading. Original collapse action joins desktop search controls. The new filter button actually toggles the BAN/history section; Rank choices remain available.
+- Keyboard focus cycling excludes hidden controls. Notifications retain existing visualViewport positioning instead of a fixed mobile top offset.
+- Mock Chrome checks: 1600px/1200px four warehouses share one row; 390px/360px form two rows; 768px also checked. No page overflow or JS errors. Exactly one navigation tree, three phone bottom actions, one Statistics and one Settings control. Filter hide/show, add form, warehouses, search, BAN/Rank/history, settings/cloud/statistics and guest visibility passed.
+- Analytics checked at desktop/390px/360px: modal fits, no body overflow, 30-day bars/details, warehouse scope and all report tabs work. 31 regression tests passed. Tests use synthetic data, with no real cloud writes or Telegram sends. Physical iPhone/Safari remains unverified.
