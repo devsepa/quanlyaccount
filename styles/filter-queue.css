@@ -292,3 +292,18 @@
 
 .fq-group-workers { display:flex; flex-wrap:wrap; gap:5px; width:100%; }
 .fq-worker-tag { display:inline-flex; max-width:100%; box-sizing:border-box; padding:3px 7px; border:1px solid rgba(244,181,65,.28); border-radius:6px; color:#ffe7b8; background:rgba(244,181,65,.1); font-size:.72rem; line-height:1.4; overflow-wrap:anywhere; }
+
+#admin-account-tools { display:flex; flex-wrap:wrap; gap:8px; margin:12px 0; justify-content:center; }
+#admin-account-tools[hidden], .filter-mode .account-list-workspace>#admin-account-tools[hidden] { display:none!important; }
+.filter-mode .account-list-workspace>#admin-account-tools { display:flex!important; }
+.aat-card { max-width:760px; width:100%; text-align:left; overflow:auto; }
+.aat-heading,.aat-query,.aat-pagination { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.aat-heading h3 { margin:0; }
+.aat-query input { flex:1; min-width:0; }
+#aat-message { color:#b7c8df; line-height:1.5; }
+.aat-result { display:flex; flex-direction:column; gap:7px; padding:12px; margin:10px 0; border:1px solid #3c4961; border-radius:10px; background:#111b2d; overflow-wrap:anywhere; }
+.aat-result small { color:#adbeda; }
+.aat-result button { align-self:flex-start; }
+.aat-names { max-height:150px; overflow:auto; line-height:1.7; padding-top:8px; }
+.aat-pagination { margin-top:12px; }
+@media(max-width:500px) { .aat-card { padding:16px 12px; } .aat-query { flex-wrap:wrap; } }

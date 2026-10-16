@@ -2780,6 +2780,7 @@
         updateGreetingUI();
         syncCurrentDevice();
         window.filterQueue?.render();
+        window.adminAccountTools?.refreshRole();
       }
 
       // ==========================================
@@ -7003,20 +7004,26 @@
 
         showNotice({
           title: "Xác Nhận Xóa",
-          message: `Bạn có chắc chắn muốn xóa tài khoản "${item.username}"?`,
+          message: `Bạn có chắc chắn muốn xóa tài khoản "${escapeHtml(item.username)}"? Có thể khôi phục trong Thùng rác 7 ngày.`,
           icon: "🗑️",
           type: "danger",
-          onConfirm: () => {
+          onConfirm: async () => {
             if (!isAdmin) return;
             const removed=accounts.find(a=>a.id===id);
             if (!removed) return;
+            try {
+              const removedVersion=JSON.stringify(removed);
+              await window.adminAccountTools.archive('main',[removed],{},'Xóa acc '+removed.username);
+              if(JSON.stringify(accounts.find(a=>a.id===id))!==removedVersion)throw new Error('Acc vừa thay đổi. Chưa xóa.');
+              if(!isAdmin||JSON.stringify(accounts.find(a=>a.id===id))!==JSON.stringify(removed))throw new Error('Acc hoặc quyền Admin đã thay đổi. Chưa xóa.');
+            } catch(error) {showNotice({title:'Chưa xóa tài khoản',message:escapeHtml(error.message)});return;}
             accounts = accounts.filter((a) => a.id !== id);
             saveData();
             recordAdminAudit("delete",removed);
             renderList();
             triggerAutoSync();
             playSound("delete");
-            showToast("Đã xóa tài khoản!");
+            showToast("Đã xóa. Có thể khôi phục trong Thùng rác 7 ngày.");
           },
         });
       };
@@ -8273,5 +8280,6 @@
     </script>
     <script src="filter-queue.js"></script>
     <script src="account-privacy.js"></script>
+    <script src="admin-account-tools.js"></script>
   </body>
 </html>

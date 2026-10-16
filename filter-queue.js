@@ -332,13 +332,13 @@
       const locations=[...new Set(targets.map(a=>a.category==='chungsuc'?'Chung Sức':'Rank'))].join(', ');
       return `<li><b>${e(row.username)}</b> · ${group?'Nhóm '+e(group.number):'Chưa chia nhóm'} · Có trong: ${locations}${targets.some(a=>a.password!==row.password)?' · <b>Khác mật khẩu</b>':''}${row.status==='transferring'?' · Đang chuyển, tạm bỏ qua':row.status!=='pending'?' · Đang lọc: '+e(row.claimedBy||'Admin'):''}</li>`;
     }).join('');
-    const report=`Tìm thấy <b>${matches.length} acc trùng</b> theo tên tài khoản (không phân biệt hoa/thường).<br>${approved.length} acc có thể xóa khỏi kho cần lọc.${working?'<br><b>Cảnh báo: '+working+' acc đang được lọc.</b>':''}${transferring?'<br>'+transferring+' acc đang chuyển kho được tạm bỏ qua.':''}<ul style="max-height:280px;overflow:auto;text-align:left;overflow-wrap:anywhere;padding-left:20px">${details}</ul>Acc trong kho Rank/Chung Sức được giữ nguyên. Xóa không thể hoàn tác.`;
+    const report=`Tìm thấy <b>${matches.length} acc trùng</b> theo tên tài khoản (không phân biệt hoa/thường).<br>${approved.length} acc có thể xóa khỏi kho cần lọc.${working?'<br><b>Cảnh báo: '+working+' acc đang được lọc.</b>':''}${transferring?'<br>'+transferring+' acc đang chuyển kho được tạm bỏ qua.':''}<ul style="max-height:280px;overflow:auto;text-align:left;overflow-wrap:anywhere;padding-left:20px">${details}</ul>Acc trong kho Rank/Chung Sức được giữ nguyên. Có thể khôi phục trong Thùng rác 7 ngày.`;
     showNotice({title:'Báo cáo acc trùng',type:approved.length?'danger':'info',message:report,...(approved.length?{onConfirm:()=>run(async()=>{
       await waitForMainSave();
       const latest=await transport.read('app_data/accounts');let outcome;
-      const next=await transport.transaction('filter_queue',current=>{
+      const next=await global.adminAccountTools.deleteFilter(transport,current=>{
         outcome=removeFilterDuplicates(current,latest,approved);return outcome.value;
-      });
+      },'Xóa acc trùng');
       rows=isAdmin?next:{};
       if(outcome.removed.length)recordAdminAudit('delete',outcome.removed.map(r=>({...r,category:'filter'})));
       const retained=approved.length-outcome.removed.length;
@@ -349,12 +349,12 @@
     if(!isAdmin||busy)return;
     const group=filterGroupList(rows).find(g=>g.id===id);if(!group)return;
     const working=ordered().filter(r=>r.groupId===id&&r.status!=='pending').map(r=>r.id);
-    showNotice({title:'Xóa Nhóm '+String(group.number).padStart(2,'0')+'?',type:'danger',message:`Xóa nhóm và <b>${group.remaining} acc còn lại</b> trong kho cần lọc? ${group.working?`<br><b>Cảnh báo: ${group.working} acc đang được lọc.</b>`:''}<br>Acc đã chuyển sang Rank hoặc Chung Sức được giữ nguyên. Thao tác không thể hoàn tác.`,onConfirm:()=>run(async()=>{
+    showNotice({title:'Xóa Nhóm '+String(group.number).padStart(2,'0')+'?',type:'danger',message:`Xóa nhóm và <b>${group.remaining} acc còn lại</b> trong kho cần lọc? ${group.working?`<br><b>Cảnh báo: ${group.working} acc đang được lọc.</b>`:''}<br>Acc đã chuyển sang Rank hoặc Chung Sức được giữ nguyên. Có thể khôi phục trong Thùng rác 7 ngày.`,onConfirm:()=>run(async()=>{
       let removed=[];
-      const next=await transport.transaction('filter_queue',current=>{
+      const next=await global.adminAccountTools.deleteFilter(transport,current=>{
         removed=Object.values(current||{}).filter(r=>r&&r.username&&r.groupId===id);
         return removeFilterGroup(current,id,working);
-      });
+      },'Xóa Nhóm '+String(group.number).padStart(2,'0'));
       rows=isAdmin?next:{};
       if(selectedGroup===id)selectGroup('');
       if(removed.length)recordAdminAudit('delete',removed.map(r=>({...r,category:'filter'})));
@@ -391,7 +391,7 @@
   function deleteRow(row) {
     if(!isAdmin)return;
     showNotice({title:'Xóa khỏi kho cần lọc?',type:'danger',message:`Xóa dòng <b>${displayNumber(row)}</b> — <b>${e(row.username)}</b>? Danh sách sẽ được đánh lại STT sau khi xóa.`,onConfirm:()=>run(async()=>{
-      await transport.transaction('filter_queue/'+row.id,current=>{if(!current)throw new Error('Acc đã rời kho.');if(current.status==='transferring')throw new Error('Acc đang chuyển kho.');if(current.owner&&current.owner!==owner())throw new Error('Acc đang được quản trị khác lọc.');return null;});
+      rows=await global.adminAccountTools.deleteFilter(transport,queue=>{const current=queue?.[row.id];if(!current)throw new Error('Acc đã rời kho.');if(current.status==='transferring')throw new Error('Acc đang chuyển kho.');if(current.owner&&current.owner!==owner())throw new Error('Acc đang được quản trị khác lọc.');const next={...queue};delete next[row.id];return next;},'Xóa acc '+row.username);
       delete rows[row.id];recordAdminAudit('delete',{...row,category:'filter'});showToast('Đã xóa dòng khỏi kho cần lọc.');
     })});
   }
@@ -446,7 +446,7 @@
     });
     button.disabled=false;if(error)document.getElementById('fq-transfer-error').textContent=error;
   }
-  global.filterQueue={observeAccounts,writeMainPayload,setActive(value){const changed=active!==!!value;active=!!value&&!!isAdmin;host.hidden=!active;document.body.classList.toggle('filter-mode',active);document.getElementById('storage-tab-filter').classList.toggle('active',active);document.getElementById('storage-tab-filter').setAttribute('aria-pressed',String(active));if(active){render();if(changed)void refresh();listen();}else stop();},render};
+  global.filterQueue={observeAccounts,writeMainPayload,refresh,waitForSave:waitForMainSave,async openAccount(id){await refresh();if(!isAdmin)return;const location=locateFilterAccount(rows,id,PAGE_SIZE);if(!location){showToast('Acc đã rời kho.');return;}selectedGroup=location.groupId;page=location.page;query='';mode='all';focusedAccountId=id;scrollToAccount=true;render();},setActive(value){const changed=active!==!!value;active=!!value&&!!isAdmin;host.hidden=!active;document.body.classList.toggle('filter-mode',active);document.getElementById('storage-tab-filter').classList.toggle('active',active);document.getElementById('storage-tab-filter').setAttribute('aria-pressed',String(active));if(active){render();if(changed)void refresh();listen();}else stop();},render};
   document.getElementById('fq-destination').onchange=event=>{document.getElementById('fq-rank-fields').hidden=event.target.value!=='rank';document.getElementById('rank-popover').classList.remove('show');};
   document.getElementById('fq-confirm-transfer').onclick=transferSelected;
   document.getElementById('fq-cancel-transfer').onclick=()=>{if(!busy){document.getElementById('rank-popover').classList.remove('show');document.getElementById('filter-transfer-modal').classList.remove('show');}};
