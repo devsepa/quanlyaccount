@@ -378,3 +378,7 @@
 .ban-watch-date { color:#ffc1c9; }
 .ban-watch-remaining { color:#e8bf81; }
 @media(max-width:700px){.ban-watch-row { grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px; padding:12px; }.ban-watch-row>strong { grid-column:1/-1; }.ban-watch-remaining { grid-column:2; }}
+
+.ban-watch-row { grid-template-columns:minmax(130px,1.4fr) minmax(80px,.8fr) minmax(70px,.7fr) minmax(115px,1fr) minmax(85px,.7fr) auto; }
+.ban-watch-edit { white-space:nowrap; min-height:38px; font-size:.75rem; }
+@media(max-width:850px){.ban-watch-row { grid-template-columns:repeat(2,minmax(0,1fr)); }.ban-watch-row>strong { grid-column:1/-1; }.ban-watch-edit { justify-self:start; grid-column:1/-1; }}

@@ -763,7 +763,7 @@
         <div class="zone-divider-left">
           <span class="zone-badge zone-badge-player">KHU VỰC 2</span>
           <span class="zone-title-text"
-            >🎮 DANH SÁCH TÀI KHOẢN • CHỌN ACC ĐỂ CHƠI</span
+            >🎮 DANH SÁCH TÀI KHOẢN • LỰA CHỌN</span
           >
         </div>
         <div class="zone-desc-text">
@@ -4229,17 +4229,20 @@
         return !!item && (item.unbanReviewPending === true || checkBanStatus(item.unlockDate,item).isJustUnbanned === true);
       }
       function accountWarehouse(item) {
-        return needsUnbanReview(item)?'unban':item?.category==='chungsuc'?'chungsuc':'rank';
+        if(needsUnbanReview(item))return 'unban';
+        if(item?.category==='chungsuc')return 'chungsuc';
+        return checkBanStatus(item?.unlockDate,item).isBanned?'banned':'rank';
       }
       window.revealAccountLocation=function(id){
         const item=accounts.find(a=>a.id===id);if(!item)return false;
-        const destination=accountWarehouse(item);
-        if(destination==='unban'&&!isAdmin)return false;
+        const view=accountWarehouse(item),destination=view==='banned'?'rank':view;
+        if(['unban','banned'].includes(view)&&!isAdmin)return false;
         activeRankFilter='all';currentSearchQuery='';
         if(searchAccountInput)searchAccountInput.value='';
         switchAccountStorage(destination,false);
-        document.querySelectorAll('.rank-nav-chip').forEach(chip=>chip.classList.toggle('active',chip.getAttribute('data-rank')==='all'));
-        if(destination!=='chungsuc')uncollapseRankGroup(parseRankGroup(item.rank).key);
+        activeRankFilter=view==='banned'?'banned':'all';
+        document.querySelectorAll('.rank-nav-chip').forEach(chip=>chip.classList.toggle('active',chip.getAttribute('data-rank')===activeRankFilter));
+        if(destination==='rank'&&view!=='banned')uncollapseRankGroup(parseRankGroup(item.rank).key);
         renderList();triggerAccountGlowAndScroll(item.id,true);return true;
       };
       function updateUnbanWarehouseUI() {
@@ -5809,14 +5812,23 @@
         });
       };
 
+      window.editBannedAccountDate=function(id){
+        if(!isAdmin)return;const item=accounts.find(a=>a.id===id);if(!item||accountWarehouse(item)!=='banned')return;
+        showNotice({title:'Sửa ngày mở BAN',type:'confirm',message:`Tài khoản <b>${escapeHtml(item.username)}</b><br><label for="ban-watch-edit-date">Ngày mở BAN (dd/MM)</label><input id="ban-watch-edit-date" type="text" inputmode="numeric" maxlength="5" value="${escapeHtml(item.unlockDate||'')}" oninput="formatDateOnlyNumbers(this)" placeholder="Ví dụ: 25/10"><br>Đến ngày này, acc được đưa vào kho chờ kiểm tra.`,onConfirm:()=>{
+          if(!isAdmin)return;const value=document.getElementById('ban-watch-edit-date')?.value.trim();
+          if(!value||!isValidUnlockDate(value)){showNotice({title:'Ngày chưa hợp lệ',message:'Nhập ngày có thật theo dd/MM, ví dụ 25/10.'});return;}
+          updateField(id,'unlockDate',value);window.revealAccountLocation(id);
+        }});
+      };
+
       function renderBannedWatch(items) {
         const now=Date.now();
         const banned=items.filter(item=>checkBanStatus(item.unlockDate,item).isBanned)
           .filter(item=>!currentSearchQuery||String(item.username||'').toLowerCase().includes(currentSearchQuery))
           .sort((a,b)=>(parseUnlockTargetTimestamp(a.unlockDate)||Infinity)-(parseUnlockTargetTimestamp(b.unlockDate)||Infinity));
-        displayArea.innerHTML=`<section class="ban-watch"><h3>🚫 Acc đang BAN · ${banned.length} acc</h3><p>Chỉ theo dõi, sắp theo ngày mở BAN gần nhất. Đến ngày mở BAN, acc tự chuyển sang kho chờ kiểm tra.</p><div class="ban-watch-list">${banned.map(item=>{
+        displayArea.innerHTML=`<section class="ban-watch"><h3>🚫 Acc đang BAN · ${banned.length} acc</h3><p>Danh sách theo dõi riêng, sắp theo ngày mở BAN gần nhất. Đến ngày mở BAN, acc tự chuyển sang kho chờ kiểm tra.</p><div class="ban-watch-list">${banned.map(item=>{
           const target=parseUnlockTargetTimestamp(item.unlockDate),days=target?Math.max(0,Math.ceil((target-now)/86400000)):null;
-          return `<article class="ban-watch-row"><strong>${escapeHtml(item.username)}</strong><span>Rank: <b>${escapeHtml(item.rank||'Chưa rank')}</b></span><span>Uy tín: ${escapeHtml(item.uyTin||'—')}</span><span class="ban-watch-date">Mở BAN: <b>${escapeHtml(item.unlockDate)}</b></span><span class="ban-watch-remaining">${days===null?'Chưa rõ thời hạn':'Còn '+days+' ngày'}</span></article>`;
+          return `<article class="ban-watch-row" id="acc-row-${item.id}"><strong>${escapeHtml(item.username)}</strong><span>Rank: <b>${escapeHtml(item.rank||'Chưa rank')}</b></span><span>Uy tín: ${escapeHtml(item.uyTin||'—')}</span><span class="ban-watch-date">Mở BAN: <b>${escapeHtml(item.unlockDate)}</b></span><span class="ban-watch-remaining">${days===null?'Chưa rõ thời hạn':'Còn '+days+' ngày'}</span><button type="button" class="btn btn-tool ban-watch-edit" onclick="editBannedAccountDate('${item.id}')">✎ Sửa ngày BAN</button></article>`;
         }).join('')||'<div class="fq-empty">Không có tài khoản đang BAN phù hợp.</div>'}</div></section>`;
       }
 
@@ -5856,11 +5868,13 @@
           return accountWarehouse(a)===currentStorage;
         }).sort((a,b)=>(Number(b.createdTimestamp)||filterTransferTime(b))-(Number(a.createdTimestamp)||filterTransferTime(a)));
 
-        let banCount = 0;
-        storageAccounts.forEach((a) => {
+        const rankBannedAccounts=accounts.filter(a=>accountWarehouse(a)==='banned');
+        let banCount = currentStorage==='rank'?rankBannedAccounts.length:0;
+        if(currentStorage!=='rank')storageAccounts.forEach((a) => {
           if (checkBanStatus(a.unlockDate).isBanned) banCount++;
         });
-        const activeCount = storageAccounts.length - banCount;
+        const activeCount = currentStorage==='rank'?storageAccounts.length:storageAccounts.length-banCount;
+        const storageCount=currentStorage==='rank'?rankTotal:storageAccounts.length;
         const watchTab=document.getElementById('tab-banned-watch');
         if(watchTab)watchTab.hidden=!isAdmin||currentStorage!=='rank';
         const watchCount=document.getElementById('banned-watch-count');if(watchCount)watchCount.textContent=banCount;
@@ -5870,7 +5884,7 @@
           currentStorage === "unban" ? "Vừa mở BAN" : currentStorage === "chungsuc" ? "Chung Sức" : "Chơi Rank";
 
         if (statCount)
-          statCount.textContent = `${storageAccounts.length} nick [${storeTagLabel}]`;
+          statCount.textContent = `${storageCount} nick [${storeTagLabel}]`;
         if (statActive)
           statActive.innerHTML = `<span class="status-dot-active" style="margin-right: 5px; vertical-align: middle;"></span>${activeCount} hoạt động`;
         if (statBan) statBan.innerHTML = `🚫 ${banCount} ban`;
@@ -5896,7 +5910,7 @@
         if (createdTabCount)
           createdTabCount.textContent = storageAccounts.length;
 
-        if(fRank==='banned'&&isAdmin&&currentStorage==='rank'){renderBannedWatch(storageAccounts);return;}
+        if(fRank==='banned'&&isAdmin&&currentStorage==='rank'){renderBannedWatch(rankBannedAccounts);return;}
 
         displayArea.innerHTML = "";
 
@@ -5934,10 +5948,10 @@
 
           if (currentSearchQuery) {
             if (statCount)
-              statCount.innerHTML = `<span style="color: #38bdf8;">Khớp ${historyList.length}/${storageAccounts.length} nick [${storeTagLabel}]</span>`;
+              statCount.innerHTML = `<span style="color: #38bdf8;">Khớp ${historyList.length}/${storageCount} nick [${storeTagLabel}]</span>`;
           } else {
             if (statCount)
-              statCount.textContent = `${storageAccounts.length} nick [${storeTagLabel}]`;
+              statCount.textContent = `${storageCount} nick [${storeTagLabel}]`;
           }
 
           if (historyList.length === 0) {
@@ -6203,10 +6217,10 @@
           const matchCount =
             fRank === "recent" ? recentAccounts.length : filtered.length;
           if (statCount)
-            statCount.innerHTML = `<span style="color: #38bdf8;">Khớp ${matchCount}/${storageAccounts.length} nick [${storeTagLabel}]</span>`;
+            statCount.innerHTML = `<span style="color: #38bdf8;">Khớp ${matchCount}/${storageCount} nick [${storeTagLabel}]</span>`;
         } else {
           if (statCount)
-            statCount.textContent = `${storageAccounts.length} nick [${storeTagLabel}]`;
+            statCount.textContent = `${storageCount} nick [${storeTagLabel}]`;
         }
 
         if (fRank !== "recent" && filtered.length === 0) {
