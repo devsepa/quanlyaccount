@@ -377,7 +377,7 @@
 .ban-watch>p { color:#abbdd5; font-size:.8rem; line-height:1.5; margin:0 0 10px; }
 .ban-watch-list { display:grid; grid-template-columns:minmax(0,1fr); gap:6px 10px; min-width:0; }
 @container(min-width:1160px) { .ban-watch-list { grid-template-columns:repeat(2,minmax(0,1fr)); } }
-.ban-watch .ban-watch-row { display:grid; grid-template-columns:minmax(0,1fr) 140px 92px 190px; align-items:center; gap:10px; padding:8px 10px; margin:0; border:1px solid #354052; border-left:2px solid #b96275; border-radius:7px; background:#161e2c; box-sizing:border-box; min-width:0; max-width:100%; color:#dfe8f6; font-size:.8rem; }
+.ban-watch .ban-watch-row { display:grid; grid-template-columns:minmax(0,1fr) 140px 92px 190px; align-items:center; gap:10px; padding:8px 10px; margin:0; border:1px solid #354052; border-left:2px solid #b96275; border-radius:7px; background:#111827; box-sizing:border-box; min-width:0; max-width:100%; color:#dfe8f6; font-size:.8rem; }
 .ban-watch-row>div { min-width:0; }
 .ban-watch-account strong { font:700 .82rem/1.5 'JetBrains Mono',monospace; overflow-wrap:anywhere; }
 .ban-watch-status { display:none; }

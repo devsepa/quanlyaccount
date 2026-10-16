@@ -61,7 +61,7 @@
   async function flush(){if(running||!isAdmin||document.hidden||navigator.onLine===false||!queue.length)return;const config=getTeleConfig();if(!config?.token||!config?.chatId)return;running=true;let delay=1000;
     try{
       // Local moves are announced only after main-list synchronization succeeds.
-      await global.filterQueue.waitForSave();
+      await global.filterQueue.waitForSave({silent:true});
       const notice=queue[0];if(Date.now()-notice.timestamp>86400000){track(notice,'expired');queue.shift();save();return;}
       track(notice,'sending');
       const result=await sender.send({...config,chatId:normalizeTelegramChatId(config.chatId)},notice);

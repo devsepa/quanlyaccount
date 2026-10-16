@@ -10,7 +10,7 @@
     <link rel="icon" type="image/png" href="logo.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=2" />
     <link rel="manifest" href="site.webmanifest" />
-    <meta name="theme-color" content="#0f172a" />
+    <meta name="theme-color" content="#0B1220" />
     <meta name="apple-mobile-web-app-title" content="AOV Manager" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -19,10 +19,12 @@
       rel="stylesheet"
     />
     <!-- Ordered stylesheets: preserve base → workspace → controls cascade. -->
-    <link rel="stylesheet" href="styles/core.css?v=20261016-filter-no-search-1" />
-    <link rel="stylesheet" href="styles/workspace.css?v=20261016-filter-no-search-1" />
-    <link rel="stylesheet" href="styles/controls.css?v=20261016-filter-no-search-1" />
-    <link rel="stylesheet" href="styles/filter-queue.css?v=20261016-filter-no-search-1" />
+    <link rel="stylesheet" href="styles/core.css?v=20261016-mobile-unified-1" />
+    <link rel="stylesheet" href="styles/workspace.css?v=20261016-mobile-unified-1" />
+    <link rel="stylesheet" href="styles/controls.css?v=20261016-mobile-unified-1" />
+    <link rel="stylesheet" href="styles/filter-queue.css?v=20261016-mobile-unified-1" />
+    <link rel="stylesheet" href="styles/dashboard.css?v=20261016-mobile-unified-1" />
+    <link rel="stylesheet" href="styles/analytics.css?v=20261016-mobile-unified-1" />
     <style>
       #page-loader {display:none;}
       html.page-loading #page-loader {display:flex;position:fixed;inset:0;z-index:100000;align-items:center;justify-content:center;flex-direction:column;gap:14px;background:#0d1422;color:#c5d0e3;font:13px/1.5 system-ui,sans-serif;}
@@ -1892,7 +1894,7 @@
             <div class="analytics-icon-badge">📊</div>
             <div>
               <div class="analytics-title-main">
-                <span id="analytics-dialog-title">Phân tích kho tài khoản</span>
+                <span id="analytics-dialog-title">Thống kê tài khoản</span>
                 <span
                   class="badge"
                   style="
@@ -1914,6 +1916,7 @@
             class="analytics-close-btn"
             onclick="closeAnalyticsModal()"
             title="Đóng bảng thống kê (Esc)"
+            aria-label="Đóng thống kê"
           >
             ✕
           </button>
@@ -2002,7 +2005,7 @@
                 <div class="analytics-kpi-val" id="analytics-kpi-contributors">
                   0
                 </div>
-                <div class="analytics-kpi-lbl">Người Thêm Nick</div>
+                <div class="analytics-kpi-lbl">Thiết bị/nhóm</div>
                 <div
                   class="analytics-kpi-sub"
                   id="analytics-kpi-contributors-sub"
@@ -2025,7 +2028,7 @@
               </div>
               <div>
                 <div class="analytics-kpi-val" id="analytics-kpi-rate">0%</div>
-                <div class="analytics-kpi-lbl">Tỷ Lệ Hoạt Động</div>
+                <div class="analytics-kpi-lbl">Tỷ lệ hoạt động</div>
                 <div class="analytics-kpi-sub" id="analytics-kpi-rate-sub">
                   0 sẵn sàng • 0 ban
                 </div>
@@ -2353,7 +2356,7 @@
     <!-- CONTAINER THẺ THÔNG BÁO GÓC DƯỚI BÊN TRÁI KHI THÊM ACC MỚI -->
     <div id="activity-toast-container" class="activity-toast-container"></div>
 
-    <script src="analytics-report.js?v=20261016-filter-no-search-1"></script>
+    <script src="analytics-report.js?v=20261016-mobile-unified-1"></script>
     <script>
       // BẮT MỌI LỖI RUNTIME NẾU CÓ ĐỂ KHÔNG BAO GIỜ BỊ ĐƠ WEB
       window.addEventListener("error", function (e) {
@@ -3420,6 +3423,7 @@
         }
       }
 
+      let headerKnownNotificationIds = null;
       function updateNotiBadge() {
         const notiBadge = document.getElementById("noti-badge-count");
         const btnBell = document.getElementById("btn-open-noti");
@@ -3427,6 +3431,17 @@
 
         const list = getNotificationList();
         const unreadCount = list.filter((item) => !item.read).length;
+        const notificationIds = new Set(list.map(item => String(item.id)));
+        const hasNewUnread = headerKnownNotificationIds !== null && list.some(item =>
+          !item.read && !headerKnownNotificationIds.has(String(item.id)));
+        headerKnownNotificationIds = notificationIds;
+        if (hasNewUnread && !document.hidden && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          btnBell.classList.remove('dashboard-bell-arrival');
+          void btnBell.offsetWidth;
+          btnBell.classList.add('dashboard-bell-arrival');
+          btnBell.addEventListener('animationend', () => btnBell.classList.remove('dashboard-bell-arrival'), { once: true });
+        }
+
 
         if (unreadCount > 0) {
           notiBadge.textContent = unreadCount > 99 ? "99+" : unreadCount;
@@ -5463,6 +5478,8 @@
         catch (_) { adminAuditMessage="Không lưu được nhật ký trên máy. Hãy giữ trang mở và thử đồng bộ lại."; return false; }
       }
       let accountAuditSaveError = "";
+      let syncConflictRevision = null;
+      let lastSyncConflictNotice = "";
       let pendingAccountAudits = [];
       try { pendingAccountAudits = JSON.parse(localStorage.getItem('lq_account_audit_waiting') || '[]'); } catch (_) {}
       if (!Array.isArray(pendingAccountAudits)) pendingAccountAudits=[];
@@ -7457,7 +7474,7 @@
           error: syncPending ? "Còn thay đổi trên máy — chưa đồng bộ" : "Chưa tải được dữ liệu — thử lại",
           offline: syncPending ? "Mất mạng — còn thay đổi chưa đồng bộ trên máy" : "Đang mất mạng — dữ liệu có thể chưa cập nhật",
         };
-        bar.dataset.state = state; text.textContent = labels[state] || labels.loading;
+        bar.dataset.state = state; text.textContent = syncPending&&syncConflictRevision===localSyncRevision ? "Xung đột dữ liệu — bản trên máy chưa được lưu. Mở cloud để xử lý." : labels[state] || labels.loading;
         const conflictButton=document.getElementById('sync-use-cloud');
         if(conflictButton)conflictButton.hidden=!isAdmin||pushInFlight||offline||!accountAuditSaveError.includes('thiết bị khác');
         if (cloudStatusIcon) cloudStatusIcon.textContent = ({ loading: "⏳", saving: "⏳", saved: "🟢", updated: "🟢", pending: "⏳", error: "⚠️", offline: "📴" })[state];
@@ -7481,7 +7498,7 @@
             if(!isAdmin||pushInFlight||revision!==localSyncRevision)throw new Error('Có thay đổi mới trên máy; chưa thay danh sách.');
             if(!createAutoSnapshot(accounts))throw new Error('Chưa sao lưu được bản trên máy; chưa thay danh sách. Hãy tải file sao lưu trước.');
             clearTimeout(autoSyncTimer);accounts=list;window.filterQueue?.observeAccounts(list);saveData();
-            pendingAccountAudits=[];saveWaitingAudits();accountAuditSaveError='';markSyncPending(false);syncState='updated';renderList();renderSyncStatus();renderAdminAudit();
+            pendingAccountAudits=[];saveWaitingAudits();accountAuditSaveError='';syncConflictRevision=null;lastSyncConflictNotice='';markSyncPending(false);syncState='updated';renderList();renderSyncStatus();renderAdminAudit();
             showToast('Đã dùng bản cloud. Bản cũ được giữ trong sao lưu tự động.');
           }catch(error){showToast(escapeHtml(error.message));}
         }});
@@ -7705,7 +7722,7 @@
 
       // 2. ĐẨY DỮ LIỆU LÊN FIREBASE (PUSH)
       async function pushToCloud(silent = false) {
-        if (pushInFlight) return;
+        if (pushInFlight || (silent && syncConflictRevision === localSyncRevision)) return;
         clearTimeout(autoSyncTimer);
         markSyncPending(true);
         if (navigator.onLine === false) { renderSyncStatus(); return; }
@@ -7739,7 +7756,7 @@
               });
 
           if (res.ok) {
-            accountAuditSaveError="";
+            accountAuditSaveError="";syncConflictRevision=null;lastSyncConflictNotice="";
             const submittedAccounts=new Map(payload.accounts.map(a=>[String(a.id),a]));
             for (const job of auditBatch) {
               const applied=job.items.every(target=>{
@@ -7774,14 +7791,14 @@
           }
         } catch (err) {
           console.error("Lỗi pushToCloud:", err);
+          const conflict=err.code==='ACCOUNT_CONFLICT';
+          if(conflict)syncConflictRevision=revision;
           accountAuditSaveError=err.message || "Mất kết nối. Thao tác chưa được Firebase xác nhận.";
-          updateCloudUI("⚠️", "Lỗi kết nối");
-          if (!silent) {
-            showNotice({
-              title: "Lỗi Kết Nối",
-              message: escapeHtml(err.message || "Không thể kết nối đến máy chủ Firebase!"),
-              icon: "❌",
-            });
+          updateCloudUI("⚠️",conflict?"Xung đột dữ liệu":"Lỗi kết nối");
+          const noticeKey=String(revision)+':'+accountAuditSaveError;
+          if(!silent&&(!conflict||noticeKey!==lastSyncConflictNotice)){
+            if(conflict)lastSyncConflictNotice=noticeKey;
+            showNotice({title:conflict?"Xung đột dữ liệu":"Lỗi Kết Nối",message:escapeHtml(accountAuditSaveError),icon:conflict?"⚠️":"❌"});
           }
         } finally {
           clearTimeout(pushTimeout);
@@ -8280,10 +8297,11 @@
       if (isAdmin) void flushAdminAudit();
       setTimeout(autoCheckUnbannedAccounts, 2000);
     </script>
-    <script src="filter-queue.js?v=20261016-filter-no-search-1"></script>
-    <script src="account-privacy.js?v=20261016-filter-no-search-1"></script>
-    <script src="admin-account-tools.js?v=20261016-filter-no-search-1"></script>
-    <script src="telegram-daily.js?v=20261016-filter-no-search-1"></script>
-    <script src="telegram-transfers.js?v=20261016-filter-no-search-1"></script>
+    <script src="filter-queue.js?v=20261016-mobile-unified-1"></script>
+    <script src="account-privacy.js?v=20261016-mobile-unified-1"></script>
+    <script src="admin-account-tools.js?v=20261016-mobile-unified-1"></script>
+    <script src="telegram-daily.js?v=20261016-mobile-unified-1"></script>
+    <script src="telegram-transfers.js?v=20261016-mobile-unified-1"></script>
+    <script src="dashboard-ui.js?v=20261016-mobile-unified-1"></script>
   </body>
 </html>

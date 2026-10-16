@@ -39,3 +39,58 @@ Lịch sử Telegram hiển thị 100 mục gần nhất trên thiết bị, g�
 ## Khi cập nhật lần sau
 
 Đổi đồng thời mã `?v=` của các CSS và JS nội bộ trong index.html. Giữ một mã cho toàn bộ tài nguyên trong cùng lần phát hành.
+
+
+## Minimal Dark Dashboard — 16/10/2026
+
+- Minimal Dark theme: styles/dashboard.css loads last. dashboard-ui.js delegates existing controls and mirrors existing counters; no additional API or storage is introduced.
+- Desktop checked with Chrome headless at 1600×1100; mobile emulation at 390×844 and 360×800. No horizontal overflow or JavaScript errors in the mocked preview; table/card switching and sidebar open/close verified.
+- Preview uses synthetic account records and intercepts Firebase/Telegram requests. It does not modify live records or send real messages.
+- Run `node --test tests/quality-regression.test.cjs` for regression checks.
+- Physical Android Chrome and iPhone Safari still require a final device check. Chrome viewport emulation does not establish Safari compatibility.
+
+- Mock browser interaction checks passed: add form opens, warehouse selection changes to Chung Sức, username search returns one matching card, guest hides Admin/filter/unban controls. Real clipboard access and real cloud mutations were not exercised in this UI preview.
+
+
+## Dashboard consolidation — 16/10/2026
+
+- Removed the duplicated overview cards; original warehouse cards retain counts and selection handlers.
+- Sidebar now contains Accounts, Statistics and Settings. Statistics/Settings reuse the original DOM buttons and handlers. The original settings popup is attached to body to avoid sidebar clipping.
+- Moved the original cloud status/retry/conflict controls to the sidebar footer; active/BAN counters appear once beside the account list.
+- Browser mock checks: exactly three sidebar buttons, no duplicated overview, one settings button, one cloud-status control; settings popup fits mobile viewport; cloud/statistics panels open, sidebar closes when a panel opens.
+- Desktop 1600px and mobile 390px/360px retain correct table/card mode with no horizontal overflow or JavaScript errors. Add form, warehouse switch, search, Rank/BAN/history and guest visibility checks passed.
+
+
+## Phone layout — 16/10/2026
+
+- Dedicated rules at 600px and below: compact header, two-column warehouse tiles, grouped Admin actions, horizontally scrollable Rank/history filters, and account-first mobile cards.
+- Mobile account cards show credentials and editing/copy controls before the usage/creation metadata. Transfer, copy, delete and unban destination actions remain available.
+- Chrome device emulation at 390px/360px: no page overflow or JavaScript errors; account cards visible, desktop tables hidden. Sidebar/settings/cloud/statistics, add-form opening, warehouse selection, search, Rank/BAN/history and guest visibility passed against mock data.
+- Desktop 1600px retains the table layout. Physical iPhone Safari / Android devices still need a device check; no live clipboard/cloud writes were used for this UI verification.
+
+
+## Analytics presentation — 16/10/2026
+
+- New scoped styles/analytics.css redesigns the report modal: filter panel, four KPI cards, sticky report tabs, grouped chart/table sections and full-screen phone layout.
+- Report calculations, account data and API/storage behavior are unchanged. Date-range and warehouse filters retain their original handlers.
+- Chrome mock checks at 1600px, 390px and 360px: modal fits viewport and report body has no horizontal overflow or JavaScript errors. Wide mobile tables scroll inside their own containers.
+- Confirmed 30 chart columns for the 30-day filter; selecting a column opens details. Chung Sức filter returns the expected 2 mock accounts; all four report tabs open correctly.
+- Existing regression suite: 17/17 passed. Physical Safari/iPhone/Android checks and real service writes are not part of this UI preview.
+
+
+## Layout balance and motion — 16/10/2026
+
+- Same brand DOM element moves to the top of the sidebar on desktop and returns to the header below 1101px. No duplicate brand/typewriter IDs; existing typing animation remains attached.
+- Desktop header shows page context; warehouse heading aligns with the content edge. Brand dimensions reserve space to avoid layout jumps while text types/deletes.
+- Added brief staggered card entrance, fine-pointer hover lift, button press feedback and sidebar/modal fade/slide. Reduced-motion styles suppress these effects; typewriter initializes to static devsepa when reduced motion is selected.
+- Rank column reserves more room for BK/KC/TA/CT/DCT abbreviations. Narrow desktop tables scroll within their container to retain readable controls.
+- Mock Chrome checks: one brand at desktop/mobile; sidebar width remains within bounds; 1600px, 390px and 360px have no page overflow or JS errors. Menu/settings/cloud/statistics, forms, warehouse/search/Rank/BAN/history and guest visibility passed. Regression suite: 17/17 passed.
+
+
+## False sync conflict and repeated dialogs — 16/10/2026
+
+- Reproduced an unban-to-Rank move failing when Firebase omitted unbanCleared/unbanReviewedAt but the local normalized baseline contained false/0. Numeric trust values vs UI strings could cause the same false conflict.
+- Merge comparisons now use the same default/string/number/boolean semantics as account normalization. Actual conflicting values still throw ACCOUNT_CONFLICT without overwriting cloud data.
+- Telegram background outbox waits for synchronization with silent:true. A known conflict is not automatically retried at the same local revision; foreground conflict dialogs appear once per unchanged revision and use the correct title.
+- Success or explicit use-cloud recovery clears the conflict state. Local data and pending audits are retained on failure.
+- 27/27 regression tests passed, including 10 new tests covering unban moves, normalized types/defaults, actual conflicts, lost responses and silent background behavior. No live Firebase data was modified during verification.

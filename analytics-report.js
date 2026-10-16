@@ -132,6 +132,35 @@ function inspectDailyAccounts(dateKey) {
   card.scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
 
+function analyticsDeviceGroups(raw) {
+  const devices = Object.entries(raw || {}).filter(([, d]) => d && typeof d === "object" &&
+    (d.isAdmin === true || d.status === "blocked" ||
+      (isValidUserName(d.userName) && d.userName.trim().toLowerCase() !== "khách")))
+    .map(([id, d]) => ({ ...d, id }));
+  return { groups: groupDeviceRecords(devices).length, browsers: devices.length };
+}
+let analyticsDevicesLoading = false;
+async function refreshAnalyticsDeviceGroups() {
+  if (!isAdmin) {
+    analyticsSetText("analytics-kpi-contributors", "—");
+    analyticsSetText("analytics-kpi-contributors-sub", "Cần quyền quản trị để xem thiết bị");
+    return;
+  }
+  if (analyticsDevicesLoading) return;
+  analyticsDevicesLoading = true;
+  analyticsSetText("analytics-kpi-contributors", "…");
+  analyticsSetText("analytics-kpi-contributors-sub", "Đang tải thiết bị/nhóm");
+  try {
+    const stats = analyticsDeviceGroups(await readDeviceRecords());
+    if (!isAdmin) return;
+    analyticsSetText("analytics-kpi-contributors", stats.groups);
+    analyticsSetText("analytics-kpi-contributors-sub", `${stats.browsers} trình duyệt · Toàn hệ thống`);
+  } catch (_) {
+    analyticsSetText("analytics-kpi-contributors", "—");
+    analyticsSetText("analytics-kpi-contributors-sub", "Chưa tải được thiết bị · Bấm Tính lại");
+  } finally { analyticsDevicesLoading = false; }
+}
+
 function renderAnalyticsData() {
   const scope = getAnalyticsScope();
   const report = buildAnalyticsReport(scope);
@@ -148,8 +177,7 @@ function renderAnalyticsData() {
   analyticsSetText("analytics-kpi-total-sub", `${report.rank} rank · ${report.event} chung sức`);
   analyticsSetText("analytics-kpi-usage", report.usage.toLocaleString("vi-VN"));
   analyticsSetText("analytics-kpi-usage-sub", "Bộ đếm hiện có của acc đã chọn");
-  analyticsSetText("analytics-kpi-contributors", [...report.contributors.keys()].filter(x => x !== "Không rõ").length);
-  analyticsSetText("analytics-kpi-contributors-sub", `${report.contributors.get("Không rõ") || 0} acc chưa rõ người thêm`);
+  refreshAnalyticsDeviceGroups();
   analyticsSetText("analytics-kpi-rate", report.activeRate === null ? "—" : `${report.activeRate}%`);
   analyticsSetText("analytics-kpi-rate-sub", report.total ? `${report.active} sẵn sàng · ${report.banned} BAN` : "Chưa có dữ liệu");
 

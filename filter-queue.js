@@ -158,11 +158,24 @@
     return { ["app_data/warehouseNotices/"+notice.id]:notice, ["app_data/accounts/" + destination.id]: destination, "app_data/updatedAt": now, ["filter_queue/" + row.id]: null };
   }
   function mergeMainAccounts(remote, local, baseline) {
-    const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+    // Compare persisted and UI-normalized records using the same field semantics.
+    const textFields=new Set(['username','password','rank','uyTin','unlockDate','lastUsed','lastUsedBy','createdBy','createdAt','sourceBatch','unbanReviewedBy']);
+    const numberFields=new Set(['createdTimestamp','filterTransferredAt','unbanReviewedAt','lastUsedTime','useCount']);
+    const boolFields=new Set(['unbanReviewPending','unbanCleared','inRecent']);
+    function value(field,item){
+      if(textFields.has(field))return String(item??'');
+      if(numberFields.has(field))return Number(item)||0;
+      if(boolFields.has(field))return item===true;
+      if(field==='category')return item==='chungsuc'?'chungsuc':'rank';
+      if(field==='sourceWarehouse')return item==='filter'?'filter':'';
+      return item;
+    }
+    const sameField=(field,a,b)=>JSON.stringify(value(field,a))===JSON.stringify(value(field,b));
+    const same=(a,b)=>!!a&&!!b&&[...new Set([...Object.keys(a),...Object.keys(b)])].every(field=>sameField(field,a[field],b[field]));
     const prior=new Map((baseline||[]).map(a=>[String(a.id),a]));
     const latest=new Map((remote||[]).filter(Boolean).map(a=>[String(a.id),a]));
     const localIds=new Set(local.map(a=>String(a.id)));
-    const conflict=()=>{throw new Error('Acc vừa được sửa trên thiết bị khác. Chưa ghi đè; giữ bản trên máy để đối chiếu trước khi đồng bộ lại.');};
+    const conflict=()=>{const error=new Error('Bản trên máy và cloud có thay đổi khác nhau, có thể từ thiết bị khác. Chưa ghi đè; giữ bản trên máy để đối chiếu trước khi đồng bộ lại.');error.code='ACCOUNT_CONFLICT';throw error;};
     prior.forEach((before,id)=>{
       if(!localIds.has(id)){
         if(latest.has(id)&&!same(latest.get(id),before))conflict();
@@ -180,8 +193,8 @@
       if(!current)conflict();
       const merged={...current};
       for(const field of new Set([...Object.keys(before),...Object.keys(a)])){
-        if(same(a[field],before[field]))continue;
-        if(!same(current[field],before[field])&&!same(current[field],a[field]))conflict();
+        if(sameField(field,a[field],before[field]))continue;
+        if(!sameField(field,current[field],before[field])&&!sameField(field,current[field],a[field]))conflict();
         if(Object.hasOwn(a,field))merged[field]=a[field];else delete merged[field];
       }
       latest.set(id,merged);
@@ -458,10 +471,10 @@
     ['fq-rank','fq-trust','fq-unlock'].forEach(id=>document.getElementById(id).value='');document.getElementById('fq-destination').value='rank';document.getElementById('fq-rank-fields').hidden=false;
     document.getElementById('fq-transfer-error').textContent='';modal.classList.add('show');
   }
-  async function waitForMainSave() {
+  async function waitForMainSave({silent=false}={}) {
     const start=Date.now();
     while(pushInFlight){if(Date.now()-start>22000)throw new Error('Đang đồng bộ danh sách chính. Hãy thử chuyển lại sau.');await new Promise(r=>setTimeout(r,100));}
-    if(syncPending)await pushToCloud(false);
+    if(syncPending)await pushToCloud(silent);
     if(syncPending||pushInFlight)throw new Error('Danh sách chính còn thay đổi chưa đồng bộ. Hãy lưu thành công trước khi chuyển.');
   }
   async function transferSelected() {
