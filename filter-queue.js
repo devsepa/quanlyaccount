@@ -2,23 +2,21 @@
   "use strict";
   const keyOf = value => String(value || "").trim().toLowerCase();
   function parseFilterTxt(text) {
-    const rows = [], errors = [], numbers = new Set(), names = new Set();
+    const rows = [], errors = [], names = new Set();
     const lines = String(text).replace(/^\uFEFF/, "").split(/\r\n|\n|\r/);
     if (lines.length > 5000) throw new Error("Mỗi file tối đa 5.000 dòng.");
     let duplicates = 0;
     lines.forEach((line, index) => {
       if (!line.trim()) return;
-      const match = line.trim().match(/^(\d+)\.\s*([^:\s]+):(.+)$/);
-      if (!match || !Number.isSafeInteger(Number(match[1])) || Number(match[1]) < 1 || !match[3].trim()) {
+      const normalized = line.trim().replace(/^\d+\.\s*/, "");
+      const match = normalized.match(/^([^:\s]+):(.+)$/);
+      if (!match || !match[2].trim()) {
         errors.push(index + 1); return;
       }
-      const number = String(Number(match[1]));
-      if (numbers.has(number)) { errors.push(index + 1); return; }
-      numbers.add(number);
-      const username = match[2].trim(), password = match[3].trim();
+      const username = match[1].trim(), password = match[2].trim();
       if (names.has(keyOf(username))) { duplicates++; return; }
       names.add(keyOf(username));
-      rows.push({ sourceNumber: match[1], sourceLine: index + 1, username, password });
+      rows.push({ sourceNumber: String(index + 1), sourceLine: index + 1, username, password });
     });
     return { rows, errors, duplicates };
   }
@@ -150,7 +148,8 @@
   const owner = () => getOrCreateDeviceId();
   const eligible = () => { if(!isAdmin)throw new Error("Chỉ quản trị viên được thao tác."); if(navigator.onLine===false)throw new Error("Cần có mạng để thao tác trong kho cần lọc."); };
   function message(value) { error=value; render(); }
-  function ordered() { return Object.values(rows).filter(r=>r&&r.id&&r.username).sort((a,b)=>Number(a.importedAt)-Number(b.importedAt)||Number(a.sourceNumber)-Number(b.sourceNumber)); }
+  function ordered() { return Object.values(rows).filter(r=>r&&r.id&&r.username).sort((a,b)=>Number(a.importedAt)-Number(b.importedAt)||Number(a.sourceLine||a.sourceNumber)-Number(b.sourceLine||b.sourceNumber)||String(a.id).localeCompare(String(b.id))); }
+  function displayNumber(row) { return ordered().findIndex(item=>item.id===row.id)+1; }
   function render() {
     const tab = document.getElementById('storage-tab-filter');
     tab.hidden = !isAdmin;
@@ -173,14 +172,14 @@
     document.getElementById('stat-active').textContent=workingCount+' đang lọc';
     document.getElementById('stat-ban').textContent=(visibleRows.length-workingCount)+' chờ lọc';
     host.setAttribute('aria-busy',String(busy||refreshing));
-    const all=ordered(), filtered=all.filter(r=>(!query||`${r.sourceNumber} ${r.username} ${r.fileName}`.toLowerCase().includes(query))&&(mode!=="working"||r.status!=="pending")&&(mode!=="pending"||r.status==="pending"));
+    const all=ordered(), filtered=all.filter(r=>(!query||`${all.indexOf(r)+1} ${r.username} ${r.fileName}`.toLowerCase().includes(query))&&(mode!=="working"||r.status!=="pending")&&(mode!=="pending"||r.status==="pending"));
     page=Math.max(0,Math.min(page,Math.ceil(filtered.length/PAGE_SIZE)-1));
     const shown=filtered.slice(page*PAGE_SIZE,(page+1)*PAGE_SIZE);
-    host.innerHTML=`<div class="fq-heading"><div><h3>📥 Kho acc cần lọc</h3><p>${all.length} acc · ${all.filter(r=>r.status!=="pending").length} đang lọc. Số thứ tự giữ theo file gốc.</p></div><div class="fq-tools">${isAdmin?'<label class="btn btn-tool fq-import">＋ Nhập TXT<input id="fq-file" type="file" accept=".txt,text/plain" hidden></label>':''}<button type="button" class="btn btn-tool" id="fq-refresh">↻ Tải lại</button></div></div>
-    <p class="fq-note">${isAdmin?'File dạng <b>stt.tk:mk</b>, ví dụ <code>12.taikhoan:matkhau</code>. Sao chép để nhận lọc; chuyển kho cần điền thông tin và xác nhận.':'Bạn đang xem danh sách. Chỉ quản trị viên được nhập file và thao tác.'}</p>
+    host.innerHTML=`<div class="fq-heading"><div><h3>📥 Kho acc cần lọc</h3><p>${all.length} acc · ${all.filter(r=>r.status!=="pending").length} đang lọc. STT tự đánh theo thứ tự danh sách trên web.</p></div><div class="fq-tools">${isAdmin?'<label class="btn btn-tool fq-import">＋ Nhập TXT<input id="fq-file" type="file" accept=".txt,text/plain" hidden></label>':''}<button type="button" class="btn btn-tool" id="fq-refresh">↻ Tải lại</button></div></div>
+    <p class="fq-note">${isAdmin?'File dạng <b>stt.tk:mk</b> hoặc <b>tk:mk</b>, ví dụ <code>11.taikhoan:matkhau</code>. Web tự bỏ STT đầu dòng. Sao chép để nhận lọc; chuyển kho cần điền thông tin và xác nhận.':'Bạn đang xem danh sách. Chỉ quản trị viên được nhập file và thao tác.'}</p>
     <div class="fq-search"><input id="fq-search" type="search" placeholder="Tìm số dòng, tài khoản hoặc file…" aria-label="Tìm trong kho cần lọc"><select id="fq-mode" aria-label="Lọc trạng thái"><option value="all">Tất cả</option><option value="pending">Chưa lọc</option><option value="working">Đang lọc</option></select></div>
     <p class="fq-message" role="status">${e(error|| (refreshing?'Đang tải…':busy?'Đang lưu…':connected?'Đang cập nhật trực tiếp':'Bấm Tải lại nếu danh sách chưa cập nhật.'))}</p>
-    <div class="fq-list">${shown.map((r,i)=>`<article class="fq-row ${r.status!=="pending"?'is-working':''}" data-index="${i}"><div class="fq-number" title="STT gốc trong file">#${e(r.sourceNumber)}</div><div class="fq-account"><code>${e(r.username+':'+r.password)}</code><small>${e(r.fileName)}${r.status!=="pending"?` · <b>${r.status==='transferring'?'Đang chuyển':'Đang lọc'}: ${e(r.claimedBy||'Quản trị')}</b>${isAdmin?` <button type="button" class="fq-release" data-do="release" ${busy?'disabled':''}>Bỏ nhận</button>`:''}`:''}</small></div>${isAdmin?`<div class="fq-actions"><button type="button" data-do="copy" ${busy?'disabled':''}>📋 Sao chép</button><button type="button" data-do="move" ${busy?'disabled':''}>⇄ Chuyển kho</button><button type="button" data-do="delete" class="fq-delete" ${busy?'disabled':''} aria-label="Xóa acc dòng ${e(r.sourceNumber)}">🗑 Xóa</button></div>`:''}</article>`).join('')||'<div class="fq-empty">'+(refreshing?'Đang tải danh sách…':'Không có acc phù hợp trong kho cần lọc.')+'</div>'}</div>
+    <div class="fq-list">${shown.map((r,i)=>`<article class="fq-row ${r.status!=="pending"?'is-working':''}" data-index="${i}"><div class="fq-number" title="STT trong danh sách">#${all.indexOf(r)+1}</div><div class="fq-account"><code>${e(r.username+':'+r.password)}</code><small>${e(r.fileName)}${r.status!=="pending"?` · <b>${r.status==='transferring'?'Đang chuyển':'Đang lọc'}: ${e(r.claimedBy||'Quản trị')}</b>${isAdmin?` <button type="button" class="fq-release" data-do="release" ${busy?'disabled':''}>Bỏ nhận</button>`:''}`:''}</small></div>${isAdmin?`<div class="fq-actions"><button type="button" data-do="copy" ${busy?'disabled':''}>📋 Sao chép</button><button type="button" data-do="move" ${busy?'disabled':''}>⇄ Chuyển kho</button><button type="button" data-do="delete" class="fq-delete" ${busy?'disabled':''} aria-label="Xóa acc dòng ${all.indexOf(r)+1}">🗑 Xóa</button></div>`:''}</article>`).join('')||'<div class="fq-empty">'+(refreshing?'Đang tải danh sách…':'Không có acc phù hợp trong kho cần lọc.')+'</div>'}</div>
     <div class="fq-pagination"><button type="button" id="fq-prev" ${page===0?'disabled':''}>← Trước</button><span>Trang ${page+1}/${Math.max(1,Math.ceil(filtered.length/PAGE_SIZE))} · ${filtered.length} acc</span><button type="button" id="fq-next" ${(page+1)*PAGE_SIZE>=filtered.length?'disabled':''}>Sau →</button></div>`;
     const search=host.querySelector('#fq-search');search.value=query;search.addEventListener('input',()=>{query=search.value.toLowerCase();page=0;const position=search.selectionStart;render();const next=host.querySelector('#fq-search');next.focus();try{next.setSelectionRange(position,position);}catch(_){}});
     const select=host.querySelector('#fq-mode');select.value=mode;select.onchange=()=>{mode=select.value;page=0;render();};
@@ -209,9 +208,9 @@
     try {
       eligible();if(!/\.txt$/i.test(file.name))throw new Error("Chọn file .txt.");if(file.size>2*1024*1024)throw new Error("File tối đa 2 MB.");
       const parsed=parseFilterTxt(await file.text());
-      if(parsed.errors.length)throw new Error(`Chưa nhập file. Kiểm tra định dạng/STT trùng tại dòng ${parsed.errors.slice(0,15).join(', ')}${parsed.errors.length>15?'…':''}.`);
+      if(parsed.errors.length)throw new Error(`Chưa nhập file. Kiểm tra định dạng stt.tk:mk hoặc tk:mk tại dòng ${parsed.errors.slice(0,15).join(', ')}${parsed.errors.length>15?'…':''}.`);
       if(!parsed.rows.length)throw new Error("File không có acc hợp lệ.");
-      showNotice({title:'Nhập vào Kho acc cần lọc?',type:'confirm',message:`File <b>${e(file.name)}</b>: ${parsed.rows.length} acc hợp lệ; bỏ qua ${parsed.duplicates} acc trùng trong file. Số dòng gốc được giữ. Acc đã có trong kho cần lọc/Rank/Chung Sức sẽ được bỏ qua.`,onConfirm:()=>run(async()=>{
+      showNotice({title:'Nhập vào Kho acc cần lọc?',type:'confirm',message:`File <b>${e(file.name)}</b>: ${parsed.rows.length} acc hợp lệ; bỏ qua ${parsed.duplicates} acc trùng trong file. STT do web tự hiển thị theo danh sách. Acc đã có trong kho cần lọc/Rank/Chung Sức sẽ được bỏ qua.`,onConfirm:()=>run(async()=>{
         const now=Date.now(),batchId='batch_'+(global.crypto?.randomUUID?.()||now+'_'+Math.random().toString(36).slice(2));
         const incoming=parsed.rows.map((row,i)=>({...row,id:batchId+'_'+i,batchId,fileName:file.name.slice(0,120),importedAt:now,importedBy:getUserName(),status:'pending'}));
         await waitForMainSave();
@@ -229,18 +228,18 @@
   function copyRow(row) {return run(async()=>{
     if(isEmergencyLocked)throw new Error('Hệ thống đang khóa sao chép.');
     const claimed=await transport.transaction('filter_queue/'+row.id,current=>filterClaim(current,owner(),getUserName(),Date.now()));rows[row.id]=claimed;render();
-    await copyText(claimed.username+':'+claimed.password);playSound('copy');showToast(`Đã sao chép dòng ${e(row.sourceNumber)} — đang lọc.`);
+    await copyText(claimed.username+':'+claimed.password);playSound('copy');showToast(`Đã sao chép dòng ${displayNumber(row)} — đang lọc.`);
   });}
   function deleteRow(row) {
     if(!isAdmin)return;
-    showNotice({title:'Xóa khỏi kho cần lọc?',type:'danger',message:`Xóa dòng <b>${e(row.sourceNumber)}</b> — <b>${e(row.username)}</b>? Những dòng còn lại không đổi số thứ tự.`,onConfirm:()=>run(async()=>{
+    showNotice({title:'Xóa khỏi kho cần lọc?',type:'danger',message:`Xóa dòng <b>${displayNumber(row)}</b> — <b>${e(row.username)}</b>? Danh sách sẽ được đánh lại STT sau khi xóa.`,onConfirm:()=>run(async()=>{
       await transport.transaction('filter_queue/'+row.id,current=>{if(!current)throw new Error('Acc đã rời kho.');if(current.status==='transferring')throw new Error('Acc đang chuyển kho.');if(current.owner&&current.owner!==owner())throw new Error('Acc đang được quản trị khác lọc.');return null;});
       delete rows[row.id];recordAdminAudit('delete',{...row,category:'filter'});showToast('Đã xóa dòng khỏi kho cần lọc.');
     })});
   }
   function releaseRow(row) {
     if(!isAdmin)return;
-    showNotice({title:'Bỏ nhận lọc acc?',type:'confirm',message:`Dòng <b>${e(row.sourceNumber)}</b> đang được <b>${e(row.claimedBy||'quản trị')}</b> xử lý. Chỉ bỏ nhận khi đã ngừng kiểm tra acc này. Số dòng và tài khoản được giữ nguyên.`,onConfirm:()=>run(async()=>{
+    showNotice({title:'Bỏ nhận lọc acc?',type:'confirm',message:`Dòng <b>${displayNumber(row)}</b> đang được <b>${e(row.claimedBy||'quản trị')}</b> xử lý. Chỉ bỏ nhận khi đã ngừng kiểm tra acc này. Tài khoản vẫn được giữ trong danh sách.`,onConfirm:()=>run(async()=>{
       const updated=await transport.transaction('filter_queue/'+row.id,current=>{
         if(!current)throw new Error('Acc đã rời kho.');
         if(current.owner!==row.owner)throw new Error('Người nhận lọc đã thay đổi. Hãy tải lại.');
@@ -252,7 +251,7 @@
   function openTransfer(row) {
     if(!isAdmin||busy)return;
     const modal=document.getElementById('filter-transfer-modal');modal.dataset.rowId=row.id;
-    document.getElementById('fq-transfer-account').textContent='#'+row.sourceNumber+' · '+row.username;
+    document.getElementById('fq-transfer-account').textContent='#'+displayNumber(row)+' · '+row.username;
     ['fq-rank','fq-trust','fq-unlock'].forEach(id=>document.getElementById(id).value='');document.getElementById('fq-destination').value='rank';document.getElementById('fq-rank-fields').hidden=false;
     document.getElementById('fq-transfer-error').textContent='';modal.classList.add('show');
   }
