@@ -5,9 +5,9 @@
   try{const saved=JSON.parse(sessionStorage.getItem('lq_privacy_activity')||'null');if(saved){events=Array.isArray(saved.events)?saved.events:[];lastAlert=Number(saved.lastAlert)||0;}}catch(_){}
   function persist(){try{sessionStorage.setItem('lq_privacy_activity',JSON.stringify({events,lastAlert}));}catch(_){}}
   function record(action,id){
-    if(!['open','copy'].includes(action))return;
+    if(!['open','copy'].includes(action)||String(id).startsWith('filter:'))return;
     const now=Date.now();
-    events=events.filter(e=>Number(e.at)>now-60000&&Number(e.at)<=now);
+    events=events.filter(e=>!String(e.id).startsWith('filter:')&&Number(e.at)>now-60000&&Number(e.at)<=now);
     events.push({action,id:String(id),at:now});events=events.slice(-200);persist();
     const count=new Set(events.map(e=>e.id)).size;
     if(count<10||now-lastAlert<300000||sending)return;
@@ -31,7 +31,7 @@
   function conceal(){const changed=visible.size||!isGlobalPasswordMasked||Object.keys(singlePasswordVisible).length;visible.clear();syncVisibility();schedule();if(changed)renderList();}
   function toggle(id){
     if(!isAdmin||isEmergencyLocked){showToast('Không có quyền xem mật khẩu hoặc hệ thống đang khóa.');return;}
-    id=String(id);
+    id=String(id);if(id.startsWith('filter:'))return;
     if(visible.has(id))visible.delete(id);
     else{while(visible.size>=LIMIT)visible.delete(visible.keys().next().value);visible.set(id,Date.now()+DURATION);record('open',id);}
     syncVisibility();schedule();renderList();
