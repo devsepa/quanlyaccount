@@ -283,3 +283,5 @@
 .fq-group.is-selected { outline:2px solid #e0d8ff; outline-offset:2px; }
 .fq-group:has(button[data-group]:hover) { box-shadow:0 0 0 1px rgba(var(--batch-rgb),.45); }
 .fq-group>button[data-group]:focus-visible { outline:2px solid #e0d8ff; outline-offset:2px; border-radius:5px; }
+
+.badge-filter-transfer { color:#b6f1e0; background:rgba(45,173,139,.12); border:1px solid rgba(100,210,177,.3); font-size:.65rem; line-height:1.4; white-space:normal; }

@@ -4205,6 +4205,29 @@
         return `${dd}/${mm}`;
       }
 
+      // New transfers retain their source; only admins see the temporary source label.
+      let filterTransferBadgeTimer = null, filterTransferBadgeDeadline = 0;
+      function filterTransferTime(item) {
+        return Number(item.filterTransferredAt) || ((item.sourceWarehouse === 'filter' || item.sourceBatch || String(item.id).startsWith('filtered_')) ? Number(item.createdTimestamp) || 0 : 0);
+      }
+      function scheduleFilterTransferBadgeExpiry(until) {
+        if (filterTransferBadgeDeadline && filterTransferBadgeDeadline <= until) return;
+        clearTimeout(filterTransferBadgeTimer);filterTransferBadgeDeadline=until;
+        filterTransferBadgeTimer=setTimeout(()=>{
+          filterTransferBadgeDeadline=0;
+          document.querySelectorAll('[data-filter-transfer-until]').forEach(label=>{
+            const deadline=Number(label.dataset.filterTransferUntil);
+            if(deadline<=Date.now())label.remove();else scheduleFilterTransferBadgeExpiry(deadline);
+          });
+        },Math.max(0,until-Date.now()));
+      }
+      function filterTransferBadge(item) {
+        const timestamp=filterTransferTime(item), until=timestamp+86400000;
+        if(!isAdmin||!timestamp||timestamp>Date.now()||until<=Date.now())return '';
+        scheduleFilterTransferBadgeExpiry(until);
+        return `<span class="badge badge-filter-transfer" data-filter-transfer-until="${until}">Vừa chuyển từ kho lọc</span>`;
+      }
+
       // ĐỊNH DẠNG THỜI GIAN TẠO / THÊM NICK
       function formatCreatedTime(item) {
         if (!item) return "Chưa rõ";
@@ -4333,6 +4356,7 @@
                   date: a.date || getTodayFormatted(),
                   createdAt: a.createdAt || "",
                   createdTimestamp: Number(a.createdTimestamp) || 0,
+                  filterTransferredAt: Number(a.filterTransferredAt)||0, sourceWarehouse:a.sourceWarehouse==='filter'?'filter':'', sourceBatch:a.sourceBatch||'',
                   createdBy: a.createdBy || "",
                   unlockDate: String(unlock),
                   lastUsed: a.lastUsed || "",
@@ -5773,7 +5797,7 @@
         const storageAccounts = accounts.filter((a) => {
           const cat = a.category || "rank";
           return cat === currentStorage;
-        });
+        }).sort((a,b)=>(Number(b.createdTimestamp)||filterTransferTime(b))-(Number(a.createdTimestamp)||filterTransferTime(a)));
 
         let banCount = 0;
         storageAccounts.forEach((a) => {
@@ -6268,6 +6292,7 @@
               <td style="text-align: center;">
                 <div style="display: inline-flex; align-items: center; justify-content: center; gap: 4px; flex-wrap: wrap;">
                   ${badgeHtml}
+                ${filterTransferBadge(item)}
                   ${chungSucBadge}
                 </div>
               </td>
@@ -6490,6 +6515,7 @@
                 ${item.category === "chungsuc" ? '<span class="badge badge-chungsuc-tag">🤝 Chung Sức</span>' : ""}
                 ${!isChungSuc && item.rank ? `<span class="badge ${rankGrp.class}">${escapeHtml(item.rank)}</span>` : ""}
                 ${badgeHtml}
+                ${filterTransferBadge(item)}
               </div>
             </div>
 
@@ -7420,6 +7446,9 @@
                 lastUsed: a.lastUsed || "",
                 lastUsedBy: a.lastUsedBy ? String(a.lastUsedBy) : "",
                 createdBy: a.createdBy ? String(a.createdBy) : "",
+                filterTransferredAt: Number(a.filterTransferredAt)||0,
+                sourceWarehouse: a.sourceWarehouse==='filter'?'filter':'',
+                sourceBatch: a.sourceBatch?String(a.sourceBatch):'',
                 lastUsedTime: Number(a.lastUsedTime) || 0,
                 useCount: Number(a.useCount) || 0,
                 category: a.category === "chungsuc" ? "chungsuc" : "rank",

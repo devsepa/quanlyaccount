@@ -126,7 +126,7 @@
     return { id: "filtered_" + row.id, username: row.username, password: row.password, category, ...fields,
       date: new Date(now).toLocaleDateString("en-GB", { day:"2-digit",month:"2-digit" }),
       createdAt: `${pad(date.getHours())}:${pad(date.getMinutes())} - ${pad(date.getDate())}/${pad(date.getMonth()+1)}/${date.getFullYear()}`, createdTimestamp: now, createdBy: actor,
-      lastUsed:"", lastUsedBy:"", useCount:0, sourceBatch:row.batchId, sourceNumber:row.sourceNumber };
+      lastUsed:"", lastUsedBy:"", useCount:0, filterTransferredAt:now, sourceWarehouse:"filter", sourceBatch:row.batchId, sourceNumber:row.sourceNumber };
   }
   function filterTransferPatch(row, destination, now) {
     return { ["app_data/accounts/" + destination.id]: destination, "app_data/updatedAt": now, ["filter_queue/" + row.id]: null };
