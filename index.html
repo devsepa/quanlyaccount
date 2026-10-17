@@ -9,7 +9,6 @@
     <title>Hệ thống quản lý tài khoản AOV</title>
     <link rel="icon" type="image/png" href="logo.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=2" />
-    <link rel="manifest" href="site.webmanifest" />
     <meta name="theme-color" content="#0B1220" />
     <meta name="apple-mobile-web-app-title" content="AOV Manager" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -19,13 +18,13 @@
       rel="stylesheet"
     />
     <!-- Ordered stylesheets: preserve base → workspace → controls cascade. -->
-    <link rel="stylesheet" href="styles/core.css?v=20261017-ban-hour-1" />
-    <link rel="stylesheet" href="styles/workspace.css?v=20261017-ban-hour-1" />
-    <link rel="stylesheet" href="styles/controls.css?v=20261017-ban-hour-1" />
-    <link rel="stylesheet" href="styles/filter-queue.css?v=20261017-ban-hour-1" />
-    <link rel="stylesheet" href="styles/dashboard.css?v=20261017-ban-hour-1" />
-    <link rel="stylesheet" href="styles/analytics.css?v=20261017-ban-hour-1" />
-    <link rel="stylesheet" href="styles/layout-refinement.css?v=20261017-ban-hour-1" />
+    <link rel="stylesheet" href="styles/core.css?v=20261017-management-1" />
+    <link rel="stylesheet" href="styles/workspace.css?v=20261017-management-1" />
+    <link rel="stylesheet" href="styles/controls.css?v=20261017-management-1" />
+    <link rel="stylesheet" href="styles/filter-queue.css?v=20261017-management-1" />
+    <link rel="stylesheet" href="styles/dashboard.css?v=20261017-management-1" />
+    <link rel="stylesheet" href="styles/analytics.css?v=20261017-management-1" />
+    <link rel="stylesheet" href="styles/layout-refinement.css?v=20261017-management-1" />
     <style>
       #page-loader {display:none;}
       html.page-loading #page-loader,#page-loader.is-leaving {display:flex;position:fixed;inset:0;z-index:100000;align-items:center;justify-content:center;flex-direction:column;gap:20px;background:radial-gradient(ellipse at 50% 42%,#172444 0%,#0b1220 65%);color:#dce7fc;font:13px/1.5 system-ui,sans-serif;}
@@ -1895,7 +1894,7 @@
       <h3 id="fq-transfer-title">Chuyển acc đã lọc</h3><p id="fq-transfer-account" class="fq-transfer-account"></p>
       <label for="fq-destination">Kho đích</label><select id="fq-destination"><option value="rank">🎮 Kho Nick Chơi Rank</option><option value="chungsuc">🤝 Kho Chung Sức</option></select>
       <div id="fq-rank-fields"><label for="fq-rank">Rank (chọn nhanh hoặc gõ)</label><input type="text" id="fq-rank" class="rank-input-field" maxlength="15" placeholder="BK, KC, TA, CT, DCT…" style="text-transform:uppercase" onclick="openRankPicker(this,event)" oninput="this.value=this.value.toUpperCase()" autocomplete="off"><div class="fq-meta-grid"><div><label for="fq-trust">Uy tín</label><input type="text" id="fq-trust" pattern="[0-9]*" oninput="this.value=this.value.replace(/[^0-9]/g,'')" inputmode="numeric" placeholder="0–100 (tùy chọn)" maxlength="3"></div><div><label for="fq-unlock">Ngày mở BAN</label><input type="text" id="fq-unlock" pattern="[0-9/]*" oninput="formatDateOnlyNumbers(this)" inputmode="numeric" maxlength="5" placeholder="dd/MM (tùy chọn)"></div><div><label for="fq-unlock-hour">Giờ mở BAN (VN)</label><select id="fq-unlock-hour"><option value="">Chưa rõ giờ</option></select></div></div></div>
-      <p class="fq-note">Xác nhận sẽ lưu acc vào kho đích và bỏ dòng nguồn khỏi kho cần lọc. Chuyển sang Chung Sức không cần Rank, uy tín hoặc ngày BAN.</p><p id="fq-transfer-error" class="fq-message" role="status"></p><div class="fq-transfer-actions"><button type="button" class="btn btn-tool" id="fq-cancel-transfer">Hủy</button><button type="button" class="btn btn-primary" id="fq-confirm-transfer">Xác nhận chuyển</button></div>
+      <p class="fq-note">Xác nhận sẽ lưu acc vào kho đích và bỏ dòng nguồn khỏi kho cần lọc. Chuyển sang Chung Sức không cần Rank, uy tín hoặc ngày BAN.</p><label id="fq-duplicate-wrap" hidden>Nếu tài khoản đã có trong kho<select id="fq-duplicate-mode"><option value="skip">Giữ dòng nguồn, không cập nhật</option><option value="update">Cập nhật mật khẩu, giữ kho và lịch sử của acc đã có</option></select></label><p id="fq-transfer-error" class="fq-message" role="status"></p><div class="fq-transfer-actions"><button type="button" class="btn btn-tool" id="fq-cancel-transfer">Hủy</button><button type="button" class="btn btn-primary" id="fq-confirm-transfer">Xác nhận chuyển</button></div>
     </div></div>
     <div id="admin-audit-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="admin-audit-title">
       <div class="modal-card audit-card">
@@ -2392,8 +2391,11 @@
     <!-- CONTAINER THẺ THÔNG BÁO GÓC DƯỚI BÊN TRÁI KHI THÊM ACC MỚI -->
     <div id="activity-toast-container" class="activity-toast-container"></div>
 
-    <script src="ban-schedule.js?v=20261017-ban-hour-1"></script>
-    <script src="analytics-report.js?v=20261017-ban-hour-1"></script>
+    <script src="assets/js/app-config.js?v=20261017-management-1"></script>
+    <script src="assets/js/secure-admin.js?v=20261017-management-1"></script>
+    <script src="assets/js/management-core.js?v=20261017-management-1"></script>
+    <script src="assets/js/ban-schedule.js?v=20261017-management-1"></script>
+    <script src="assets/js/analytics-report.js?v=20261017-management-1"></script>
     <script>
       // BẮT MỌI LỖI RUNTIME NẾU CÓ ĐỂ KHÔNG BAO GIỜ BỊ ĐƠ WEB
       window.addEventListener("error", function (e) {
@@ -2688,6 +2690,7 @@
       const ADMIN_SESSION_HOURS = 12; // Thời hạn phiên đăng nhập Quản Trị: 12 tiếng
 
       function getInitialAdminState() {
+        if(window.secureAdmin?.enabled)return false;
         if (window.location.protocol === "file:") return true;
         const savedAdmin = localStorage.getItem("lq_is_admin") === "true";
         if (!savedAdmin) return false;
@@ -2707,7 +2710,7 @@
 
       // Tự động thu hồi quyền Admin nếu mở web liên tục quá 12 tiếng
       setInterval(() => {
-        if (!isAdmin || window.location.protocol === "file:") return;
+        if (window.secureAdmin?.enabled || !isAdmin || window.location.protocol === "file:") return;
         const loginTime = parseInt(
           localStorage.getItem("lq_admin_session_time") || "0",
           10,
@@ -2857,6 +2860,7 @@
       }
 
       function getOrCreateDeviceId() {
+        if(window.secureAdmin?.enabled&&secureAdmin.uid)return secureAdmin.uid;
         let id = localStorage.getItem("lq_device_id");
         if (id) return id;
 
@@ -3268,6 +3272,8 @@
 
       // TƯỚC QUYỀN QUẢN TRỊ VIÊN CỦA THIẾT BỊ KHÁC
       window.revokeDeviceAdmin = async function (id, userName) {
+        if(window.secureAdmin?.enabled){if(!isAdmin)return;showNotice({title:'Thu hồi quyền Admin?',type:'confirm',message:'Phiên này sẽ bị thu hồi quyền trên máy chủ.',onConfirm:async()=>{try{await secureAdmin.call('revokeAdminAccess',{uid:id});showToast('Đã thu hồi quyền Admin.');void refreshDeviceList();}catch(err){showToast(err.message);}}});return;}
+
         if (
           !confirm(
             `Bạn có chắc chắn muốn THU HỒI quyền Quản Trị của [${userName || "thiết bị này"}] không?\n\nThiết bị này sẽ bị tước quyền Quản Trị ngay lập tức và chuyển về chế độ Khách!`,
@@ -3543,7 +3549,7 @@
                   </div>
                 </div>
                 <div class="noti-item-desc">
-                  ${item.kind==='ban-reminder'?`⏰ Sắp đến giờ mở BAN · ${item.reminderStage} giờ tới<br><small>${escapeHtml(new Date(Number(item.unlockAt)).toLocaleString("vi-VN",{timeZone:"Asia/Ho_Chi_Minh",hour12:false}))} (VN)</small>`:`Đã thêm <b>${item.count || 1} tài khoản</b> vào <b>${escapeHtml(catName)}</b>`}
+                  ${item.kind==='ban-opened'?'🎉 Đã đến giờ mở BAN · Acc đang chờ Admin kiểm tra':item.kind==='ban-reminder'?`⏰ Sắp đến giờ mở BAN · ${item.reminderStage} giờ tới<br><small>${escapeHtml(new Date(Number(item.unlockAt)).toLocaleString("vi-VN",{timeZone:"Asia/Ho_Chi_Minh",hour12:false}))} (VN)</small>`:`Đã thêm <b>${item.count || 1} tài khoản</b> vào <b>${escapeHtml(catName)}</b>`}
                   ${item.firstAccount ? `<div style="font-size: 0.73rem; color: #94a3b8; font-family: monospace; margin-top: 2px;">• ${escapeHtml(item.firstAccount)}${item.count > 1 ? ` (+${item.count - 1} nick khác)` : ""}</div>` : ""}
                 </div>
                 <span class="noti-item-badge-cat ${catClass}">${escapeHtml(catName)}</span>
@@ -3688,7 +3694,7 @@
             <button type="button" class="activity-toast-close" title="Đóng">✕</button>
           </div>
           <div class="activity-toast-body">
-            ${notiItem.kind==='ban-reminder'?`⏰ Nhắc trước ${notiItem.reminderStage} giờ · ${escapeHtml(new Date(Number(notiItem.unlockAt)).toLocaleString("vi-VN",{timeZone:"Asia/Ho_Chi_Minh",hour12:false}))} (VN)`:`<span class="activity-toast-user">${escapeHtml(notiItem.user || "Khách")}</span> đã thêm <b>${notiItem.count || 1} tài khoản</b> vào <span class="activity-toast-target">${escapeHtml(catName)}</span>`}
+            ${notiItem.kind==='ban-opened'?'🎉 Acc đã đến giờ mở BAN · Chờ Admin kiểm tra':notiItem.kind==='ban-reminder'?`⏰ Nhắc trước ${notiItem.reminderStage} giờ · ${escapeHtml(new Date(Number(notiItem.unlockAt)).toLocaleString("vi-VN",{timeZone:"Asia/Ho_Chi_Minh",hour12:false}))} (VN)`:`<span class="activity-toast-user">${escapeHtml(notiItem.user || "Khách")}</span> đã thêm <b>${notiItem.count || 1} tài khoản</b> vào <span class="activity-toast-target">${escapeHtml(catName)}</span>`}
           </div>
           ${
             notiItem.firstAccount
@@ -3927,6 +3933,7 @@
       };
 
       window.toggleAdmin = function () {
+        if(window.secureAdmin?.enabled){if(isAdmin){void secureAdmin.logout().catch(err=>showToast(err.message));}else{document.dispatchEvent(new CustomEvent("dashboard:close-navigation"));secureAdmin.open();}return;}
         if (isAdmin) {
           showNotice({
             title: "Khóa Chế Độ Quản Trị",
@@ -3953,6 +3960,7 @@
       };
 
       window.checkAdminPin = async function () {
+        if(window.secureAdmin?.enabled){secureAdmin.open();return;}
         const pinInput = document.getElementById("admin-pin-input");
         const val = pinInput ? pinInput.value.trim() : "";
         let savedPin =
@@ -4007,6 +4015,7 @@
       };
 
       window.changeAdminPin = async function () {
+        if(window.secureAdmin?.enabled){showToast("Đổi mật khẩu trong Firebase Authentication.");return;}
         let currentPin =
           localStorage.getItem("lq_admin_pin") || ADMIN_PIN_DEFAULT;
 
@@ -5561,13 +5570,13 @@
         const list=Array.isArray(items)?items:[items];
         const stamp=Number(details.timestamp)||Date.now();
         const entry={id:details.auditId || stamp+"_"+(globalThis.crypto?.randomUUID?.() || Math.random().toString(36).slice(2)),timestamp:stamp,
-          actor:String(details.actor || getUserName()).slice(0,60),action,count:list.length,
+          actor:String(details.actor || getUserName()).slice(0,60),uid:window.secureAdmin?.uid||"",action,count:list.length,
           targets:list.slice(0,100).map(a=>({id:String(a?.id||"").slice(0,100),username:String(a?.username||"").slice(0,120),category:["filter","chungsuc"].includes(a?.category)?a.category:"rank"})),
-          field:["username","password","rank","uyTin","unlockDate"].includes(details.field)?details.field:""};
+          field:["username","password","rank","uyTin","unlockDate","unlockHour","banSchedule"].includes(details.field)?details.field:""};
         if (action==="edit" && entry.field && entry.field!=="password") {
           entry.before=String(details.before??"").slice(0,120); entry.after=String(details.after??"").slice(0,120);
         }
-        if (action==="move") {entry.from=["filter","unban"].includes(details.from)?details.from:"rank";entry.to=details.to==="rank"?"rank":"chungsuc";}
+        if (action==="move") {entry.from=["filter","unban","chungsuc","mixed"].includes(details.from)?details.from:"rank";entry.to=details.to==="rank"?"rank":"chungsuc";}
         if (action==="restore") entry.previousCount=Number(details.previousCount)||0;
         state.entries=[entry,...state.entries.filter(e=>e.id!==entry.id)].slice(0,200); if(!state.pending.some(e=>e.id===entry.id))state.pending.push(entry);
         if (!saveAdminAuditState()) showToast("Nhật ký đang giữ tạm trong phiên, chưa lưu được trên máy.");
@@ -5584,7 +5593,11 @@
               let res;
               try {res=await fetch(`${FIREBASE_DB_URL}/admin_audit.json`,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify(Object.fromEntries(batch.map(e=>[e.id,e]))),signal:controller.signal});}
               finally {clearTimeout(timeout);}
-              if (!res.ok) throw new Error("Không lưu được nhật ký lên cloud.");
+              if (!res.ok) {
+                const recovered=await Promise.all(batch.map(async entry=>{const response=await fetch(`${FIREBASE_DB_URL}/admin_audit/${encodeURIComponent(entry.id)}.json`);if(!response.ok)return null;const saved=await response.json();return window.managementCore.auditSame(saved,entry)?entry.id:null;}));
+                const confirmed=new Set(recovered.filter(Boolean));if(!confirmed.size)throw new Error("Không lưu được nhật ký lên cloud.");
+                getAdminAuditState().pending=getAdminAuditState().pending.filter(entry=>!confirmed.has(entry.id));saveAdminAuditState();continue;
+              }
               const done=new Set(batch.map(e=>e.id));
               getAdminAuditState().pending=getAdminAuditState().pending.filter(e=>!done.has(e.id));
               saveAdminAuditState(); adminAuditMessage="";
@@ -5602,9 +5615,12 @@
         status.textContent=adminAuditLoading?"Đang tải nhật ký…":accountAuditSaveError || adminAuditMessage || (pendingAccountAudits.length ? `${pendingAccountAudits.length} thao tác đang chờ Firebase xác nhận; chưa ghi thành công.` : pending.size?`${pending.size} mục đang chờ đồng bộ nhật ký.`:"Nhật ký hiện có đã đồng bộ.");
         const search=(document.getElementById("admin-audit-search")?.value||"").trim().toLowerCase();
         const filter=document.getElementById("admin-audit-filter")?.value||"all";
-        const entries=state.entries.filter(e=>adminAuditLabels[e.action]&&(filter==="all"||e.action===filter)&&(!search||`${e.actor} ${(e.targets||[]).map(a=>a.username).join(" ")}`.toLowerCase().includes(search)));
-        const fieldLabels={username:"Tên tài khoản",password:"Mật khẩu (ẩn nội dung)",rank:"Rank",uyTin:"Uy tín",unlockDate:"Ngày mở BAN"};
-        list.innerHTML=entries.map(e=>`<article class="audit-entry"><div class="audit-entry-title"><b>${escapeHtml(adminAuditLabels[e.action])}</b><time>${escapeHtml(new Date(e.timestamp).toLocaleString("vi-VN"))}</time></div><p>👤 ${escapeHtml(e.actor||"Chưa đặt tên")} · ${Number(e.count)||0} acc ${pending.has(e.id)?"· Chờ đồng bộ nhật ký":""}</p><p>${(e.targets||[]).slice(0,8).map(a=>escapeHtml(a.username)).join(", ")}${Number(e.count)>8?"…":""}</p>${e.action==="edit"?`<p>${escapeHtml(fieldLabels[e.field]||"Thông tin")}${e.field!=="password"&&e.before!==undefined?`: ${escapeHtml(e.before||"Trống")} → ${escapeHtml(e.after||"Trống")}`:""}</p>`:""}${e.action==="move"?`<p>${e.from==="unban"?"Kho vừa mở BAN":e.from==="filter"?"Kho cần lọc":"Kho Rank"} → ${e.to==="rank"?"Kho Rank":"Kho Chung Sức"}</p>`:""}${e.action==="restore"?`<p>Danh sách trước: ${Number(e.previousCount)||0} acc → sau: ${Number(e.count)||0} acc</p>`:""}</article>`).join("")||"<p>Chưa có nhật ký phù hợp.</p>";
+        const from=document.getElementById('audit-from')?.value,to=document.getElementById('audit-to')?.value;
+        const lower=from?Date.parse(from+'T00:00:00+07:00'):0,upper=to?Date.parse(to+'T23:59:59.999+07:00'):Infinity;
+        const entries=state.entries.filter(e=>Number(e.timestamp)>=lower&&Number(e.timestamp)<=upper&&adminAuditLabels[e.action]&&(filter==="all"||e.action===filter)&&(!search||`${e.actor} ${(e.targets||[]).map(a=>a.username).join(" ")}`.toLowerCase().includes(search)));
+        const warehouseLabels={rank:"Kho Rank",chungsuc:"Kho Chung Sức",filter:"Kho cần lọc",unban:"Kho vừa mở BAN",mixed:"Nhiều kho"};
+        const fieldLabels={username:"Tên tài khoản",password:"Mật khẩu (ẩn nội dung)",rank:"Rank",uyTin:"Uy tín",unlockDate:"Ngày mở BAN",unlockHour:"Giờ mở BAN",banSchedule:"Lịch mở BAN"};
+        list.innerHTML=entries.map(e=>`<article class="audit-entry"><div class="audit-entry-title"><b>${escapeHtml(adminAuditLabels[e.action])}</b><time>${escapeHtml(new Date(e.timestamp).toLocaleString("vi-VN"))}</time></div><p>👤 ${escapeHtml(e.actor||"Chưa đặt tên")} · ${Number(e.count)||0} acc ${pending.has(e.id)?"· Chờ đồng bộ nhật ký":""}</p><p>${(e.targets||[]).slice(0,8).map(a=>escapeHtml(a.username)).join(", ")}${Number(e.count)>8?"…":""}</p>${e.action==="edit"?`<p>${escapeHtml(fieldLabels[e.field]||"Thông tin")}${e.field!=="password"&&e.before!==undefined?`: ${escapeHtml(e.before||"Trống")} → ${escapeHtml(e.after||"Trống")}`:""}</p>`:""}${e.action==="move"?`<p>${escapeHtml(warehouseLabels[e.from]||"Kho nguồn")} → ${escapeHtml(warehouseLabels[e.to]||"Kho đích")}</p>`:""}${e.action==="restore"?`<p>Danh sách trước: ${Number(e.previousCount)||0} acc → sau: ${Number(e.count)||0} acc</p>`:""}</article>`).join("")||"<p>Chưa có nhật ký phù hợp.</p>";
       };
       window.refreshAdminAudit = async function () {
         if (!isAdmin || adminAuditLoading) return;
@@ -7074,6 +7090,9 @@
         } finally {accountCopiesInFlight.delete(id);}
 
 
+        if(window.secureAdmin?.enabled&&!isAdmin){
+          try{await secureAdmin.call('copyGuestAccount',{id,actor:getUserName(),requestId:crypto.randomUUID()});await pullFromCloud(true);showToast('Đã sao chép và ghi nhận lượt dùng.');}catch(err){showToast('Đã sao chép nhưng chưa ghi nhận lượt dùng: '+err.message);}return;
+        }
         window.accountPrivacy?.record("copy", String(id));
         const now = new Date();
         const hh = String(now.getHours()).padStart(2, "0");
@@ -7399,6 +7418,7 @@
       };
 
       async function syncTeleConfigFromCloud() {
+        if(window.secureAdmin?.enabled)return;
         try {
           const res = await fetch(
             `${FIREBASE_DB_URL}/tele_config.json?t=${Date.now()}`,
@@ -7414,6 +7434,7 @@
       }
 
       async function syncAdminPinFromCloud() {
+        if(window.secureAdmin?.enabled)return;
         try {
           const res = await fetch(
             `${FIREBASE_DB_URL}/admin_pin.json?t=${Date.now()}`,
@@ -7839,7 +7860,7 @@
                 const saved=submittedAccounts.get(String(target.id));
                 if(job.action==='delete')return !saved;
                 if(!saved||saved.category!==target.category)return false;
-                if(job.action==='edit'&&job.details.field!=='password')return String(saved[job.details.field]??'')===String(job.details.after??'');
+                if(job.action==='edit'&&!['password','banSchedule'].includes(job.details.field))return String(saved[job.details.field]??'')===String(job.details.after??'');
                 return true;
               });
               if(applied)appendAdminAudit(job.action,job.items,{...job.details,timestamp:job.timestamp,actor:job.actor,auditId:job.id});
@@ -7909,7 +7930,7 @@
       function initFirebaseRealtimeListener() {
         try {
           if (!firebaseRealtimeSource && !document.hidden && navigator.onLine !== false && typeof EventSource !== "undefined") {
-            const es = new EventSource(FIREBASE_ENDPOINT);
+            const es = new EventSource(window.secureAdmin?.streamUrl(FIREBASE_ENDPOINT)||FIREBASE_ENDPOINT);
             firebaseRealtimeSource = es;
             es.addEventListener("open", () => { firebaseRealtimeHealthy = true; });
             es.addEventListener("error", () => { firebaseRealtimeHealthy = false; });
@@ -8066,6 +8087,7 @@
 
       let isCheckingTeleUnban = false;
       async function autoCheckUnbannedAccounts() {
+        if(window.ACCOUNT_CONFIG?.serverScheduler)return;
         if (isCheckingTeleUnban) return;
 
         // 1. Quét các nick vừa mở ban để báo lên Web Toast (cả Admin & Khách đều thấy)
@@ -8262,7 +8284,7 @@
         try {
           if (!deviceRealtimeSource && !document.hidden && navigator.onLine !== false && typeof EventSource !== "undefined") {
             const devId = getOrCreateDeviceId();
-            const esDev = new EventSource(`${FIREBASE_DB_URL}/devices/${devId}.json`);
+            const esDev = new EventSource(window.secureAdmin?.streamUrl(`${FIREBASE_DB_URL}/devices/${devId}.json`)||`${FIREBASE_DB_URL}/devices/${devId}.json`);
             deviceRealtimeSource = esDev;
             const handleDevEvent = (e) => {
               try {
@@ -8374,12 +8396,14 @@
       if (isAdmin) void flushAdminAudit();
       setTimeout(autoCheckUnbannedAccounts, 2000);
     </script>
-    <script src="filter-queue.js?v=20261017-ban-hour-1"></script>
-    <script src="account-privacy.js?v=20261017-ban-hour-1"></script>
-    <script src="admin-account-tools.js?v=20261017-ban-hour-1"></script>
-    <script src="telegram-daily.js?v=20261017-ban-hour-1"></script>
-    <script src="telegram-transfers.js?v=20261017-ban-hour-1"></script>
-    <script src="dashboard-ui.js?v=20261017-ban-hour-1"></script>
-    <script src="ban-schedule-ui.js?v=20261017-ban-hour-1"></script>
+    <script src="assets/js/filter-queue.js?v=20261017-management-1"></script>
+    <script src="assets/js/account-privacy.js?v=20261017-management-1"></script>
+    <script src="assets/js/admin-account-tools.js?v=20261017-management-1"></script>
+    <script src="assets/js/telegram-daily.js?v=20261017-management-1"></script>
+    <script src="assets/js/telegram-transfers.js?v=20261017-management-1"></script>
+    <script src="assets/js/dashboard-ui.js?v=20261017-management-1"></script>
+    <script src="assets/js/ban-schedule-ui.js?v=20261017-management-1"></script>
+    <script src="assets/js/management-ui.js?v=20261017-management-1"></script>
+    <script src="assets/js/cloud-backups-ui.js?v=20261017-management-1"></script>
   </body>
 </html>

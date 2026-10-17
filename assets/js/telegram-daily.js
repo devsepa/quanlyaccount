@@ -65,6 +65,7 @@
   const owner=global.crypto?.randomUUID?.()||Date.now()+'_'+Math.random().toString(36).slice(2);
   const client=createClient({base:FIREBASE_DB_URL,fetcher:(...args)=>fetch(...args),canWrite:()=>isAdmin,storage:localStorage,owner});let lastFingerprint='';
   global.telegramDaily={async scan(list,config){
+    if(global.ACCOUNT_CONFIG?.serverScheduler)return;
     if(!isAdmin||document.hidden||navigator.onLine===false)return;
     const chatId=normalizeTelegramChatId(config.chatId);const grouped=classify(list,Date.now(),parseUnlockTargetTimestamp,checkBanStatus),day=dayKey(Date.now());
     const fingerprint=JSON.stringify([day,chatId,config.token,grouped]);if(fingerprint===lastFingerprint)return;

@@ -4,7 +4,7 @@ Các thay đổi dành cho web quản lý acc; không thay TOOL_MAKE.js.
 
 ## Chạy lại kiểm tra
 
-`node --test tests/quality-regression.test.cjs`
+`npm test`
 
 17 kiểm tra cho xung đột, xác nhận nhật ký, mã phiên bản và Telegram. Ngoài ra đã chạy 35 kiểm tra hồi quy hiện có trong bộ kiểm thử tạm của phiên làm việc.
 
@@ -46,7 +46,7 @@ Lịch sử Telegram hiển thị 100 mục gần nhất trên thiết bị, g�
 - Minimal Dark theme: styles/dashboard.css loads last. dashboard-ui.js delegates existing controls and mirrors existing counters; no additional API or storage is introduced.
 - Desktop checked with Chrome headless at 1600×1100; mobile emulation at 390×844 and 360×800. No horizontal overflow or JavaScript errors in the mocked preview; table/card switching and sidebar open/close verified.
 - Preview uses synthetic account records and intercepts Firebase/Telegram requests. It does not modify live records or send real messages.
-- Run `node --test tests/quality-regression.test.cjs` for regression checks.
+- Run `npm test` for regression checks.
 - Physical Android Chrome and iPhone Safari still require a final device check. Chrome viewport emulation does not establish Safari compatibility.
 
 - Mock browser interaction checks passed: add form opens, warehouse selection changes to Chung Sức, username search returns one matching card, guest hides Admin/filter/unban controls. Real clipboard access and real cloud mutations were not exercised in this UI preview.
@@ -113,3 +113,21 @@ Lịch sử Telegram hiển thị 100 mục gần nhất trên thiết bị, g�
 - ban-schedule-ui.js updates countdowns each second, emits stable 6-hour/1-hour reminder notifications and marks each target/window once. At the deadline the existing warehouse classification places the same account in Acc vừa mở BAN for Admin review; no account is copied or deleted.
 - Telegram daily summaries support the 1-hour window and include the opening hour. Browser reminders and Telegram scans require an open, active Admin session; delivery with all browsers closed requires a server-side scheduler.
 - 41 regression tests passed: Vietnam time, midnight, invalid dates/hours, exact expiry, New Year, reminder deduplication, schedule edits, filter transfers, cloud merge conflicts and Telegram classification. Mock Chrome checks cover 1600px, 390px and 360px with no page overflow or JavaScript errors. No live Firebase writes or real Telegram sends were performed.
+
+## Six management improvements — 17/10/2026
+
+- Added opt-in bulk selection with visible-row selection, BAN date/hour edits, warehouse moves and selected-account JSON export. Unsafe pending-review moves and stale selections are rejected. Group actions preserve IDs/history and snapshot before changes.
+- Main import now checks the filter warehouse and offers skip/password-update for duplicates in the main warehouse. Password update preserves ID, warehouse, BAN schedule and usage history. Filter transfer has an Auth-backed atomic server path with optional duplicate password update and a 7-day source archive.
+- Added audit date range controls, schedule-field labels, accurate warehouse names and lost-response reconciliation for immutable audit entries. Server audit derives account changes and omits password values.
+- Added scheduled BAN outbox and expiry review routing, daily server backup retention, atomic preview/revision-guarded restore and pre-restore recovery snapshots. Scheduler and guest-copy transactions only read app_data; multi-warehouse transfer/restore transactions read the database root for atomicity.
+- Added Firebase REST email/password Admin sign-in, anonymous guest sessions, token refresh, verified server endpoints, custom claims plus revocable admin_access registry, and restrictive Realtime Database Rules. Legacy PIN/token fields are excluded from secure writes. Migration and grant/revoke scripts are explicit operations.
+- app-config.js intentionally leaves secureMode/serverScheduler false until real Firebase configuration, CLI authorization, Secrets and migration are completed together. No real Firebase writes, Telegram messages or deployment were performed. Firebase CLI reports no authorized accounts on this machine.
+- 58 logic/auth/regression tests passed using Node.js 22; 7 Database Emulator security tests passed using a demo project and Java 21. Tests cover guest write denial, blocked-device self-unblocking/deletion denial, revoked Admin claims, private backups and immutable audit. Backend exports compile/load with installed locked SDKs.
+- Mock Chrome at 1600px, 390px and 360px: no page overflow or JS errors; bulk selection/schedule edit, duplicate update, audit dates and guest hiding passed. Physical iPhone/Safari and live IAM/Scheduler/Telegram remain unverified. See docs/DEPLOYMENT.md for deployment order and the remaining live-service checks.
+
+## Folder cleanup — 17/10/2026
+
+- Moved 14 browser scripts into assets/js, root documentation into docs and the remaining management test into tests. Updated HTML script URLs, CommonJS imports, npm test and documentation paths.
+- Previous test directories were already absent at the start of this cleanup and were not restored. npm test now runs the 5 existing management tests; all passed. Historical totals above describe earlier checkouts.
+- Verified all 23 local HTML resources exist. Removed the stale site.webmanifest link because the referenced file was already missing.
+- Mock Chrome at 1600px, 390px and 360px: no JS errors or horizontal overflow; bulk scheduling, duplicate update, audit date controls and guest visibility passed after the moves. Firebase deployment paths remain at the repository root.

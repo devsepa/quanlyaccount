@@ -10,7 +10,7 @@
     const due=accounts.filter(a=>engine.status(a,now)?.isJustUnbanned||a.unbanReviewPending).map(a=>String(a.id)).sort().join('|');
     if(due!==previousDue){previousDue=due;needsRender=true;updateUnbanWarehouseUI();}
     if(needsRender&&!document.activeElement?.matches('input,select,textarea')){needsRender=false;renderList();}
-    if(!isAdmin||now-lastScan<15000)return;lastScan=now;
+    if(window.ACCOUNT_CONFIG?.serverScheduler||!isAdmin||now-lastScan<15000)return;lastScan=now;
     let changed=false;const known=new Set(getNotificationList().map(n=>n.id));
     accounts.forEach(account=>engine.reminders(account,now).forEach(reminder=>{
       if(!known.has(reminder.id)){

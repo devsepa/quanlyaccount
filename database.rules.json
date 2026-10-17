@@ -1,0 +1,86 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "admin_access": {
+      "$uid": {
+        ".read": "auth != null && (auth.uid === $uid || (auth.token.admin === true && root.child('admin_access').child(auth.uid).val() === true))",
+        ".write": false
+      }
+    },
+    "app_data": {
+      ".read": "auth != null && root.child('devices').child(auth.uid).child('status').val() !== 'blocked'",
+      ".write": "auth != null && auth.token.admin === true && root.child('admin_access').child(auth.uid).val() === true",
+      ".validate": "!newData.hasChild('adminPin') && !newData.hasChild('teleConfig')",
+      "lastWriterUid": {
+        ".validate": "newData.val() === data.val() || newData.val() === auth.uid"
+      },
+      "serverReminderOutbox": {
+        ".indexOn": [
+          "state"
+        ]
+      }
+    },
+    "filter_queue": {
+      ".read": "auth != null && auth.token.admin === true && root.child('admin_access').child(auth.uid).val() === true",
+      ".write": "auth != null && auth.token.admin === true && root.child('admin_access').child(auth.uid).val() === true"
+    },
+    "devices": {
+      ".read": "auth != null && auth.token.admin === true && root.child('admin_access').child(auth.uid).val() === true",
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && ((auth.token.admin === true && root.child('admin_access').child(auth.uid).val() === true) || (auth.uid === $uid && newData.exists()))",
+        "status": {
+          ".validate": "(auth.token.admin === true && root.child('admin_access').child(auth.uid).val() === true) || newData.val() === data.val() || (!data.exists() && newData.val() === 'approved')"
+        },
+        "physicalDeviceId": {
+          ".validate": "auth.token.admin === true && root.child('admin_access').child(auth.uid).val() === true"
+        },
+        "physicalDeviceName": {
+          ".validate": "auth.token.admin === true && root.child('admin_access').child(auth.uid).val() === true"
+        },
+        "isAdmin": {
+          ".validate": "newData.val() === (auth.token.admin === true && root.child('admin_access').child(auth.uid).val() === true)"
+        },
+        ".validate": "(auth.token.admin === true && root.child('admin_access').child(auth.uid).val() === true) || (newData.hasChild('status') && (data.child('status').val() !== 'blocked' || newData.child('status').val() === 'blocked'))"
+      }
+    },
+    "admin_audit": {
+      ".read": "auth != null && auth.token.admin === true && root.child('admin_access').child(auth.uid).val() === true",
+      ".indexOn": [
+        "timestamp"
+      ],
+      "$id": {
+        ".write": "auth != null && auth.token.admin === true && root.child('admin_access').child(auth.uid).val() === true && !data.exists()",
+        ".validate": "newData.child('uid').val() === auth.uid && newData.child('source').val() !== 'server'"
+      }
+    },
+    "account_trash": {
+      ".read": "auth != null && auth.token.admin === true && root.child('admin_access').child(auth.uid).val() === true",
+      ".write": "auth != null && auth.token.admin === true && root.child('admin_access').child(auth.uid).val() === true"
+    },
+    "backup_index": {
+      ".read": "auth != null && auth.token.admin === true && root.child('admin_access').child(auth.uid).val() === true"
+    },
+    "backups": {
+      ".read": "auth != null && auth.token.admin === true && root.child('admin_access').child(auth.uid).val() === true"
+    },
+    "server_outbox": {
+      ".read": "auth != null && auth.token.admin === true && root.child('admin_access').child(auth.uid).val() === true",
+      ".indexOn": [
+        "state"
+      ]
+    },
+    "server_settings": {
+      ".read": "auth != null && auth.token.admin === true && root.child('admin_access').child(auth.uid).val() === true"
+    },
+    "tele_transfer_receipts": {
+      ".read": "auth != null && auth.token.admin === true && root.child('admin_access').child(auth.uid).val() === true",
+      ".write": "auth != null && auth.token.admin === true && root.child('admin_access').child(auth.uid).val() === true"
+    },
+    "tele_daily_summaries": {
+      ".read": "auth != null && auth.token.admin === true && root.child('admin_access').child(auth.uid).val() === true",
+      ".write": "auth != null && auth.token.admin === true && root.child('admin_access').child(auth.uid).val() === true"
+    }
+  }
+}

@@ -177,3 +177,15 @@
 .device-session-details{border-top:1px solid #ffffff12;padding:10px;font-size:.76rem;color:#94a3b8}
 .device-session-details>summary{cursor:pointer;padding:4px 0;color:#a5b4fc}
 .device-session-list{display:grid;gap:8px;margin:10px 0}
+
+/* Account management: bulk controls and authenticated login. */
+.management-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:12px 0;color:#94a3b8;font-size:.78rem}
+.management-bar[hidden]{display:none!important}
+.bulk-account-label{display:inline-flex;align-items:center;gap:4px;margin:4px 8px 6px 0;color:#94a3b8;font-size:.72rem;cursor:pointer}
+.bulk-account-select{accent-color:#6366f1;width:18px;height:18px}
+.secure-login-card{width:min(420px,calc(100vw - 32px))}
+.secure-login-card label{display:grid;gap:8px;margin:16px 0}
+.secure-login-card input,.modal-card select,.modal-card input[type=date],#bulk-date{background:#111827;color:#e5e7eb;border:1px solid #475569;border-radius:8px;min-height:42px;padding:8px;max-width:100%}
+#secure-login-modal{z-index:100030}
+.audit-tools label{display:grid;gap:4px;font-size:.75rem;color:#94a3b8}
+@media(max-width:600px){.management-bar{display:grid;grid-template-columns:1fr 1fr}.management-bar>*{min-width:0}.secure-login-card input{font-size:16px}}

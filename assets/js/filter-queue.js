@@ -237,6 +237,8 @@
       throw new Error("Có người khác đang cập nhật acc này. Hãy tải lại và thử lại.");
     }
     async function transfer(row, destination) {
+      if(global.secureAdmin?.enabled){const result=await global.secureAdmin.call('transferFilterAccount',{id:row.id,destination,duplicateMode:document.getElementById('fq-duplicate-mode')?.value||'skip'});return result.target;}
+
       if (!canWrite()) throw new Error("Phiên quản trị đã kết thúc.");
       const response = await request(base + "/.json", {method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify(filterTransferPatch(row,destination,Date.now()))});
       if (!response.ok) throw new Error("Chưa chuyển được acc. Dòng nguồn vẫn được giữ lại.");
@@ -371,7 +373,7 @@
   function stop() {source?.close();source=null;connected=false;}
   function listen() {
     if(!isAdmin||!active||document.hidden||navigator.onLine===false||source||typeof EventSource==='undefined')return;
-    source=new EventSource(FIREBASE_DB_URL+'/filter_queue.json');
+    source=new EventSource(global.secureAdmin?.streamUrl(FIREBASE_DB_URL+'/filter_queue.json')||FIREBASE_DB_URL+'/filter_queue.json');
     source.onopen=()=>{connected=true;};source.onerror=()=>{connected=false;};
     const eventHandler=event=>{if(!isAdmin){stop();return;}try{const payload=JSON.parse(event.data);const path=String(payload.path||'/').split('/').filter(Boolean);if(!path.length){rows=event.type==='patch'?{...rows,...payload.data}:(payload.data||{});Object.keys(rows).forEach(k=>{if(rows[k]===null)delete rows[k];});}else{const id=path[0];if(['__proto__','constructor','prototype'].includes(id))return;if(path.length===1){if(payload.data===null)delete rows[id];else rows[id]=event.type==='patch'?{...rows[id],...payload.data}:payload.data;}else if(rows[id]&&!path.some(k=>['__proto__','constructor','prototype'].includes(k))){let ref=rows[id];for(let i=1;i<path.length-1;i++)ref=ref[path[i]]||(ref[path[i]]={});ref[path.at(-1)]=payload.data;}}scheduleLiveRender();}catch(_){}};
     source.addEventListener('put',eventHandler);source.addEventListener('patch',eventHandler);
@@ -471,7 +473,7 @@
     const modal=document.getElementById('filter-transfer-modal');modal.dataset.rowId=row.id;
     document.getElementById('fq-transfer-account').textContent='#'+displayNumber(row)+' · '+row.username;
     ['fq-rank','fq-trust','fq-unlock','fq-unlock-hour'].forEach(id=>document.getElementById(id).value='');document.getElementById('fq-destination').value='rank';document.getElementById('fq-rank-fields').hidden=false;
-    document.getElementById('fq-transfer-error').textContent='';modal.classList.add('show');
+    document.getElementById('fq-duplicate-wrap').hidden=!global.secureAdmin?.enabled;document.getElementById('fq-duplicate-mode').value='skip';document.getElementById('fq-transfer-error').textContent='';modal.classList.add('show');
   }
   async function waitForMainSave({silent=false}={}) {
     const start=Date.now();
@@ -487,22 +489,23 @@
     const button=document.getElementById('fq-confirm-transfer');if(busy)return;button.disabled=true;
     await run(async()=>{
       await waitForMainSave();
-      const destination=buildFilterDestination(row,category,metadata,getUserName(),Date.now());
+      let destination=buildFilterDestination(row,category,metadata,getUserName(),Date.now());
       const [existing,sourceVersion]=await Promise.all([transport.read('app_data/accounts'),transport.readVersion('filter_queue/'+row.id)]);
-      if(Object.values(existing||{}).some(a=>a&&keyOf(a.username)===keyOf(row.username)))throw new Error('Tài khoản đã có trong kho đích hoặc kho còn lại. Chưa chuyển; dòng nguồn vẫn còn để kiểm tra.');
+      if(Object.values(existing||{}).some(a=>a&&keyOf(a.username)===keyOf(row.username))&&!(global.secureAdmin?.enabled&&document.getElementById('fq-duplicate-mode').value==='update'))throw new Error('Tài khoản đã có trong kho đích hoặc kho còn lại. Chưa chuyển; dòng nguồn vẫn còn để kiểm tra.');
+      const updatedDuplicate=Object.values(existing||{}).some(a=>a&&keyOf(a.username)===keyOf(row.username));
       const locked=await transport.transaction('filter_queue/'+row.id,current=>({...filterClaim(current,owner(),getUserName(),Date.now()),status:'transferring',transferStartedAt:Date.now()}),sourceVersion);
       let saved=false;
-      try {await transport.transfer(locked,destination);saved=true;}
+      try {destination=await transport.transfer(locked,destination)||destination;saved=true;}
       catch(err){
         // A timeout can occur after an atomic write succeeded. Verify before retrying.
-        try{const [remaining,target]=await Promise.all([transport.read('filter_queue/'+row.id),transport.read('app_data/accounts/'+destination.id)]);saved=!remaining&&!!target;}catch(_){}
+        try{const [remaining,all]=await Promise.all([transport.read('filter_queue/'+row.id),transport.read('app_data/accounts')]);const target=Object.values(all||{}).find(a=>a&&keyOf(a.username)===keyOf(row.username)&&a.password===row.password);saved=!remaining&&!!target;if(saved)destination=target;}catch(_){}
         if(!saved){try{await transport.transaction('filter_queue/'+row.id,current=>{if(current?.owner===owner()&&current.status==='transferring')return {...current,status:'working'};throw new Error('Trạng thái đã thay đổi.');});}catch(_){}throw err;}
       }
       delete rows[row.id];accounts=[destination,...accounts.filter(a=>a.id!==destination.id)];
       try{saveData();}catch(_){error='Acc đã chuyển thành công trên cloud, nhưng bộ nhớ trình duyệt đầy. Hãy tải lại danh sách khi có mạng.';}
       if(currentStorage!=='filter')renderList();
-      if(typeof pushAccountNotification==='function')pushAccountNotification({...makeArrivalNotice([destination],category,destination.createdBy,destination.createdTimestamp),kind:'transfer'},false);
-      recordAdminAudit('move',destination,{from:'filter',to:category,cloudConfirmed:true});playSound('success');modal.classList.remove('show');
+      if(!updatedDuplicate&&typeof pushAccountNotification==='function')pushAccountNotification({...makeArrivalNotice([destination],category,destination.createdBy,destination.createdTimestamp),kind:'transfer'},false);
+      recordAdminAudit(updatedDuplicate?'edit':'move',destination,updatedDuplicate?{field:'password',cloudConfirmed:true}:{from:'filter',to:category,cloudConfirmed:true});playSound('success');modal.classList.remove('show');
       showToast('Đã chuyển sang '+(category==='rank'?'kho Rank':'kho Chung Sức')+'. Dòng nguồn đã được xóa.');void pullFromCloud(true);
     });
     button.disabled=false;if(error)document.getElementById('fq-transfer-error').textContent=error;
