@@ -313,7 +313,20 @@
     }
     return {read,readVersion,transaction,transfer};
   }
-  const pure = {reconcileCommittedAccount,loadSyncRecoveries,persistSyncRecoveries,buildUnbanReviewMove,commitUnbanReviewMove,makeArrivalNotice,colorFilterGroups,filterBatchTone,locateFilterAccount,findFilterDuplicates,removeFilterDuplicates,assignFilterGroups,filterGroupList,removeFilterGroup,parseFilterTxt,mergeFilterImport,validateFilterDestination,filterClaim,buildFilterDestination,filterTransferPatch,createFilterTransport,mergeMainAccounts};
+  // Initiate WebKit clipboard access during the click; resolve text after the claim commits.
+  async function copyClaimedFilterAccount(prepare,env=global){
+    const claimed=Promise.resolve().then(prepare);
+    const content=claimed.then(row=>new env.Blob([row.username+':'+row.password],{type:'text/plain'}));
+    content.catch(()=>{});
+    try{
+      if(!env.navigator.clipboard?.write||!env.ClipboardItem)throw new Error('ClipboardItem unavailable');
+      const writing=env.navigator.clipboard.write([new env.ClipboardItem({'text/plain':content})]);
+      const [row]=await Promise.all([claimed,writing]);return row;
+    }catch(error){
+      const row=await claimed;const retry=new Error('Đã nhận lọc nhưng chưa sao chép được. Bấm Sao chép lại trong bảng hoặc nhấn giữ nội dung để sao chép.');retry.claimed=row;throw retry;
+    }
+  }
+  const pure = {copyClaimedFilterAccount,reconcileCommittedAccount,loadSyncRecoveries,persistSyncRecoveries,buildUnbanReviewMove,commitUnbanReviewMove,makeArrivalNotice,colorFilterGroups,filterBatchTone,locateFilterAccount,findFilterDuplicates,removeFilterDuplicates,assignFilterGroups,filterGroupList,removeFilterGroup,parseFilterTxt,mergeFilterImport,validateFilterDestination,filterClaim,buildFilterDestination,filterTransferPatch,createFilterTransport,mergeMainAccounts};
   if (typeof module !== "undefined" && module.exports) module.exports = pure;
   if (typeof document === "undefined") return;
   const host = document.getElementById("filter-queue-panel"); if (!host) return;
@@ -517,13 +530,32 @@
     }catch(err){message(err.message);}
   }
   async function copyText(text) {
-    try {if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(text);return;}}catch(_){}
-    const area=document.createElement('textarea');area.value=text;area.style.cssText='position:fixed;left:0;top:0;opacity:0';document.body.appendChild(area);area.select();const done=document.execCommand('copy');area.remove();if(!done)throw new Error('Đã nhận lọc nhưng chưa sao chép được. Hãy bấm Sao chép lại hoặc chọn nội dung acc để sao chép.');
+    if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(text);return;}
+    const area=document.createElement('textarea');area.value=text;area.readOnly=true;
+    area.style.cssText='position:fixed;left:0;top:0;font-size:16px;width:2px;height:2px';document.body.appendChild(area);
+    let copied=false;
+    const capture=event=>{if(event.clipboardData){event.clipboardData.setData('text/plain',text);event.preventDefault();copied=true;}};
+    document.addEventListener('copy',capture);
+    try{area.focus();area.select();area.setSelectionRange(0,text.length);if(!document.execCommand('copy')||!copied)throw new Error('Chưa sao chép được. Nhấn giữ nội dung để chọn và sao chép thủ công.');}
+    finally{document.removeEventListener('copy',capture);area.remove();}
+  }
+  function finishCopy(row){rememberAccount(row.id);focusedAccountId=row.id;restorePending=false;playSound('copy');showToast(`Đã sao chép dòng ${displayNumber(row)} — đang lọc.`);}
+  function offerManualCopy(row){
+    showNotice({title:'Sao chép tài khoản',type:'confirm',message:`<p>iOS chưa cho phép sao chép tự động. Bấm <b>Sao chép lại</b>, hoặc nhấn giữ nội dung bên dưới để sao chép.</p><textarea id="fq-manual-copy" readonly aria-label="Tài khoản để sao chép" style="width:100%;min-height:80px;font-size:16px">${e(row.username+':'+row.password)}</textarea>`,onConfirm:()=>{
+      if(!isAdmin)return;
+      // Called directly from the confirmation click, without a preceding network await.
+      void copyText(row.username+':'+row.password).then(()=>finishCopy(row)).catch(()=>{showToast('Chưa sao chép được. Nhấn giữ nội dung để sao chép thủ công.');offerManualCopy(row);});
+    }});
+    const confirm=document.querySelector('#modal-btns .btn-m-confirm');if(confirm)confirm.textContent='Sao chép lại';
   }
   function copyRow(row) {return run(async()=>{
-    if(isEmergencyLocked)throw new Error('Hệ thống đang khóa sao chép.');
-    const claimed=await transport.transaction('filter_queue/'+row.id,current=>{if(current?.status==='working'&&current.owner===owner())return current;return filterClaim(current,owner(),getUserName(),Date.now());});rows[row.id]=claimed;
-    await copyText(claimed.username+':'+claimed.password);rememberAccount(row.id);focusedAccountId=row.id;restorePending=false;playSound('copy');showToast(`Đã sao chép dòng ${displayNumber(row)} — đang lọc.`);
+    if(isGuestEmergencyLocked())throw new Error('Hệ thống đang khóa sao chép.');
+    try{
+      const claimed=await copyClaimedFilterAccount(async()=>{
+        const value=await transport.transaction('filter_queue/'+row.id,current=>{if(current?.status==='working'&&current.owner===owner())return current;return filterClaim(current,owner(),getUserName(),Date.now());});rows[row.id]=value;return value;
+      });
+      finishCopy(claimed);
+    }catch(error){if(error.claimed)offerManualCopy(error.claimed);throw error;}
   });}
   function deleteRow(row) {
     if(!isAdmin)return;

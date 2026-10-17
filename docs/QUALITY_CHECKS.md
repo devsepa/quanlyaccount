@@ -183,3 +183,10 @@ Remaining verification limits:
 
 - Rank rows/cards show the Admin hour selector even without an existing BAN date. Selecting an hour or changing a date opens a draft editor; date/hour commit together only on confirmation. Cancel keeps the stored schedule unchanged. Guest editing permissions remain unchanged.
 - npm test: 37/37 passed. Mock Chrome at 1600/390/360px confirmed visible selectors, no overflow/runtime errors, cancelled drafts unchanged and confirmed date/hour persisted without changing usage count.
+
+## iOS filter-warehouse clipboard — 18/10/2026
+
+- Found a network await before clipboard access in filter copy, plus a legacy fallback trusting execCommand without checking clipboard data. WebKit requires clipboard initiation within the user gesture.
+- Filter copy now initiates ClipboardItem writing immediately with a promise-backed text/plain Blob. The promise resolves only after the filter claim transaction succeeds, using committed credentials. Failed claims cannot provide credentials or announce success.
+- Refused/unsupported clipboard access opens a retry/manual-copy dialog while preserving the claimed account. Retry calls writeText directly within the new click. Legacy copy explicitly focuses/selects a textarea, sets clipboard event data and requires both the event and execCommand success. No asynchronous legacy fallback is reported as successful.
+- Tests cover synchronous clipboard initiation, delayed claim credentials, clipboard denial/unsupported APIs, claim failure and false-positive legacy copy. Physical iPhone/Safari and paste into a game remain unverified; no real Firebase or Telegram operations used.
