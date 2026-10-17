@@ -105,3 +105,11 @@ Lịch sử Telegram hiển thị 100 mục gần nhất trên thiết bị, g�
 - Keyboard focus cycling excludes hidden controls. Notifications retain existing visualViewport positioning instead of a fixed mobile top offset.
 - Mock Chrome checks: 1600px/1200px four warehouses share one row; 390px/360px form two rows; 768px also checked. No page overflow or JS errors. Exactly one navigation tree, three phone bottom actions, one Statistics and one Settings control. Filter hide/show, add form, warehouses, search, BAN/Rank/history, settings/cloud/statistics and guest visibility passed.
 - Analytics checked at desktop/390px/360px: modal fits, no body overflow, 30-day bars/details, warehouse scope and all report tabs work. 31 regression tests passed. Tests use synthetic data, with no real cloud writes or Telegram sends. Physical iPhone/Safari remains unverified.
+
+## Hour-based BAN schedule — 17/10/2026
+
+- Added optional 00–23 opening-hour selection to account creation, filter-to-Rank transfer and BAN schedule editing. Exact timestamps use Asia/Ho_Chi_Minh (UTC+7); existing date-only accounts retain their previous behavior.
+- ban-schedule.js owns validation, timestamp normalization, countdowns and reminder windows. Stored timestamps preserve the intended year across New Year. Local/cloud normalization and account conflict comparisons include the new schedule and reminder fields.
+- ban-schedule-ui.js updates countdowns each second, emits stable 6-hour/1-hour reminder notifications and marks each target/window once. At the deadline the existing warehouse classification places the same account in Acc vừa mở BAN for Admin review; no account is copied or deleted.
+- Telegram daily summaries support the 1-hour window and include the opening hour. Browser reminders and Telegram scans require an open, active Admin session; delivery with all browsers closed requires a server-side scheduler.
+- 41 regression tests passed: Vietnam time, midnight, invalid dates/hours, exact expiry, New Year, reminder deduplication, schedule edits, filter transfers, cloud merge conflicts and Telegram classification. Mock Chrome checks cover 1600px, 390px and 360px with no page overflow or JavaScript errors. No live Firebase writes or real Telegram sends were performed.

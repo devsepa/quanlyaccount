@@ -147,3 +147,33 @@
  #option-menu-dropdown #sync-status-bar button { min-height:36px; padding:6px 10px; border:1px solid #3c5578; border-radius:6px; background:#192c46; color:#dbeafe; font:inherit; }
  #option-menu-dropdown #sync-status-bar button[hidden] { display:none; }
 }
+
+/* Hour-aware BAN schedule, retaining compact account forms. */
+.ban-date-hour { display:grid; grid-template-columns:minmax(0,1fr) minmax(84px,.8fr); gap:7px; }
+.app-layout #input-container #defaultUnlockHour,.ban-hour-inline select,#ban-watch-edit-hour,#fq-unlock-hour { box-sizing:border-box; min-width:0; width:100%; min-height:36px; padding:6px 8px; background:#0b1423; color:#dbeafe; border:1px solid #3a4b64; border-radius:7px; font-family:inherit; font-size:.73rem; }
+.ban-hour-inline { display:flex; flex-direction:column; align-items:center; gap:4px; margin-top:5px; max-width:160px; font-size:.66rem; line-height:1.5; }
+.ban-hour-inline select { max-width:112px; min-height:30px; }
+.ban-hour-inline small { color:#fbbf24; font-variant-numeric:tabular-nums; font-size:.65rem; white-space:nowrap; }
+.ban-watch .ban-watch-date { flex-wrap:wrap; }
+.ban-watch .ban-watch-date>b { white-space:normal; font-size:.76rem; }
+.ban-watch [data-ban-deadline] { font-variant-numeric:tabular-nums; }
+#ban-watch-edit-hour { margin:8px 0; }
+#fq-rank-fields .fq-meta-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
+@media(max-width:600px) {
+ .app-layout #input-container #defaultUnlockHour,#fq-unlock-hour,#ban-watch-edit-hour { min-height:40px; font-size:16px; }
+ .mobile-card-list .ban-hour-inline { grid-column:1/-1; grid-row:2; display:flex; flex-direction:row; flex-wrap:wrap; justify-content:space-between; max-width:none; width:100%; margin:0; padding:6px 0; }
+ .mobile-card-list .ban-hour-inline select { min-height:40px; font-size:16px; max-width:142px; }
+ .mobile-card-list .m-action-row:not(.mode-chungsuc):not(.mode-unban):not(.no-admin) .m-btn-transfer-compact { grid-column:4; grid-row:1; }
+ #fq-rank-fields .fq-meta-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+
+@media(max-width:600px){.app-layout .account-workspace #input-container #field-wrap-unlock{grid-column:1/-1!important;}.ban-date-hour{grid-template-columns:repeat(2,minmax(0,1fr));}#fq-rank-fields .fq-meta-grid>div:last-child{grid-column:1/-1;}}
+
+/* Device summaries count linked machines once; sessions stay available on demand. */
+.device-summary-meta{color:#94a3b8;font-size:.76rem;padding:0 10px;overflow-wrap:anywhere}
+.device-summary-actions{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px;flex-wrap:wrap}
+.device-summary-status{color:#34d399;font-size:.75rem;font-weight:700}
+.device-summary-status.is-blocked{color:#fca5a5}
+.device-session-details{border-top:1px solid #ffffff12;padding:10px;font-size:.76rem;color:#94a3b8}
+.device-session-details>summary{cursor:pointer;padding:4px 0;color:#a5b4fc}
+.device-session-list{display:grid;gap:8px;margin:10px 0}

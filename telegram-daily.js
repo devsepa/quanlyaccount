@@ -2,19 +2,20 @@
   'use strict';
   const esc=v=>String(v??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
   function dayKey(ms){const parts=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Ho_Chi_Minh',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date(ms));const get=k=>parts.find(p=>p.type===k).value;return get('year')+'-'+get('month')+'-'+get('day');}
-  function classify(list,now,parse,status){const result={today:[],six:[],tomorrow:[]},seen=new Set(),day=dayKey(now),tomorrow=dayKey(now+86400000);
-    for(const row of list||[]){const name=String(row?.username||'').trim().toLowerCase();if(!name||seen.has(name)||!row.unlockDate)continue;seen.add(name);const target=parse(row.unlockDate);if(!target)continue;const diff=target-now,targetDay=dayKey(target);let kind;
+  function classify(list,now,parse,status){const result={today:[],one:[],six:[],tomorrow:[]},seen=new Set(),day=dayKey(now),tomorrow=dayKey(now+86400000);
+    for(const row of list||[]){const name=String(row?.username||'').trim().toLowerCase();if(!name||seen.has(name)||!row.unlockDate)continue;seen.add(name);const target=parse(row.unlockDate,row);if(!target)continue;const diff=target-now,targetDay=dayKey(target);let kind;
       if(diff<=0&&targetDay===day&&status(row.unlockDate,row).isJustUnbanned)kind='today';
+      else if(diff>0&&diff<=3600000&&row.unlockHour!==undefined&&row.unlockHour!=='')kind='one';
       else if(diff>0&&diff<=21600000)kind='six';
       else if(diff>21600000&&diff<=86400000&&targetDay===tomorrow)kind='tomorrow';
-      if(kind)result[kind].push({username:String(row.username),password:String(row.password||''),rank:String(row.rank||'')});
+      if(kind)result[kind].push({username:String(row.username),password:String(row.password||''),rank:String(row.rank||''),openLabel:row.unlockHour!==undefined&&row.unlockHour!==''?String(row.unlockDate)+' '+String(row.unlockHour).padStart(2,'0')+':00 (VN)':''});
     }return result;
   }
-  function mergeEntries(previous,incoming){const map=new Map();for(const row of [...(previous||[]),...(incoming||[])])if(row?.username)map.set(String(row.username).trim().toLowerCase(),{username:String(row.username),password:String(row.password||''),rank:String(row.rank||'')});return [...map.values()].sort((a,b)=>a.username.localeCompare(b.username,'vi'));}
+  function mergeEntries(previous,incoming){const map=new Map();for(const row of [...(previous||[]),...(incoming||[])])if(row?.username)map.set(String(row.username).trim().toLowerCase(),{username:String(row.username),password:String(row.password||''),rank:String(row.rank||''),openLabel:String(row.openLabel||'')});return [...map.values()].sort((a,b)=>a.username.localeCompare(b.username,'vi'));}
   function buildMessage(kind,entries,day){const date=day.slice(8,10)+'/'+day.slice(5,7);const tomorrow=dayKey(Date.parse(day+'T12:00:00+07:00')+86400000);const next=tomorrow.slice(8,10)+'/'+tomorrow.slice(5,7);
-    const titles={today:`🎉 <b>THÔNG BÁO: CÓ ${entries.length} NICK VỪA MỞ BAN HÔM NAY (${date})!</b>`,six:`⚡ <b>ĐẾM NGƯỢC: ${entries.length} NICK SẮP MỞ BAN TRONG 6 TIẾNG · ${date}</b>`,tomorrow:`⏳ <b>NHẮC NHỞ: ${entries.length} NICK SẮP MỞ BAN VÀO NGÀY MAI (${next})!</b>`};
+    const titles={one:`⏰ <b>NHẮC TRƯỚC 1 GIỜ: ${entries.length} NICK SẮP ĐẾN GIỜ MỞ BAN · ${date}</b>`,today:`🎉 <b>THÔNG BÁO: CÓ ${entries.length} NICK VỪA MỞ BAN HÔM NAY (${date})!</b>`,six:`⚡ <b>ĐẾM NGƯỢC: ${entries.length} NICK SẮP MỞ BAN TRONG 6 TIẾNG · ${date}</b>`,tomorrow:`⏳ <b>NHẮC NHỞ: ${entries.length} NICK SẮP MỞ BAN VÀO NGÀY MAI (${next})!</b>`};
     if(!titles[kind])throw new Error('Loại bản tin không hợp lệ.');let text=titles[kind]+'\n\n',shown=0;
-    for(const row of entries){const line=`${shown+1}. <code>${esc(row.username+(row.password?':'+row.password:''))}</code>${row.rank?' | Rank: <b>'+esc(row.rank)+'</b>':''}\n`;if(text.length+line.length>3500)break;text+=line;shown++;}
+    for(const row of entries){const line=`${shown+1}. <code>${esc(row.username+(row.password?':'+row.password:''))}</code>${row.rank?' | Rank: <b>'+esc(row.rank)+'</b>':''}${row.openLabel?' | Mở: '+esc(row.openLabel):''}\n`;if(text.length+line.length>3500)break;text+=line;shown++;}
     if(shown<entries.length)text+=`\n… còn ${entries.length-shown} acc, xem đầy đủ trên web.\n`;
     return text+'\n<i>Bản tin được cập nhật trong ngày khi có thêm acc.</i>';
   }
@@ -68,7 +69,7 @@
     const chatId=normalizeTelegramChatId(config.chatId);const grouped=classify(list,Date.now(),parseUnlockTargetTimestamp,checkBanStatus),day=dayKey(Date.now());
     const fingerprint=JSON.stringify([day,chatId,config.token,grouped]);if(fingerprint===lastFingerprint)return;
     let complete=true;
-    for(const kind of ['today','six','tomorrow']){if(!grouped[kind].length)continue;const notice={id:'daily_'+day+'_'+kind,category:'rank',firstAccount:'Bản tin BAN '+({today:'hôm nay',six:'6 giờ tới',tomorrow:'ngày mai'}[kind]),timestamp:Date.now()};global.warehouseTransferTele?.trackState(notice,'sending');let result;try{result=await client.upsert({...config,chatId},day,kind,grouped[kind]);}catch(_){result='failed';}global.warehouseTransferTele?.trackState(notice,result==='uncertain'?'uncertain':['busy','failed'].includes(result)?'retry':'sent');if(['busy','failed','uncertain'].includes(result))complete=false;if(result==='uncertain')showToast('Chưa xác minh được bản tin Telegram. Hệ thống không gửi tin mới để tránh trùng.');}
+    for(const kind of ['today','one','six','tomorrow']){if(!grouped[kind].length)continue;const notice={id:'daily_'+day+'_'+kind,category:'rank',firstAccount:'Bản tin BAN '+({today:'hôm nay',one:'1 giờ tới',six:'6 giờ tới',tomorrow:'ngày mai'}[kind]),timestamp:Date.now()};global.warehouseTransferTele?.trackState(notice,'sending');let result;try{result=await client.upsert({...config,chatId},day,kind,grouped[kind]);}catch(_){result='failed';}global.warehouseTransferTele?.trackState(notice,result==='uncertain'?'uncertain':['busy','failed'].includes(result)?'retry':'sent');if(['busy','failed','uncertain'].includes(result))complete=false;if(result==='uncertain')showToast('Chưa xác minh được bản tin Telegram. Hệ thống không gửi tin mới để tránh trùng.');}
     if(complete)lastFingerprint=fingerprint;
   }};
   setInterval(()=>{if(isAdmin&&!document.hidden&&navigator.onLine!==false)void autoCheckUnbannedAccounts();},60000);

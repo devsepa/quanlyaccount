@@ -93,3 +93,60 @@ test('PIN opens after navigation closes and focuses within the same user gesture
  vm.createContext(c);vm.runInContext(html.slice(html.indexOf('      window.openPinModal ='),html.indexOf('      window.closePinModal =')),c);
  c.window.openPinModal();assert.deepEqual(events,['dashboard:close-navigation','show','focus']);assert.equal(input.value,'');
 });
+
+const banSchedule=require(root+'ban-schedule.js'),dailySummary=require(root+'telegram-daily.js');
+const vnNow=Date.parse('2026-10-17T10:00:00+07:00');
+test('BAN schedule uses Vietnam time and accepts midnight without treating zero as missing',()=>{
+ assert.equal(banSchedule.resolve('17/10','16',vnNow),Date.parse('2026-10-17T16:00:00+07:00'));
+ assert.equal(banSchedule.resolve('18/10',0,vnNow),Date.parse('2026-10-18T00:00:00+07:00'));
+ assert.equal(banSchedule.hour('0'),'00');assert.equal(banSchedule.hour(''),'');
+});
+test('BAN hour and calendar validation reject impossible schedules',()=>{
+ for(const value of ['24','-1','1.5','09:30'])assert.throws(()=>banSchedule.resolve('17/10',value,vnNow));
+ assert.throws(()=>banSchedule.resolve('31/02','09',vnNow));assert.throws(()=>banSchedule.resolve('','09',vnNow));
+ assert.equal(banSchedule.target({unlockDate:'17/10'}),null);
+});
+test('timed BAN remains banned until the exact hour, then enters pending review',()=>{
+ const row={id:'timed',unlockDate:'17/10',...banSchedule.fields('17/10','16',vnNow)};
+ assert.equal(banSchedule.status(row,row.unlockAt-1).isBanned,true);assert.equal(banSchedule.status(row,row.unlockAt).isJustUnbanned,true);
+ assert.equal(banSchedule.status({...row,unbanCleared:true},row.unlockAt).isJustUnbanned,false);
+ assert.equal(banSchedule.countdown(row.unlockAt,row.unlockAt-1000),'Còn 00:00:01');
+});
+test('stored deadline keeps its original year across New Year and ignores stale timestamps',()=>{
+ const now=Date.parse('2026-12-31T20:00:00+07:00'),row={unlockDate:'01/01',...banSchedule.fields('01/01','01',now)};
+ assert.equal(row.unlockAt,Date.parse('2027-01-01T01:00:00+07:00'));
+ assert.equal(banSchedule.target(row,Date.parse('2027-12-01T00:00:00+07:00')),row.unlockAt);
+ const edited={...row,unlockDate:'02/01'};assert.notEqual(banSchedule.target(edited,now),row.unlockAt);
+});
+test('six-hour and one-hour reminders are each deduplicated for their deadline',()=>{
+ const row={id:'reminder',username:'tester',unlockDate:'17/10',...banSchedule.fields('17/10','16',vnNow)};
+ assert.equal(banSchedule.reminders(row,row.unlockAt-6*banSchedule.HOUR)[0].stage,6);
+ row.banReminder6At=row.unlockAt;assert.equal(banSchedule.reminders(row,row.unlockAt-2*banSchedule.HOUR).length,0);
+ assert.equal(banSchedule.reminders(row,row.unlockAt-banSchedule.HOUR)[0].stage,1);
+ row.banReminder1At=row.unlockAt;assert.equal(banSchedule.reminders(row,row.unlockAt-1000).length,0);
+ assert.equal(banSchedule.reminders({...row,banReminder1At:0},row.unlockAt).length,0);
+ assert.equal(banSchedule.reminders({...row,category:'chungsuc',banReminder1At:0},row.unlockAt-1000).length,0);
+});
+test('changing the BAN schedule resets reminders while leaving old date-only accounts untimed',()=>{
+ const fields=banSchedule.fields('18/10','18',vnNow);assert.equal(fields.banReminder1At,0);assert.equal(fields.banReminder6At,0);
+ assert.equal(banSchedule.fields('18/10','',vnNow).unlockAt,0);assert.equal(banSchedule.normalize({}).unlockHour,'');
+});
+test('filter-to-Rank transfer preserves scheduled hour and Chung Suc clears it',()=>{
+ const fields=lib.validateFilterDestination('rank',{rank:'KC',unlockDate:'18/10',unlockHour:'09'});
+ assert.equal(fields.unlockHour,'09');assert.ok(fields.unlockAt>0);
+ const event=lib.validateFilterDestination('chungsuc',{unlockDate:'18/10',unlockHour:'09'});assert.equal(event.unlockHour,'');assert.equal(event.unlockAt,0);
+});
+test('schedule metadata survives concurrent merge and detects conflicting hour edits',()=>{
+ const old={...base,unlockDate:'18/10',...banSchedule.fields('18/10','09',vnNow)};
+ const merged=lib.mergeMainAccounts([{...old,uyTin:'90'}],[{...old,banReminder6At:old.unlockAt}],[old]);
+ assert.equal(merged[0].banReminder6At,old.unlockAt);assert.equal(merged[0].uyTin,'90');
+ assert.throws(()=>lib.mergeMainAccounts([{...old,unlockHour:'10'}],[{...old,unlockHour:'11'}],[old]),error=>error.code==='ACCOUNT_CONFLICT');
+ const numeric={...old,unlockHour:9};assert.equal(lib.mergeMainAccounts([numeric],[{...old,uyTin:'95'}],[old])[0].uyTin,'95');
+});
+test('Telegram uses precise timestamps, separates 6h/1h and includes the scheduled hour',()=>{
+ const row={id:'tele-timed',username:'tester',password:'mock',unlockDate:'17/10',...banSchedule.fields('17/10','16',vnNow)};
+ const parse=(date,account)=>banSchedule.target(account,vnNow),status=(date,account)=>banSchedule.status(account,vnNow);
+ assert.equal(dailySummary.classify([row],vnNow,parse,status).six.length,1);
+ const one=dailySummary.classify([row],row.unlockAt-banSchedule.HOUR,parse,status);assert.equal(one.one.length,1);assert.equal(one.six.length,0);
+ const entries=dailySummary.mergeEntries([],one.one);assert.match(dailySummary.buildMessage('one',entries,'2026-10-17'),/16:00/);
+});

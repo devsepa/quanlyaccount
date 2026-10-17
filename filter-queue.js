@@ -121,9 +121,10 @@
     if (Object.values(result).filter(r=>r&&r.username).length > 5000) throw new Error("Kho cần lọc tối đa 5.000 acc. Hãy xử lý bớt trước khi nhập thêm.");
     return { value: assignFilterGroups(result), added, skipped };
   }
+  const scheduleEngine=typeof module!=='undefined'&&module.exports?require('./ban-schedule.js'):global.banSchedule;
   function validateFilterDestination(category, metadata) {
     if (!["rank", "chungsuc"].includes(category)) throw new Error("Chọn kho Rank hoặc Chung Sức.");
-    if (category === "chungsuc") return { rank: "", uyTin: "", unlockDate: "" };
+    if (category === "chungsuc") return { rank: "", uyTin: "", unlockDate: "", ...scheduleEngine.fields('','') };
     const rank = String(metadata.rank || "").trim().toUpperCase();
     const uyTin = String(metadata.uyTin || "").trim(), unlockDate = String(metadata.unlockDate || "").trim();
     if (rank.length > 15) throw new Error("Rank tối đa 15 ký tự.");
@@ -132,7 +133,7 @@
       const match = unlockDate.match(/^(\d{2})\/(\d{2})$/);
       if (!match || Number(match[2]) < 1 || Number(match[2]) > 12 || Number(match[1]) < 1 || Number(match[1]) > [31,29,31,30,31,30,31,31,30,31,30,31][Number(match[2])-1]) throw new Error("Ngày mở BAN cần đúng dd/MM và là ngày có thật.");
     }
-    return { rank, uyTin, unlockDate };
+    return { rank, uyTin, unlockDate, ...scheduleEngine.fields(unlockDate,metadata.unlockHour) };
   }
   function filterClaim(row, owner, actor, now) {
     if (!row) throw new Error("Acc đã được chuyển hoặc xóa. Hãy tải lại.");
@@ -159,10 +160,11 @@
   }
   function mergeMainAccounts(remote, local, baseline) {
     // Compare persisted and UI-normalized records using the same field semantics.
-    const textFields=new Set(['username','password','rank','uyTin','unlockDate','lastUsed','lastUsedBy','createdBy','createdAt','sourceBatch','unbanReviewedBy']);
-    const numberFields=new Set(['createdTimestamp','filterTransferredAt','unbanReviewedAt','lastUsedTime','useCount']);
+    const textFields=new Set(['username','password','rank','uyTin','unlockDate','lastUsed','lastUsedBy','createdBy','createdAt','sourceBatch','unbanReviewedBy','unlockHour']);
+    const numberFields=new Set(['createdTimestamp','filterTransferredAt','unbanReviewedAt','lastUsedTime','useCount','unlockAt','banReminder6At','banReminder1At']);
     const boolFields=new Set(['unbanReviewPending','unbanCleared','inRecent']);
     function value(field,item){
+      if(field==='unlockHour'){try{return scheduleEngine.hour(item);}catch(_){return String(item??'');}}
       if(textFields.has(field))return String(item??'');
       if(numberFields.has(field))return Number(item)||0;
       if(boolFields.has(field))return item===true;
@@ -468,7 +470,7 @@
     if(!isAdmin||busy)return;
     const modal=document.getElementById('filter-transfer-modal');modal.dataset.rowId=row.id;
     document.getElementById('fq-transfer-account').textContent='#'+displayNumber(row)+' · '+row.username;
-    ['fq-rank','fq-trust','fq-unlock'].forEach(id=>document.getElementById(id).value='');document.getElementById('fq-destination').value='rank';document.getElementById('fq-rank-fields').hidden=false;
+    ['fq-rank','fq-trust','fq-unlock','fq-unlock-hour'].forEach(id=>document.getElementById(id).value='');document.getElementById('fq-destination').value='rank';document.getElementById('fq-rank-fields').hidden=false;
     document.getElementById('fq-transfer-error').textContent='';modal.classList.add('show');
   }
   async function waitForMainSave({silent=false}={}) {
@@ -481,7 +483,7 @@
     const modal=document.getElementById('filter-transfer-modal'),row=rows[modal.dataset.rowId];
     if(!row){document.getElementById('fq-transfer-error').textContent='Acc đã rời kho. Hãy tải lại.';return;}
     const category=document.getElementById('fq-destination').value;
-    let metadata;try{eligible();metadata=validateFilterDestination(category,{rank:document.getElementById('fq-rank').value,uyTin:document.getElementById('fq-trust').value,unlockDate:document.getElementById('fq-unlock').value});}catch(err){document.getElementById('fq-transfer-error').textContent=err.message;return;}
+    let metadata;try{eligible();metadata=validateFilterDestination(category,{rank:document.getElementById('fq-rank').value,uyTin:document.getElementById('fq-trust').value,unlockDate:document.getElementById('fq-unlock').value,unlockHour:document.getElementById('fq-unlock-hour').value});}catch(err){document.getElementById('fq-transfer-error').textContent=err.message;return;}
     const button=document.getElementById('fq-confirm-transfer');if(busy)return;button.disabled=true;
     await run(async()=>{
       await waitForMainSave();
