@@ -18,13 +18,13 @@
       rel="stylesheet"
     />
     <!-- Ordered stylesheets: preserve base → workspace → controls cascade. -->
-    <link rel="stylesheet" href="styles/core.css?v=20261017-management-1" />
-    <link rel="stylesheet" href="styles/workspace.css?v=20261017-management-1" />
-    <link rel="stylesheet" href="styles/controls.css?v=20261017-management-1" />
-    <link rel="stylesheet" href="styles/filter-queue.css?v=20261017-management-1" />
-    <link rel="stylesheet" href="styles/dashboard.css?v=20261017-management-1" />
-    <link rel="stylesheet" href="styles/analytics.css?v=20261017-management-1" />
-    <link rel="stylesheet" href="styles/layout-refinement.css?v=20261017-management-1" />
+    <link rel="stylesheet" href="styles/core.css?v=20261017-auto-sync-1" />
+    <link rel="stylesheet" href="styles/workspace.css?v=20261017-auto-sync-1" />
+    <link rel="stylesheet" href="styles/controls.css?v=20261017-auto-sync-1" />
+    <link rel="stylesheet" href="styles/filter-queue.css?v=20261017-auto-sync-1" />
+    <link rel="stylesheet" href="styles/dashboard.css?v=20261017-auto-sync-1" />
+    <link rel="stylesheet" href="styles/analytics.css?v=20261017-auto-sync-1" />
+    <link rel="stylesheet" href="styles/layout-refinement.css?v=20261017-auto-sync-1" />
     <style>
       #page-loader {display:none;}
       html.page-loading #page-loader,#page-loader.is-leaving {display:flex;position:fixed;inset:0;z-index:100000;align-items:center;justify-content:center;flex-direction:column;gap:20px;background:radial-gradient(ellipse at 50% 42%,#172444 0%,#0b1220 65%);color:#dce7fc;font:13px/1.5 system-ui,sans-serif;}
@@ -597,7 +597,7 @@
         />
       </header>
 
-      <div class="sync-status-bar" id="sync-status-bar" data-state="loading"><span id="sync-status-text" role="status" aria-live="polite">Đang kết nối dữ liệu…</span><button type="button" id="sync-retry" hidden>Thử lại</button><button type="button" id="sync-use-cloud" hidden>Dùng bản cloud</button></div>
+      <div class="sync-status-bar" id="sync-status-bar" data-state="loading"><span id="sync-status-text" role="status" aria-live="polite">Đang kết nối dữ liệu…</span><button type="button" id="sync-retry" hidden>Thử lại</button><button type="button" id="sync-use-cloud" hidden>Dùng bản cloud</button><button type="button" id="sync-recovery" hidden>Bản phục hồi</button></div>
       <!-- THANH CHÀO MỪNG NGƯỜI DÙNG Ở TRANG CHỦ -->
       <div class="user-greeting-bar" id="user-greeting-bar">
         <div class="user-greeting-left">
@@ -2391,11 +2391,11 @@
     <!-- CONTAINER THẺ THÔNG BÁO GÓC DƯỚI BÊN TRÁI KHI THÊM ACC MỚI -->
     <div id="activity-toast-container" class="activity-toast-container"></div>
 
-    <script src="assets/js/app-config.js?v=20261017-management-1"></script>
-    <script src="assets/js/secure-admin.js?v=20261017-management-1"></script>
-    <script src="assets/js/management-core.js?v=20261017-management-1"></script>
-    <script src="assets/js/ban-schedule.js?v=20261017-management-1"></script>
-    <script src="assets/js/analytics-report.js?v=20261017-management-1"></script>
+    <script src="assets/js/app-config.js?v=20261017-auto-sync-1"></script>
+    <script src="assets/js/secure-admin.js?v=20261017-auto-sync-1"></script>
+    <script src="assets/js/management-core.js?v=20261017-auto-sync-1"></script>
+    <script src="assets/js/ban-schedule.js?v=20261017-auto-sync-1"></script>
+    <script src="assets/js/analytics-report.js?v=20261017-auto-sync-1"></script>
     <script>
       // BẮT MỌI LỖI RUNTIME NẾU CÓ ĐỂ KHÔNG BAO GIỜ BỊ ĐƠ WEB
       window.addEventListener("error", function (e) {
@@ -3549,7 +3549,7 @@
                   </div>
                 </div>
                 <div class="noti-item-desc">
-                  ${item.kind==='ban-opened'?'🎉 Đã đến giờ mở BAN · Acc đang chờ Admin kiểm tra':item.kind==='ban-reminder'?`⏰ Sắp đến giờ mở BAN · ${item.reminderStage} giờ tới<br><small>${escapeHtml(new Date(Number(item.unlockAt)).toLocaleString("vi-VN",{timeZone:"Asia/Ho_Chi_Minh",hour12:false}))} (VN)</small>`:`Đã thêm <b>${item.count || 1} tài khoản</b> vào <b>${escapeHtml(catName)}</b>`}
+                  ${item.kind==='ban-opened'?'🎉 Đã đến giờ mở BAN · Acc đang chờ Admin kiểm tra':item.kind==='ban-reminder'?`⏰ Sắp đến giờ mở BAN · ${item.reminderStage} giờ tới<br><small>${escapeHtml(new Date(Number(item.unlockAt)).toLocaleString("vi-VN",{timeZone:"Asia/Ho_Chi_Minh",hour12:false}))} (VN)</small>`:`${item.kind==='transfer'?'Đã chuyển':'Đã thêm'} <b>${item.count || 1} tài khoản</b> vào <b>${escapeHtml(catName)}</b>`}
                   ${item.firstAccount ? `<div style="font-size: 0.73rem; color: #94a3b8; font-family: monospace; margin-top: 2px;">• ${escapeHtml(item.firstAccount)}${item.count > 1 ? ` (+${item.count - 1} nick khác)` : ""}</div>` : ""}
                 </div>
                 <span class="noti-item-badge-cat ${catClass}">${escapeHtml(catName)}</span>
@@ -3694,7 +3694,7 @@
             <button type="button" class="activity-toast-close" title="Đóng">✕</button>
           </div>
           <div class="activity-toast-body">
-            ${notiItem.kind==='ban-opened'?'🎉 Acc đã đến giờ mở BAN · Chờ Admin kiểm tra':notiItem.kind==='ban-reminder'?`⏰ Nhắc trước ${notiItem.reminderStage} giờ · ${escapeHtml(new Date(Number(notiItem.unlockAt)).toLocaleString("vi-VN",{timeZone:"Asia/Ho_Chi_Minh",hour12:false}))} (VN)`:`<span class="activity-toast-user">${escapeHtml(notiItem.user || "Khách")}</span> đã thêm <b>${notiItem.count || 1} tài khoản</b> vào <span class="activity-toast-target">${escapeHtml(catName)}</span>`}
+            ${notiItem.kind==='ban-opened'?'🎉 Acc đã đến giờ mở BAN · Chờ Admin kiểm tra':notiItem.kind==='ban-reminder'?`⏰ Nhắc trước ${notiItem.reminderStage} giờ · ${escapeHtml(new Date(Number(notiItem.unlockAt)).toLocaleString("vi-VN",{timeZone:"Asia/Ho_Chi_Minh",hour12:false}))} (VN)`:`<span class="activity-toast-user">${escapeHtml(notiItem.user || "Khách")}</span> ${notiItem.kind==='transfer'?'đã chuyển':'đã thêm'} <b>${notiItem.count || 1} tài khoản</b> vào <span class="activity-toast-target">${escapeHtml(catName)}</span>`}
           </div>
           ${
             notiItem.firstAccount
@@ -4336,21 +4336,24 @@
         document.body.classList.toggle('storage-mode-unban',currentStorage==='unban');
         return count;
       }
+      const unbanMovesInFlight=new Set();
       window.returnUnbanAccount=function(id){
-        if(!isAdmin)return;const item=accounts.find(a=>a.id===id);if(!item||!needsUnbanReview(item))return;
-        showNotice({title:'Chọn kho sau khi kiểm tra',type:'confirm',message:`Tài khoản <b>${escapeHtml(item.username)}</b><br><label for="unban-return-destination" style="display:block;margin-top:12px;text-align:left">Kho đích</label><select id="unban-return-destination" style="width:100%;margin:8px 0 12px;padding:10px;border-radius:7px;background:#162233;color:#e2e8f0;border:1px solid #586780"><option value="rank">🎮 Kho Rank</option><option value="chungsuc">🤝 Kho Chung Sức</option></select><br>Xác nhận đã kiểm tra và chuyển acc vào kho đã chọn. Lịch sử dùng được giữ nguyên.`,onConfirm:()=>{
-          if(!isAdmin)return;const current=accounts.find(a=>a.id===id);if(!current||!needsUnbanReview(current))return;
+        if(!isAdmin||unbanMovesInFlight.has(id))return;const item=accounts.find(a=>a.id===id);if(!item||!needsUnbanReview(item))return;
+        showNotice({title:'Chọn kho và xác nhận chuyển',type:'confirm',message:`Tài khoản <b>${escapeHtml(item.username)}</b><p>Rank: ${escapeHtml(item.rank||'Chưa nhập')} · Uy tín: ${escapeHtml(item.uyTin||'Chưa nhập')}</p><label for="unban-return-destination">Kho đích</label><select id="unban-return-destination" style="width:100%;margin:8px 0 12px;padding:10px;border-radius:7px;background:#162233;color:#e2e8f0;border:1px solid #586780"><option value="rank">🎮 Kho Rank</option><option value="chungsuc">🤝 Kho Chung Sức</option></select><p>Acc chỉ rời kho vừa mở BAN sau khi lưu chuyển kho thành công. Giữ nguyên ID và lịch sử dùng.</p>`,onConfirm:async()=>{
           const destination=document.getElementById('unban-return-destination')?.value;
-          if(!['rank','chungsuc'].includes(destination))return;
-          current.category=destination;current.unbanReviewPending=false;
-          const stillBanned=checkBanStatus(current.unlockDate,current).isBanned;current.unbanCleared=!stillBanned;
-          if(!stillBanned){current.unlockDate='';Object.assign(current,window.banSchedule.fields('',''));}
-          current.unbanReviewedAt=Date.now();current.unbanReviewedBy=getUserName();
-          saveData();triggerAutoSync();
-          window.revealAccountLocation(current.id);
-          recordAdminAudit('move',current,{from:'unban',to:destination});
-          try{pushAccountNotification({...window.filterQueue.makeArrivalNotice([current],destination,getUserName()),kind:'transfer'});}catch(_){showToast('Acc đã chuyển; thông báo sẽ cập nhật sau khi đồng bộ.');}
-          showToast('Đã cập nhật trên máy, đang chờ lưu: '+escapeHtml(current.username)+' vào '+(destination==='rank'?'kho Rank · '+escapeHtml(current.rank||'Chưa rank'):'kho Chung Sức')+'.');
+          if(!isAdmin||unbanMovesInFlight.has(id)||!['rank','chungsuc'].includes(destination))return;
+          unbanMovesInFlight.add(id);
+          const controls=[document.getElementById('acc-row-'+id),document.getElementById('m-card-'+id)].filter(Boolean).flatMap(row=>[...row.querySelectorAll('input,button,select')]);controls.forEach(el=>el.disabled=true);
+          try{
+            const result=await window.filterQueue.finishUnbanReview(id,destination);
+            recordAdminAudit('move',result.account,{from:'unban',to:destination,cloudConfirmed:true});
+            try{pushAccountNotification(result.notice,false);}catch(_){showLeftCornerToast(result.notice);}
+            window.warehouseTransferTele?.enqueue(result.notice);
+            renderList();
+            showToast('✅ Đã chuyển '+escapeHtml(result.account.username)+' vào '+(destination==='rank'?'kho Rank':'kho Chung Sức')+'.');
+          }catch(err){
+            renderList();showNotice({title:'Chưa xác nhận chuyển kho',message:escapeHtml(err.message||'Không lưu được thay đổi. Acc vẫn chờ trong kho vừa mở BAN.'),type:'danger'});
+          }finally{unbanMovesInFlight.delete(id);controls.forEach(el=>el.disabled=false);}
         }});
       };
       window.returnUnbanAccountToRank=window.returnUnbanAccount;
@@ -5851,7 +5854,7 @@
 
       window.updateField = function (id, field, value) {
         const item = accounts.find((a) => a.id === id);
-        if (!item) return;
+        if (!isAdmin || !item || unbanMovesInFlight.has(id)) return;
 
         const trimmedVal = value.trim();
         if(field==='unlockDate'||field==='unlockHour'){saveBanSchedule(id,field==='unlockDate'?trimmedVal:item.unlockDate,field==='unlockHour'?trimmedVal:item.unlockHour);return;}
@@ -5887,6 +5890,7 @@
           }
         }
 
+        const retainUnbanReview=needsUnbanReview(item);
         const beforeValue=item[field] ?? "";
         item[field] = trimmedVal;
         if (field === "rank") {
@@ -5896,6 +5900,7 @@
           item[field] = item[field].replace(/[^0-9]/g, "");
         }
         if (String(beforeValue)===String(item[field])) return;
+        if(retainUnbanReview)item.unbanReviewPending=true;
         if(field==="unlockDate"&&trimmedVal)item.unbanCleared=false;
         saveData();
         recordAdminAudit("edit",item,{field,before:field==="password"?undefined:beforeValue,after:field==="password"?undefined:item[field]});
@@ -5969,13 +5974,14 @@
         window.filterQueue?.setActive(currentStorage === "filter");
         if (currentStorage === "filter") return;
         if(activeRankFilter==='banned'&&(!isAdmin||currentStorage!=='rank'))activeRankFilter='all';
+        if(currentStorage==='unban')activeRankFilter='all';
         const fRank = activeRankFilter;
         const isChungSuc = currentStorage === "chungsuc";
         const isUnbanStorage = currentStorage === 'unban';
         if(isUnbanStorage){
           const title=document.querySelector('#zone-player-divider .zone-title-text'),desc=document.querySelector('#zone-player-divider .zone-desc-text');
           if(title)title.textContent='🎉 ACC VỪA MỞ BAN · CHỜ KIỂM TRA';
-          if(desc)desc.textContent='Sao chép để kiểm tra, sau đó bấm Chọn kho để chuyển sang Rank hoặc Chung Sức. Thao tác sao chép trong kho này không tính lượt dùng.';
+          if(desc)desc.textContent='Danh sách chờ kiểm tra, không chia nhóm Rank. Sửa Rank/uy tín tại đây, sau đó bấm Chọn kho và xác nhận để chuyển. Sao chép kiểm tra không tính lượt dùng.';
         }
 
         // 1. CẬP NHẬT SỐ LƯỢNG TRÊN 2 TAB KHO TÀI KHOẢN
@@ -6435,7 +6441,7 @@
           globalIndex++;
           const banInfo = checkBanStatus(item.unlockDate, item);
           const isBanned = banInfo.isBanned;
-          const isJustUnbanned = banInfo.isJustUnbanned;
+          const isJustUnbanned = isUnbanStorage || item.unbanReviewPending === true || banInfo.isJustUnbanned;
           const rankGrp = parseRankGroup(item.rank);
 
           const borderClass = isRecent
@@ -6471,7 +6477,7 @@
           const onchangeUyTin = isAdmin
             ? `onchange="updateField('${item.id}', 'uyTin', this.value)"`
             : "";
-          const onchangeUnlock = isAdmin
+          const onchangeUnlock = isAdmin && !isUnbanStorage
             ? `onchange="updateField('${item.id}', 'unlockDate', this.value)"`
             : "";
           const onRankClick = isAdmin
@@ -6589,7 +6595,7 @@
                   style="text-align: center; width: 75px;"
                   oninput="formatDateOnlyNumbers(this)"
                   ${onchangeUnlock}
-                  ${readOnlyAttr}
+                  ${isUnbanStorage?'readonly':readOnlyAttr}
                 />
               ${banHourMarkup(item,isAdmin&&!isUnbanStorage)}
               </td>
@@ -6660,7 +6666,7 @@
         function renderMobileCard(item, isRecent = false) {
           const banInfo = checkBanStatus(item.unlockDate, item);
           const isBanned = banInfo.isBanned;
-          const isJustUnbanned = banInfo.isJustUnbanned;
+          const isJustUnbanned = isUnbanStorage || item.unbanReviewPending === true || banInfo.isJustUnbanned;
           const rankGrp = parseRankGroup(item.rank);
 
           const borderClass = isRecent
@@ -6696,7 +6702,7 @@
           const onchangeUyTin = isAdmin
             ? `onchange="updateField('${item.id}', 'uyTin', this.value)"`
             : "";
-          const onchangeUnlock = isAdmin
+          const onchangeUnlock = isAdmin && !isUnbanStorage
             ? `onchange="updateField('${item.id}', 'unlockDate', this.value)"`
             : "";
           const onRankClick = isAdmin
@@ -6816,7 +6822,7 @@
                 title="Ngày mở BAN (dd/MM)"
                 oninput="formatDateOnlyNumbers(this)"
                 ${onchangeUnlock}
-                ${readOnlyAttr}
+                ${isUnbanStorage?'readonly':readOnlyAttr}
               />
               ${banHourMarkup(item,isAdmin&&!isUnbanStorage)}
               `
@@ -6901,7 +6907,12 @@
 
         // 2. HIỂN THỊ DANH SÁCH NICK (Khi fRank !== 'recent')
         if (fRank !== "recent") {
-          if (isChungSuc) {
+          if (isUnbanStorage) {
+            filtered.forEach(item=>{
+              tableHtml+=renderTableRow(item,false);
+              mobileWrapper.appendChild(renderMobileCard(item,false));
+            });
+          } else if (isChungSuc) {
             // KHO SỰ KIỆN CHUNG SỨC: 1 BANNER DUY NHẤT, KHÔNG CHIA NHÓM THEO RANK
             tableHtml += `
               <tr class="acc-group-header-row" style="background: linear-gradient(90deg, rgba(245, 158, 11, 0.22), rgba(15, 23, 42, 0.95)); border-left: 3px solid #f59e0b; --rank-accent: #f59e0b;">
@@ -7552,6 +7563,20 @@
       let localSyncRevision = 0;
       let pushInFlight = false;
       let syncState = syncPending ? "error" : "loading";
+      let syncRetryTimer=null,syncRetryAttempt=0,syncRetryBlocked=false;
+      function scheduleAutoSyncRetry(immediate=false){
+        clearTimeout(syncRetryTimer);syncRetryTimer=null;
+        if(!syncPending||pushInFlight||syncRetryBlocked||syncConflictRevision===localSyncRevision||document.hidden||navigator.onLine===false)return;
+        const delay=immediate?0:window.managementCore.syncRetryDelay(syncRetryAttempt++);
+        syncRetryTimer=setTimeout(()=>{syncRetryTimer=null;if(!document.hidden&&navigator.onLine!==false)void pushToCloud(true);},delay);
+      }
+      function resumePendingSync(){syncRetryBlocked=false;scheduleAutoSyncRetry(true);}
+      window.addEventListener('online',resumePendingSync);
+      window.addEventListener('focus',()=>scheduleAutoSyncRetry(true));
+      document.addEventListener('account-auth-changed',resumePendingSync);
+      document.addEventListener('visibilitychange',()=>{if(document.hidden)clearTimeout(syncRetryTimer);else scheduleAutoSyncRetry(true);});
+      window.addEventListener('offline',()=>clearTimeout(syncRetryTimer));
+
       function markSyncPending(pending) {
         syncPending = pending;
         try { localStorage.setItem("lq_sync_pending", pending ? "true" : "false"); } catch (_) {}
@@ -7570,7 +7595,11 @@
           error: syncPending ? "Còn thay đổi trên máy — chưa đồng bộ" : "Chưa tải được dữ liệu — thử lại",
           offline: syncPending ? "Mất mạng — còn thay đổi chưa đồng bộ trên máy" : "Đang mất mạng — dữ liệu có thể chưa cập nhật",
         };
-        bar.dataset.state = state; text.textContent = syncPending&&syncConflictRevision===localSyncRevision ? "Xung đột dữ liệu — bản trên máy chưa được lưu. Mở cloud để xử lý." : labels[state] || labels.loading;
+        let recoveryCount=0;try{recoveryCount=window.filterQueue?.getSyncRecoveries().length||0;}catch(_){}
+        const recoveryButton=document.getElementById('sync-recovery');if(recoveryButton){recoveryButton.hidden=!isAdmin||!recoveryCount;recoveryButton.textContent='Bản phục hồi ('+recoveryCount+')';}
+        bar.dataset.state = state;
+        text.textContent=syncPending&&syncRetryBlocked?'Đang giữ thay đổi trên máy — cần kiểm tra quyền hoặc dung lượng lưu':syncPending&&syncConflictRevision===localSyncRevision?'Thay đổi đang được giữ trên máy để xử lý an toàn':pending?'Đang giữ thay đổi trên máy — sẽ tự đồng bộ lại':labels[state]||labels.loading;
+        if(!syncPending&&recoveryCount)text.textContent+=' · Có bản sửa được giữ trong mục phục hồi';
         const conflictButton=document.getElementById('sync-use-cloud');
         if(conflictButton)conflictButton.hidden=!isAdmin||pushInFlight||offline||!accountAuditSaveError.includes('thiết bị khác');
         if (cloudStatusIcon) cloudStatusIcon.textContent = ({ loading: "⏳", saving: "⏳", saved: "🟢", updated: "🟢", pending: "⏳", error: "⚠️", offline: "📴" })[state];
@@ -7579,7 +7608,16 @@
         retry.disabled = pushInFlight;
       }
       document.getElementById("sync-retry")?.addEventListener("click", () => {
+        syncRetryBlocked=false;syncRetryAttempt=0;clearTimeout(syncRetryTimer);
         if (syncPending) pushToCloud(false); else pullFromCloud(false);
+      });
+      window.exportSyncRecovery=function(){
+        if(!isAdmin)return;const data=localStorage.getItem('lq_sync_recovery')||'[]';
+        const url=URL.createObjectURL(new Blob([data],{type:'application/json'})),link=document.createElement('a');link.href=url;link.download='ban-phuc-hoi-dong-bo.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+      };
+      document.getElementById('sync-recovery')?.addEventListener('click',()=>{
+        if(!isAdmin)return;let entries;try{entries=window.filterQueue.getSyncRecoveries();}catch(err){showToast(err.message);return;}
+        showNotice({title:'Bản sửa được giữ để phục hồi',message:'<p>Các bản này xung đột với dữ liệu cloud. Hệ thống đã giữ lại trên thiết bị trước khi dùng bản cloud; không tự ghi đè dữ liệu người khác. Nội dung mật khẩu không hiển thị ở đây.</p><ul style="max-height:250px;overflow:auto">'+entries.slice(-30).reverse().map(entry=>'<li>'+escapeHtml(entry.local?.username||entry.before?.username||entry.accountId)+' · '+escapeHtml(new Date(entry.timestamp).toLocaleString('vi-VN'))+'</li>').join('')+'</ul><button type="button" class="btn btn-tool" onclick="exportSyncRecovery()">Tải bản phục hồi</button>'});
       });
       document.getElementById('sync-use-cloud')?.addEventListener('click',()=>{
         if(!isAdmin||pushInFlight)return;
@@ -7594,7 +7632,7 @@
             if(!isAdmin||pushInFlight||revision!==localSyncRevision)throw new Error('Có thay đổi mới trên máy; chưa thay danh sách.');
             if(!createAutoSnapshot(accounts))throw new Error('Chưa sao lưu được bản trên máy; chưa thay danh sách. Hãy tải file sao lưu trước.');
             clearTimeout(autoSyncTimer);accounts=list;window.filterQueue?.observeAccounts(list);saveData();
-            pendingAccountAudits=[];saveWaitingAudits();accountAuditSaveError='';syncConflictRevision=null;lastSyncConflictNotice='';markSyncPending(false);syncState='updated';renderList();renderSyncStatus();renderAdminAudit();
+            pendingAccountAudits=[];saveWaitingAudits();accountAuditSaveError='';syncRetryBlocked=false;syncRetryAttempt=0;clearTimeout(syncRetryTimer);syncConflictRevision=null;lastSyncConflictNotice='';markSyncPending(false);syncState='updated';renderList();renderSyncStatus();renderAdminAudit();
             showToast('Đã dùng bản cloud. Bản cũ được giữ trong sao lưu tự động.');
           }catch(error){showToast(escapeHtml(error.message));}
         }});
@@ -7819,7 +7857,10 @@
 
       // 2. ĐẨY DỮ LIỆU LÊN FIREBASE (PUSH)
       async function pushToCloud(silent = false) {
-        if (pushInFlight || (silent && syncConflictRevision === localSyncRevision)) return;
+        if(!window.filterQueue?.writeMainPayload){if(syncPending){clearTimeout(syncRetryTimer);syncRetryTimer=setTimeout(()=>scheduleAutoSyncRetry(true),1000);}return;}
+        if (pushInFlight || (silent && (syncRetryBlocked||syncConflictRevision === localSyncRevision))) return;
+        if(!silent){syncRetryBlocked=false;syncRetryAttempt=0;}
+        clearTimeout(syncRetryTimer);syncRetryTimer=null;
         clearTimeout(autoSyncTimer);
         markSyncPending(true);
         if (navigator.onLine === false) { renderSyncStatus(); return; }
@@ -7853,18 +7894,21 @@
               });
 
           if (res.ok) {
-            accountAuditSaveError="";syncConflictRevision=null;lastSyncConflictNotice="";
+            accountAuditSaveError="";syncRetryBlocked=false;syncRetryAttempt=0;syncConflictRevision=null;lastSyncConflictNotice="";
             const submittedAccounts=new Map(payload.accounts.map(a=>[String(a.id),a]));
+            const recoveredIds=new Set(res.recoveredAccountIds||[]);
             for (const job of auditBatch) {
-              const applied=job.items.every(target=>{
+              const appliedItems=job.items.filter(target=>{
+                if(recoveredIds.has(String(target.id)))return false;
                 const saved=submittedAccounts.get(String(target.id));
                 if(job.action==='delete')return !saved;
                 if(!saved||saved.category!==target.category)return false;
                 if(job.action==='edit'&&!['password','banSchedule'].includes(job.details.field))return String(saved[job.details.field]??'')===String(job.details.after??'');
                 return true;
               });
-              if(applied)appendAdminAudit(job.action,job.items,{...job.details,timestamp:job.timestamp,actor:job.actor,auditId:job.id});
+              if(appliedItems.length)appendAdminAudit(job.action,appliedItems,{...job.details,timestamp:job.timestamp,actor:job.actor,auditId:job.id});
             }
+            if(recoveredIds.size)showToast('Đã tự đồng bộ. '+recoveredIds.size+' bản sửa xung đột được giữ trong Bản phục hồi; dùng dữ liệu cloud cho các acc đó.');
             const confirmedAudits=new Set(auditBatch.map(job=>job.id));
             pendingAccountAudits=pendingAccountAudits.filter(job=>!confirmedAudits.has(job.id));
             saveWaitingAudits();
@@ -7876,37 +7920,30 @@
             }
           } else {
             const err = await res.json().catch(() => ({}));
-            accountAuditSaveError="Firebase từ chối lưu. Thao tác còn trên máy, chưa ghi thành công. Hãy thử đồng bộ lại.";
-            updateCloudUI("⚠️", "Lỗi quyền Firebase");
-            if (!silent) {
-              showNotice({
-                title: "Lỗi Lưu Firebase",
-                message: `Firebase từ chối ghi: ${err.error || "Vui lòng mở Rules trong Firebase Console"}.`,
-                icon: "❌",
-              });
-            }
+            syncRetryBlocked=[400,401,403,404,413,422].includes(res.status);
+            accountAuditSaveError=syncRetryBlocked?'Chưa có quyền lưu hoặc cấu hình chưa hợp lệ. Thay đổi vẫn được giữ trên máy.':'Máy chủ tạm thời chưa nhận dữ liệu; hệ thống sẽ tự thử lại.';
+            updateCloudUI("⚠️",syncRetryBlocked?"Cần kiểm tra quyền Firebase":"Đang tự kết nối lại");
+            if(!silent)showToast(accountAuditSaveError);
+
           }
         } catch (err) {
-          console.error("Lỗi pushToCloud:", err);
           const conflict=err.code==='ACCOUNT_CONFLICT';
+          syncRetryBlocked=err.code==='SYNC_RECOVERY_STORAGE'||[400,401,403,404,413,422].includes(err.httpStatus);
           if(conflict)syncConflictRevision=revision;
-          accountAuditSaveError=err.message || "Mất kết nối. Thao tác chưa được Firebase xác nhận.";
-          updateCloudUI("⚠️",conflict?"Xung đột dữ liệu":"Lỗi kết nối");
-          const noticeKey=String(revision)+':'+accountAuditSaveError;
-          if(!silent&&(!conflict||noticeKey!==lastSyncConflictNotice)){
-            if(conflict)lastSyncConflictNotice=noticeKey;
-            showNotice({title:conflict?"Xung đột dữ liệu":"Lỗi Kết Nối",message:escapeHtml(accountAuditSaveError),icon:conflict?"⚠️":"❌"});
-          }
+          accountAuditSaveError=err.message||'Mất kết nối. Thay đổi vẫn được giữ trên máy.';
+          updateCloudUI("⚠️",syncRetryBlocked?"Cần kiểm tra quyền hoặc bộ nhớ":"Đang tự kết nối lại");
+          if(!silent)showToast(syncRetryBlocked?accountAuditSaveError:'Thay đổi đã được giữ trên máy. Hệ thống sẽ tự kết nối và lưu lại.');
+
         } finally {
           clearTimeout(pushTimeout);
           pushInFlight = false;
           renderAdminAudit();
-          if (!syncPending) syncState = "saved";
+          if (!syncPending){syncState="saved";syncRetryAttempt=0;clearTimeout(syncRetryTimer);}
           renderSyncStatus();
           if (syncPending && revision !== localSyncRevision && navigator.onLine !== false) {
             clearTimeout(autoSyncTimer);
             autoSyncTimer = setTimeout(() => pushToCloud(true), 500);
-          }
+          }else if(syncPending)scheduleAutoSyncRetry();
           if (btnPushCloud) {
             btnPushCloud.textContent = "☁️ Đồng Bộ Ngay";
             btnPushCloud.disabled = false;
@@ -8393,17 +8430,18 @@
       syncAdminPinFromCloud();
       initFirebaseRealtimeListener();
       initDeviceRealtimeListener();
+      if(syncPending)setTimeout(()=>scheduleAutoSyncRetry(true),1000);
       if (isAdmin) void flushAdminAudit();
       setTimeout(autoCheckUnbannedAccounts, 2000);
     </script>
-    <script src="assets/js/filter-queue.js?v=20261017-management-1"></script>
-    <script src="assets/js/account-privacy.js?v=20261017-management-1"></script>
-    <script src="assets/js/admin-account-tools.js?v=20261017-management-1"></script>
-    <script src="assets/js/telegram-daily.js?v=20261017-management-1"></script>
-    <script src="assets/js/telegram-transfers.js?v=20261017-management-1"></script>
-    <script src="assets/js/dashboard-ui.js?v=20261017-management-1"></script>
-    <script src="assets/js/ban-schedule-ui.js?v=20261017-management-1"></script>
-    <script src="assets/js/management-ui.js?v=20261017-management-1"></script>
-    <script src="assets/js/cloud-backups-ui.js?v=20261017-management-1"></script>
+    <script src="assets/js/filter-queue.js?v=20261017-auto-sync-1"></script>
+    <script src="assets/js/account-privacy.js?v=20261017-auto-sync-1"></script>
+    <script src="assets/js/admin-account-tools.js?v=20261017-auto-sync-1"></script>
+    <script src="assets/js/telegram-daily.js?v=20261017-auto-sync-1"></script>
+    <script src="assets/js/telegram-transfers.js?v=20261017-auto-sync-1"></script>
+    <script src="assets/js/dashboard-ui.js?v=20261017-auto-sync-1"></script>
+    <script src="assets/js/ban-schedule-ui.js?v=20261017-auto-sync-1"></script>
+    <script src="assets/js/management-ui.js?v=20261017-auto-sync-1"></script>
+    <script src="assets/js/cloud-backups-ui.js?v=20261017-auto-sync-1"></script>
   </body>
 </html>

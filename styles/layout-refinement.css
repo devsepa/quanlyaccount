@@ -189,3 +189,10 @@
 #secure-login-modal{z-index:100030}
 .audit-tools label{display:grid;gap:4px;font-size:.75rem;color:#94a3b8}
 @media(max-width:600px){.management-bar{display:grid;grid-template-columns:1fr 1fr}.management-bar>*{min-width:0}.secure-login-card input{font-size:16px}}
+
+/* Review warehouse is a flat list; metadata never controls grouping or visibility. */
+body.storage-mode-unban #quick-rank-nav,
+body.storage-mode-unban #btn-toggle-all-rank-groups,
+body.storage-mode-unban .dashboard-filter-toggle{display:none!important}
+body.storage-mode-unban .acc-row-item,
+body.storage-mode-unban .m-row-card{--rank-accent:#38bdf8}

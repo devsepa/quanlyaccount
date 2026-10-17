@@ -13,5 +13,6 @@
   }if(changed.length!==selected.size)throw new Error('Danh sách đã thay đổi. Hãy chọn lại.');return {next,changed};
  }
  function auditSame(a,b){if(!a||!b)return false;const fields=['id','timestamp','action','uid','count','field','before','after','from','to'];if(fields.some(k=>String(a[k]??'')!==String(b[k]??'')))return false;const targets=v=>Object.values(v||{}).map(t=>[String(t.id||''),String(t.username||''),String(t.category||'rank')]);return JSON.stringify(targets(a.targets))===JSON.stringify(targets(b.targets));}
- const api={key,diff,parse,importPlan,bulkPlan,auditSame};if(typeof module!=='undefined'&&module.exports)module.exports=api;root.managementCore=api;
+ function syncRetryDelay(attempt){return Math.min(60000,2000*Math.pow(2,Math.min(Math.max(0,Number(attempt)||0),5)));}
+ const api={key,diff,parse,importPlan,bulkPlan,auditSame,syncRetryDelay};if(typeof module!=='undefined'&&module.exports)module.exports=api;root.managementCore=api;
 })(typeof window==='undefined'?globalThis:window);

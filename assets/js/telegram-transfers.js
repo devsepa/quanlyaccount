@@ -1,8 +1,8 @@
 (function(global){
   'use strict';
   const STORE='lq_transfer_tele_queue',esc=v=>String(v??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;');
-  function formatNotice(n){const store=n.category==='chungsuc'?'Kho Chung Sức':'Kho Rank';return `📦 <b>TÀI KHOẢN ĐƯỢC CHUYỂN VÀO ${store.toUpperCase()}</b>\n\n👤 Người chuyển: <b>${esc(n.user||'Admin')}</b>\n📋 Số lượng: <b>${Number(n.count)||1} acc</b>\n${n.firstAccount?'Tài khoản: <code>'+esc(n.firstAccount)+'</code>\n':''}🕒 ${esc(n.time||'')}\n\n<i>Xem và sử dụng tài khoản trên website.</i>`;}
-  function safeNotice(n){return{id:String(n.id),kind:'transfer',category:n.category,user:String(n.user||'Admin'),count:Math.max(1,Number(n.count)||1),firstAccount:String(n.firstAccount||''),time:String(n.time||''),timestamp:Number(n.timestamp)||Date.now()};}
+  function formatNotice(n){const store=n.category==='chungsuc'?'Kho Chung Sức':'Kho Rank';return `📦 <b>TÀI KHOẢN ĐƯỢC CHUYỂN VÀO ${store.toUpperCase()}</b>\n\n👤 Người chuyển: <b>${esc(n.user||'Admin')}</b>\n📋 Số lượng: <b>${Number(n.count)||1} acc</b>\n${n.firstAccount?'Tài khoản: <code>'+esc(n.firstAccount)+'</code>\n':''}${n.from==='unban'?'Rank: <b>'+esc(n.rank||'Chưa nhập')+'</b> · Uy tín: <b>'+esc(n.uyTin||'Chưa nhập')+'</b>\n':''}🕒 ${esc(n.time||'')}\n\n<i>Xem và sử dụng tài khoản trên website.</i>`;}
+  function safeNotice(n){return{id:String(n.id),kind:'transfer',category:n.category,from:n.from==='unban'?'unban':'',rank:String(n.rank||''),uyTin:String(n.uyTin||''),user:String(n.user||'Admin'),count:Math.max(1,Number(n.count)||1),firstAccount:String(n.firstAccount||''),time:String(n.time||''),timestamp:Number(n.timestamp)||Date.now()};}
   function createSender({base,fetcher,canWrite,owner,now=()=>Date.now()}){
     async function request(url,options={}){if(!canWrite())throw new Error('Phiên Admin đã kết thúc.');const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),12000);try{return await fetcher(url,{...options,signal:controller.signal,cache:'no-store'});}finally{clearTimeout(timer);}}
     async function read(url){const r=await request(url,{headers:{'X-Firebase-ETag':'true'}});if(!r.ok)throw new Error('Chưa đọc được trạng thái thông báo.');const tag=r.headers.get('ETag');if(!tag)throw new Error('Thiếu mã phiên bản, chưa gửi để tránh trùng.');return{tag,value:await r.json()||{}};}
@@ -57,7 +57,7 @@
   const sender=createSender({base:FIREBASE_DB_URL,fetcher:(...args)=>fetch(...args),canWrite:()=>isAdmin,owner:global.crypto?.randomUUID?.()||String(Date.now())});
   function save(){updateDeliveryButton();try{localStorage.setItem(STORE,JSON.stringify(queue));}catch(_){}}
   function schedule(delay=100){clearTimeout(timer);timer=setTimeout(()=>{void flush();},delay);}
-  function enqueue(notice){if(!isAdmin||notice?.kind!=='transfer'||!['rank','chungsuc'].includes(notice.category))return;const config=getTeleConfig();if(!config?.token||!config?.chatId)return;if(!queue.some(n=>n.id===notice.id)){queue.push(safeNotice(notice));track(notice,'pending');}queue=queue.slice(-200);save();schedule();}
+  function enqueue(notice){if(!isAdmin||notice?.kind!=='transfer'||!['rank','chungsuc'].includes(notice.category))return;if(global.ACCOUNT_CONFIG?.serverScheduler&&notice.from==='unban'){track(notice,'pending','Đang chờ máy chủ gửi Telegram.');return;}const config=getTeleConfig();if(!config?.token||!config?.chatId)return;if(!queue.some(n=>n.id===notice.id)){queue.push(safeNotice(notice));track(notice,'pending');}queue=queue.slice(-200);save();schedule();}
   async function flush(){if(running||!isAdmin||document.hidden||navigator.onLine===false||!queue.length)return;const config=getTeleConfig();if(!config?.token||!config?.chatId)return;running=true;let delay=1000;
     try{
       // Local moves are announced only after main-list synchronization succeeds.

@@ -158,7 +158,33 @@
     const notice={...makeArrivalNotice([destination],destination.category,destination.createdBy,destination.createdTimestamp||now),kind:'transfer'};
     return { ["app_data/warehouseNotices/"+notice.id]:notice, ["app_data/accounts/" + destination.id]: destination, "app_data/updatedAt": now, ["filter_queue/" + row.id]: null };
   }
-  function mergeMainAccounts(remote, local, baseline) {
+  function buildUnbanReviewMove(item,destination,actor,now,ban) {
+    if(!['rank','chungsuc'].includes(destination))throw new Error('Kho đích không hợp lệ.');
+    if(!item||(!item.unbanReviewPending&&!ban.isJustUnbanned))throw new Error('Acc không còn trong kho vừa mở BAN.');
+    if(ban.isBanned)throw new Error('Acc vẫn còn BAN; cần kiểm tra lại lịch trước khi chuyển.');
+    return {...item,category:destination,unbanReviewPending:false,unbanCleared:true,unlockDate:'',...scheduleEngine.fields('',''),unbanReviewedAt:now,unbanReviewedBy:actor};
+  }
+  async function commitUnbanReviewMove(transport,id,destination,actor,now,status,serverQueue=false) {
+    const noticeId='unban_transfer_'+id+'_'+now;
+    try {
+      const saved=await transport.transaction('app_data',raw=>{
+        if(!raw||Array.isArray(raw))throw new Error('Dữ liệu kho chưa sẵn sàng.');
+        const rows=Object.values(raw.accounts||{}),item=rows.find(a=>String(a.id)===String(id));
+        const moved=buildUnbanReviewMove(item,destination,actor,now,item?status(item.unlockDate,item):{});
+        const notice={...makeArrivalNotice([moved],destination,actor,now),id:noticeId,kind:'transfer',from:'unban',rank:moved.rank||'',uyTin:moved.uyTin||''};
+        const next={...raw,accounts:rows.map(a=>String(a.id)===String(id)?moved:a),updatedAt:now,warehouseNotices:{...(raw.warehouseNotices||{}),[noticeId]:notice}};
+        next.activities=[notice,...Object.values(raw.activities||{}).filter(n=>n?.id&&n.id!==noticeId)].slice(0,30);
+        if(serverQueue)next.serverReminderOutbox={...(raw.serverReminderOutbox||{}),[noticeId]:{...notice,state:'pending'}};
+        return next;
+      });
+      return {account:Object.values(saved.accounts||{}).find(a=>String(a.id)===String(id)),notice:saved.warehouseNotices[noticeId]};
+    }catch(err){
+      // A lost write response is verified from the durable notice before any success is reported.
+      try{const saved=await transport.read('app_data'),notice=saved?.warehouseNotices?.[noticeId],account=Object.values(saved?.accounts||{}).find(a=>String(a.id)===String(id));if(notice&&account?.category===destination&&account.unbanReviewedAt===now&&!account.unbanReviewPending)return {account,notice};}catch(_){}
+      throw err;
+    }
+  }
+  function mergeMainAccounts(remote, local, baseline, options={}) {
     // Compare persisted and UI-normalized records using the same field semantics.
     const textFields=new Set(['username','password','rank','uyTin','unlockDate','lastUsed','lastUsedBy','createdBy','createdAt','sourceBatch','unbanReviewedBy','unlockHour']);
     const numberFields=new Set(['createdTimestamp','filterTransferredAt','unbanReviewedAt','lastUsedTime','useCount','unlockAt','banReminder6At','banReminder1At']);
@@ -176,16 +202,19 @@
     const same=(a,b)=>!!a&&!!b&&[...new Set([...Object.keys(a),...Object.keys(b)])].every(field=>sameField(field,a[field],b[field]));
     const prior=new Map((baseline||[]).map(a=>[String(a.id),a]));
     const latest=new Map((remote||[]).filter(Boolean).map(a=>[String(a.id),a]));
-    const localIds=new Set(local.map(a=>String(a.id)));
+    const localIds=new Set(local.map(a=>String(a.id))),conflicts=[];
+    const preserve=(id,before,local,current)=>conflicts.push({accountId:id,before:before||null,local:local||null,cloud:current||null});
+
     const conflict=()=>{const error=new Error('Bản trên máy và cloud có thay đổi khác nhau, có thể từ thiết bị khác. Chưa ghi đè; giữ bản trên máy để đối chiếu trước khi đồng bộ lại.');error.code='ACCOUNT_CONFLICT';throw error;};
     prior.forEach((before,id)=>{
       if(!localIds.has(id)){
-        if(latest.has(id)&&!same(latest.get(id),before))conflict();
+        if(latest.has(id)&&!same(latest.get(id),before)){if(options.recover){preserve(id,before,null,latest.get(id));return;}conflict();}
         latest.delete(id);
       }
     });
     local.forEach(a=>{
       const id=String(a.id),before=prior.get(id),current=latest.get(id);
+      try{
       if(before&&same(a,before))return;
       if(!before){
         if(current&&!same(current,a))conflict();
@@ -194,14 +223,42 @@
       }
       if(!current)conflict();
       const merged={...current};
+      const usageFields=new Set(['useCount','lastUsedTime','lastUsed','lastUsedBy','inRecent']);
+      const concurrentUsage=Number(a.useCount)>Number(before.useCount||0)&&Number(current.useCount)>Number(before.useCount||0);
+      if(concurrentUsage){const newest=Number(a.lastUsedTime)>Number(current.lastUsedTime)?a:current;for(const field of usageFields)if(Object.hasOwn(newest,field))merged[field]=newest[field];merged.useCount=Math.max(Number(a.useCount)||0,Number(current.useCount)||0);}
+      const remoteReviewed=Number(current.unbanReviewedAt)>Number(before.unbanReviewedAt||0);
+      const reviewFields=new Set(['unbanReviewPending','unbanCleared','unbanReviewedAt','unbanReviewedBy','unlockDate','unlockHour','unlockAt','banReminder6At','banReminder1At']);
+      const localReviewPinOnly=[...reviewFields].filter(field=>field!=='unbanReviewPending').every(field=>sameField(field,a[field],before[field]));
       for(const field of new Set([...Object.keys(before),...Object.keys(a)])){
+        if(concurrentUsage&&usageFields.has(field))continue;
+        if(remoteReviewed&&localReviewPinOnly&&reviewFields.has(field)&&sameField('category',a.category,before.category))continue;
         if(sameField(field,a[field],before[field]))continue;
         if(!sameField(field,current[field],before[field])&&!sameField(field,current[field],a[field]))conflict();
         if(Object.hasOwn(a,field))merged[field]=a[field];else delete merged[field];
       }
+      if([...latest.values()].some(other=>String(other.id)!==id&&keyOf(other.username)===keyOf(merged.username)))conflict();
       latest.set(id,merged);
+      }catch(error){if(!options.recover||error.code!=='ACCOUNT_CONFLICT')throw error;preserve(id,before,a,current);}
     });
-    return [...latest.values()];
+    return options.recover?{accounts:[...latest.values()],conflicts}:[...latest.values()];
+  }
+  function reconcileCommittedAccount(submitted,current,committed){
+    if(!committed)return null;
+    const next={...committed};
+    for(const field of new Set([...Object.keys(submitted),...Object.keys(current)])){
+      if(JSON.stringify(submitted[field])===JSON.stringify(current[field]))continue;
+      if(Object.hasOwn(current,field))next[field]=current[field];else delete next[field];
+    }return next;
+  }
+  function loadSyncRecoveries(storage){const entries=JSON.parse(storage.getItem('lq_sync_recovery')||'[]');if(!Array.isArray(entries))throw new Error('Bản phục hồi trên máy chưa hợp lệ.');return entries;}
+  function persistSyncRecoveries(storage,conflicts,now=Date.now()){
+    if(!conflicts.length)return [];
+    try{const entries=loadSyncRecoveries(storage),added=[];
+      for(const item of conflicts){const signature=JSON.stringify([item.accountId,item.local,item.cloud]);if(entries.some(e=>JSON.stringify([e.accountId,e.local,e.cloud])===signature))continue;
+        const entry={...JSON.parse(JSON.stringify(item)),id:'recovery_'+now+'_'+entries.length,timestamp:now};entries.push(entry);added.push(entry);}
+      const serialized=JSON.stringify(entries);if(entries.length>100||serialized.length>2000000)throw new Error('Bản phục hồi đã đầy. Hãy xuất các bản chưa lưu trước khi tiếp tục.');
+      storage.setItem('lq_sync_recovery',serialized);return added;
+    }catch(cause){const error=new Error(cause.message||'Chưa lưu được bản phục hồi; giữ nguyên thay đổi trên máy.');error.code='SYNC_RECOVERY_STORAGE';throw error;}
   }
   function createFilterTransport(base, fetcher, canWrite) {
     async function request(url, options = {}) {
@@ -245,7 +302,7 @@
     }
     return {read,readVersion,transaction,transfer};
   }
-  const pure = {makeArrivalNotice,colorFilterGroups,filterBatchTone,locateFilterAccount,findFilterDuplicates,removeFilterDuplicates,assignFilterGroups,filterGroupList,removeFilterGroup,parseFilterTxt,mergeFilterImport,validateFilterDestination,filterClaim,buildFilterDestination,filterTransferPatch,createFilterTransport,mergeMainAccounts};
+  const pure = {reconcileCommittedAccount,loadSyncRecoveries,persistSyncRecoveries,buildUnbanReviewMove,commitUnbanReviewMove,makeArrivalNotice,colorFilterGroups,filterBatchTone,locateFilterAccount,findFilterDuplicates,removeFilterDuplicates,assignFilterGroups,filterGroupList,removeFilterGroup,parseFilterTxt,mergeFilterImport,validateFilterDestination,filterClaim,buildFilterDestination,filterTransferPatch,createFilterTransport,mergeMainAccounts};
   if (typeof module !== "undefined" && module.exports) module.exports = pure;
   if (typeof document === "undefined") return;
   const host = document.getElementById("filter-queue-panel"); if (!host) return;
@@ -258,22 +315,29 @@
     const local=JSON.parse(JSON.stringify(payload.accounts)),baseline=JSON.parse(JSON.stringify(mainBaseline));
     for(let attempt=0;attempt<4;attempt++) {
       const read=await fetch(FIREBASE_ENDPOINT,{headers:{'X-Firebase-ETag':'true'},cache:'no-store',signal});
-      if(!read.ok)throw new Error('Không đọc được phiên bản dữ liệu trước khi lưu.');
+      if(!read.ok){const error=new Error('Không đọc được phiên bản dữ liệu trước khi lưu.');error.httpStatus=read.status;throw error;}
       const tag=read.headers.get('ETag');if(!tag)throw new Error('Không nhận được phiên bản dữ liệu, chưa ghi đè.');
       const raw=await read.json()||{},remote=Array.isArray(raw)?raw:Object.values(raw.accounts||{});
-      const merged=mergeMainAccounts(remote,local,baseline);
+      const plan=mergeMainAccounts(remote,local,baseline,{recover:true}),merged=plan.accounts;
+      persistSyncRecoveries(localStorage,plan.conflicts);
+
       const activities=[...new Map([...(Array.isArray(raw.activities)?raw.activities:[]),...(payload.activities||[])].filter(a=>a&&a.id).map(a=>[a.id,a])).values()].sort((a,b)=>Number(b.timestamp)-Number(a.timestamp)).slice(0,30);
       const warehouseNotices=Object.fromEntries(Object.values(raw.warehouseNotices||{}).filter(a=>a&&a.id).sort((a,b)=>Number(b.timestamp)-Number(a.timestamp)).slice(0,50).map(a=>[a.id,a]));
       const next={...(!Array.isArray(raw)?raw:{}),...payload,accounts:merged,activities,warehouseNotices};
       const response=await fetch(FIREBASE_ENDPOINT,{method:'PUT',headers:{'Content-Type':'application/json','if-match':tag},body:JSON.stringify(next),signal});
       if(response.status===412)continue;
       if(response.ok){
+        payload.accounts=merged;response.recoveredAccountIds=plan.conflicts.map(item=>item.accountId);
         const submitted=new Map(local.map(a=>[String(a.id),a])),committed=new Map(merged.map(a=>[String(a.id),a]));
         const previous=JSON.stringify(accounts);
         const reconciled=accounts.flatMap(a=>{
           const before=submitted.get(String(a.id));
-          if(before&&JSON.stringify(a)===JSON.stringify(before))return committed.has(String(a.id))?[committed.get(String(a.id))]:[];
-          return [a];
+          if(!before)return [a];
+          const saved=committed.get(String(a.id));
+          if(!saved&&JSON.stringify(a)!==JSON.stringify(before)){
+            persistSyncRecoveries(localStorage,[{accountId:String(a.id),before,local:a,cloud:null}]);response.recoveredAccountIds.push(String(a.id));
+          }
+          const next=reconcileCommittedAccount(before,a,saved);return next?[next]:[];
         });
         const currentIds=new Set(reconciled.map(a=>String(a.id)));
         // A missing submitted ID may be a local deletion made during this save.
@@ -510,7 +574,15 @@
     });
     button.disabled=false;if(error)document.getElementById('fq-transfer-error').textContent=error;
   }
-  global.filterQueue={makeArrivalNotice,observeAccounts,writeMainPayload,refresh,waitForSave:waitForMainSave,async openAccount(id){await refresh();if(!isAdmin)return;const location=locateFilterAccount(rows,id,PAGE_SIZE);if(!location){showToast('Acc đã rời kho.');return;}selectedGroup=location.groupId;page=location.page;query='';mode='all';focusedAccountId=id;scrollToAccount=true;render();},setActive(value){const changed=active!==!!value;active=!!value&&!!isAdmin;host.hidden=!active;document.body.classList.toggle('filter-mode',active);document.getElementById('storage-tab-filter').classList.toggle('active',active);document.getElementById('storage-tab-filter').setAttribute('aria-pressed',String(active));if(active){render();if(changed)void refresh();listen();}else stop();},render};
+  async function finishUnbanReview(id,destination) {
+    eligible();await waitForMainSave({silent:true});eligible();
+    const result=await commitUnbanReviewMove(transport,id,destination,getUserName(),Date.now(),checkBanStatus,!!global.ACCOUNT_CONFIG?.serverScheduler);
+    accounts=accounts.map(a=>String(a.id)===String(id)?result.account:a);
+    const baseline=mainBaseline.filter(a=>String(a.id)!==String(id));baseline.push(JSON.parse(JSON.stringify(result.account)));observeAccounts(baseline);
+    try{saveData();}catch(_){showToast('Acc đã chuyển trên Firebase nhưng chưa lưu được bản trên thiết bị.');}
+    return result;
+  }
+  global.filterQueue={getSyncRecoveries:()=>loadSyncRecoveries(localStorage),finishUnbanReview,makeArrivalNotice,observeAccounts,writeMainPayload,refresh,waitForSave:waitForMainSave,async openAccount(id){await refresh();if(!isAdmin)return;const location=locateFilterAccount(rows,id,PAGE_SIZE);if(!location){showToast('Acc đã rời kho.');return;}selectedGroup=location.groupId;page=location.page;query='';mode='all';focusedAccountId=id;scrollToAccount=true;render();},setActive(value){const changed=active!==!!value;active=!!value&&!!isAdmin;host.hidden=!active;document.body.classList.toggle('filter-mode',active);document.getElementById('storage-tab-filter').classList.toggle('active',active);document.getElementById('storage-tab-filter').setAttribute('aria-pressed',String(active));if(active){render();if(changed)void refresh();listen();}else stop();},render};
   document.getElementById('fq-destination').onchange=event=>{document.getElementById('fq-rank-fields').hidden=event.target.value!=='rank';document.getElementById('rank-popover').classList.remove('show');};
   document.getElementById('fq-confirm-transfer').onclick=transferSelected;
   document.getElementById('fq-cancel-transfer').onclick=()=>{if(!busy){document.getElementById('rank-popover').classList.remove('show');document.getElementById('filter-transfer-modal').classList.remove('show');}};
