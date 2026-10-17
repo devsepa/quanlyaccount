@@ -18,13 +18,13 @@
       rel="stylesheet"
     />
     <!-- Ordered stylesheets: preserve base → workspace → controls cascade. -->
-    <link rel="stylesheet" href="styles/core.css?v=20261017-auto-sync-1" />
-    <link rel="stylesheet" href="styles/workspace.css?v=20261017-auto-sync-1" />
-    <link rel="stylesheet" href="styles/controls.css?v=20261017-auto-sync-1" />
-    <link rel="stylesheet" href="styles/filter-queue.css?v=20261017-auto-sync-1" />
-    <link rel="stylesheet" href="styles/dashboard.css?v=20261017-auto-sync-1" />
-    <link rel="stylesheet" href="styles/analytics.css?v=20261017-auto-sync-1" />
-    <link rel="stylesheet" href="styles/layout-refinement.css?v=20261017-auto-sync-1" />
+    <link rel="stylesheet" href="styles/core.css?v=20261017-audit-1" />
+    <link rel="stylesheet" href="styles/workspace.css?v=20261017-audit-1" />
+    <link rel="stylesheet" href="styles/controls.css?v=20261017-audit-1" />
+    <link rel="stylesheet" href="styles/filter-queue.css?v=20261017-audit-1" />
+    <link rel="stylesheet" href="styles/dashboard.css?v=20261017-audit-1" />
+    <link rel="stylesheet" href="styles/analytics.css?v=20261017-audit-1" />
+    <link rel="stylesheet" href="styles/layout-refinement.css?v=20261017-audit-1" />
     <style>
       #page-loader {display:none;}
       html.page-loading #page-loader,#page-loader.is-leaving {display:flex;position:fixed;inset:0;z-index:100000;align-items:center;justify-content:center;flex-direction:column;gap:20px;background:radial-gradient(ellipse at 50% 42%,#172444 0%,#0b1220 65%);color:#dce7fc;font:13px/1.5 system-ui,sans-serif;}
@@ -2391,11 +2391,11 @@
     <!-- CONTAINER THẺ THÔNG BÁO GÓC DƯỚI BÊN TRÁI KHI THÊM ACC MỚI -->
     <div id="activity-toast-container" class="activity-toast-container"></div>
 
-    <script src="assets/js/app-config.js?v=20261017-auto-sync-1"></script>
-    <script src="assets/js/secure-admin.js?v=20261017-auto-sync-1"></script>
-    <script src="assets/js/management-core.js?v=20261017-auto-sync-1"></script>
-    <script src="assets/js/ban-schedule.js?v=20261017-auto-sync-1"></script>
-    <script src="assets/js/analytics-report.js?v=20261017-auto-sync-1"></script>
+    <script src="assets/js/app-config.js?v=20261017-audit-1"></script>
+    <script src="assets/js/secure-admin.js?v=20261017-audit-1"></script>
+    <script src="assets/js/management-core.js?v=20261017-audit-1"></script>
+    <script src="assets/js/ban-schedule.js?v=20261017-audit-1"></script>
+    <script src="assets/js/analytics-report.js?v=20261017-audit-1"></script>
     <script>
       // BẮT MỌI LỖI RUNTIME NẾU CÓ ĐỂ KHÔNG BAO GIỜ BỊ ĐƠ WEB
       window.addEventListener("error", function (e) {
@@ -5256,9 +5256,8 @@
         text.split(/\r?\n/).forEach((line, index) => {
           const value = line.trim();
           if (!value) return;
-          const delimiter = value.includes(":") ? ":" : value.includes("|") ? "|" : value.includes("/") ? "/" : "";
-          const at = delimiter ? value.indexOf(delimiter) : -1;
-          if (at < 1 || !value.slice(at + 1).trim() || /\s/.test(value.slice(0, at).trim())) errors.push(index + 1);
+          const match=value.match(/^([^:|/]+)[:|/](.+)$/);
+          if (!match || !match[1].trim() || !match[2].trim() || /\s/.test(match[1].trim())) errors.push(index + 1);
         });
         return errors;
       }
@@ -5329,22 +5328,8 @@
           let trimmed = line.trim();
           if (!trimmed) return;
 
-          let delimiter = "";
-          if (trimmed.includes(":")) delimiter = ":";
-          else if (trimmed.includes("|")) delimiter = "|";
-          else if (trimmed.includes("/")) delimiter = "/";
-
-          let user = "";
-          let pass = "";
-
-          if (delimiter) {
-            const parts = trimmed.split(delimiter);
-            user = parts[0].trim();
-            pass = parts.slice(1).join(delimiter).trim();
-          } else {
-            user = trimmed;
-            pass = "";
-          }
+          const parsed=window.managementCore.parse(trimmed)[0];
+          const user=parsed.username,pass=parsed.password;
 
           if (user) {
             const uKey = user.toLowerCase();
@@ -5932,8 +5917,9 @@
 
       window.saveBanSchedule=function(id,date,hour){
         if(!isAdmin)return false;const item=accounts.find(a=>a.id===id);if(!item)return false;
+        if(item.unbanReviewPending||checkBanStatus(item.unlockDate,item).isJustUnbanned){showToast('Acc vừa mở BAN cần chọn kho và xác nhận trước khi sửa lịch.');return false;}
         if(!isValidUnlockDate(date)){showNotice({title:'Ngày chưa hợp lệ',message:'Nhập ngày có thật theo dd/MM.'});return false;}
-        let fields;try{fields=window.banSchedule.fields(date,hour);}catch(error){showNotice({title:'Giờ chưa hợp lệ',message:escapeHtml(error.message)});return false;}
+        let fields;try{fields=window.banSchedule.fields(date,date?hour:'');}catch(error){showNotice({title:'Giờ chưa hợp lệ',message:escapeHtml(error.message)});return false;}
         if(item.unlockDate===date&&String(item.unlockHour||'')===fields.unlockHour)return true;
         const before=window.banSchedule.label(item);Object.assign(item,fields,{unlockDate:date,unbanCleared:false,unbanReviewPending:false});
         saveData();recordAdminAudit('edit',item,{field:'banSchedule',before,after:window.banSchedule.label(item)});renderList();triggerAutoSync();return true;
@@ -8434,14 +8420,14 @@
       if (isAdmin) void flushAdminAudit();
       setTimeout(autoCheckUnbannedAccounts, 2000);
     </script>
-    <script src="assets/js/filter-queue.js?v=20261017-auto-sync-1"></script>
-    <script src="assets/js/account-privacy.js?v=20261017-auto-sync-1"></script>
-    <script src="assets/js/admin-account-tools.js?v=20261017-auto-sync-1"></script>
-    <script src="assets/js/telegram-daily.js?v=20261017-auto-sync-1"></script>
-    <script src="assets/js/telegram-transfers.js?v=20261017-auto-sync-1"></script>
-    <script src="assets/js/dashboard-ui.js?v=20261017-auto-sync-1"></script>
-    <script src="assets/js/ban-schedule-ui.js?v=20261017-auto-sync-1"></script>
-    <script src="assets/js/management-ui.js?v=20261017-auto-sync-1"></script>
-    <script src="assets/js/cloud-backups-ui.js?v=20261017-auto-sync-1"></script>
+    <script src="assets/js/filter-queue.js?v=20261017-audit-1"></script>
+    <script src="assets/js/account-privacy.js?v=20261017-audit-1"></script>
+    <script src="assets/js/admin-account-tools.js?v=20261017-audit-1"></script>
+    <script src="assets/js/telegram-daily.js?v=20261017-audit-1"></script>
+    <script src="assets/js/telegram-transfers.js?v=20261017-audit-1"></script>
+    <script src="assets/js/dashboard-ui.js?v=20261017-audit-1"></script>
+    <script src="assets/js/ban-schedule-ui.js?v=20261017-audit-1"></script>
+    <script src="assets/js/management-ui.js?v=20261017-audit-1"></script>
+    <script src="assets/js/cloud-backups-ui.js?v=20261017-audit-1"></script>
   </body>
 </html>

@@ -15,4 +15,12 @@ function transferPlan(root,id,destination,uid,mode,now){
  else{if(!['rank','chungsuc'].includes(destination.category))throw new Error('Kho không hợp lệ.');const date=destination.category==='rank'?String(destination.unlockDate||''):'';if(date)schedule.resolve(date,destination.unlockHour||'00',now);const fields=schedule.fields(date,destination.category==='rank'?destination.unlockHour:'',now);if(date&&!/^\d{2}\/\d{2}$/.test(date))throw new Error('Ngày mở BAN cần dd/MM.');target={id:'filtered_'+id,username:source.username,password:source.password,category:destination.category,rank:destination.category==='rank'?String(destination.rank||'').slice(0,15):'',uyTin:destination.category==='rank'?String(destination.uyTin||''):'',unlockDate:date,...fields,createdBy:uid,createdTimestamp:now,createdAt:new Date(now).toLocaleString('vi-VN',{timeZone:'Asia/Ho_Chi_Minh'}),filterTransferredAt:now,sourceWarehouse:'filter',sourceBatch:source.batchId||'',sourceNumber:source.sourceNumber||0,useCount:0,lastUsed:'',lastUsedBy:''};if(target.uyTin&&(!/^\d{1,3}$/.test(target.uyTin)||Number(target.uyTin)>100))throw new Error('Uy tín phải từ 0 đến 100.');}
  next.app_data.accounts=Object.fromEntries(rows.map(a=>[a.id,a]));next.app_data.accounts[target.id]=target;next.app_data.updatedAt=now;next.app_data.lastWriterUid=uid;delete next.filter_queue[id];const trashId='duplicate_'+id+'_'+now;if(existing){next.account_trash ||= {};next.account_trash[trashId]={id:trashId,source:'filter',rows:[source],deletedBy:uid,deletedAt:now,expiresAt:now+7*86400000,title:'Cập nhật mật khẩu acc trùng'};}return {next,target,updated:!!existing};
 }
-module.exports={hash,reminderPlan,auditChanges,applyGuestCopy,transferPlan};
+// Account restores must not rewind delivery receipts, copy limits or the live emergency lock.
+function restoreWorkspaceData(current,saved,uid,now){
+ const next=structuredClone(saved||{});
+ for(const field of ['serverReminderOutbox','guestCopyReceipts','guestCopyLimits','isEmergencyLocked','warehouseNotices','activities']){
+  delete next[field];if(current?.[field]!==undefined)next[field]=structuredClone(current[field]);
+ }
+ delete next.adminPin;delete next.teleConfig;next.updatedAt=now;next.lastWriterUid=uid;return next;
+}
+module.exports={hash,reminderPlan,auditChanges,applyGuestCopy,transferPlan,restoreWorkspaceData};

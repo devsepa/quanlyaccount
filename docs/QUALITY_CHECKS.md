@@ -148,3 +148,26 @@ Lịch sử Telegram hiển thị 100 mục gần nhất trên thiết bị, g�
 - Admin can open/download recovery drafts via the existing sync status area; passwords are omitted from the on-screen list. Recovery drafts remain on this browser/device and are not uploaded. Identical retries are deduplicated. Capacity is bounded at 100 records/2 MB; storage/permission failures preserve pending edits and stop background write retries until intervention/reconnect, rather than discarding drafts.
 - Expected synchronization failures no longer open repeated modal dialogs. Nonblocking status text communicates pending/recovered states. Rejected edits are not recorded as successfully saved audits. Edits made during an in-flight request carry only their own delta over committed cloud fields.
 - npm test: 22/22 passed. Mock Chrome fault injection confirmed transient 503 retry success, offline/reconnect, conflicting-account recovery plus other-account save, hidden password content in recovery UI, 403 blocking without a write loop, recovery after restored permission, lost-response idempotence, quota protection with no cloud write, and edits entered while a previous save is in flight. No real backend writes occurred.
+
+
+## Logic, display and workflow audit — 17/10/2026
+
+Fixed during this audit:
+- Pending/expired unban-review accounts cannot bypass explicit warehouse confirmation through bulk scheduling or the direct schedule editor. The review view hides bulk schedule/move actions while retaining selection/export.
+- Bulk selections clear when warehouse, Rank/history filter or search context changes, preventing hidden selections from carrying into a different view.
+- Malformed imports stop before duplicate checks instead of falling back to a different parser. Main validation, duplicate checks and insertion now agree on the first separator; passwords containing colon/slash/pipe remain intact. A duplicate-confirmation dialog refuses to overwrite input edited after the dialog opened.
+- Both browser and server schedule engines reject an hour without a date and impossible calendar dates even when the hour is unspecified. Date-only schedules remain supported; clearing an existing schedule also clears its old hour.
+- Server backup restore replaces account data while preserving current delivery receipts/outbox, copy request receipts/limits, emergency lock and live notices/activities. Old pending Telegram state from a snapshot cannot rewind a completed send. Restored data excludes legacy PIN/Telegram secrets.
+- Updated asset version URLs to avoid reusing cached pre-audit scripts.
+
+Validation:
+- Current npm test: 30/30 pass, covering account merge/recovery, explicit review transfer, malformed/delimited imports, review scheduling guards, backup operational-state preservation, guest lock/BAN restrictions, scheduler stage deduplication and filter-transfer ownership/duplicate history.
+- Mock Chrome: desktop 1600px, mobile 390/360px; no observed JS errors or page horizontal overflow. Checked bulk scheduling, duplicate update, review metadata/order preservation, cancel/rejected/successful review transfer, notification layering/scroll/outside-close, mobile Settings/PIN focus and short keyboard viewport, and analytics tabs/details.
+- Fault injection: transient 503, offline/reconnect, 403 stop/resume, conflicting edits/recovery drafts, quota failure without cloud writes, lost responses and changes entered during a held save all passed.
+- Additional assertions confirmed selection clearing across warehouse/search, malformed input retention, password delimiter preservation, stale import confirmation refusal, review editor guard, schedule clearing and guest-only emergency lock. Responsive overflow checks also passed at 768px and 320px.
+- Browser/server JS and inline script syntax checks passed; static local resource references resolve. git diff --check passes.
+
+Remaining verification limits:
+- app-config.js still has secureMode:false, serverScheduler:false and no Web API key. The Firebase Auth/server scheduler/automatic cloud backup production setup is not active in this checkout and is not certified by local tests.
+- No deployment, real Firebase data writes or Telegram sends were performed. Physical iPhone/Safari, live IAM/Scheduler/Secrets and end-to-end authenticated service behavior remain to be tested after configuration.
+- Browser fault-injection runners use isolated local fixtures; the durable repository test suite is tests/management.test.cjs. Historical larger test counts above refer to earlier checkouts.

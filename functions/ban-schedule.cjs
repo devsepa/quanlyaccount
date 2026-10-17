@@ -17,7 +17,7 @@
     const stored=Number(row.unlockAt);if(stored>0&&Number.isFinite(stored)){const p=parts(stored),m=String(row.unlockDate).match(/^(\d{1,2})[\/-](\d{1,2})$/);if(m&&p.day===Number(m[1])&&p.month===Number(m[2])&&p.hour===Number(hh))return stored;}
     try{return resolve(row.unlockDate,hh,now);}catch(_){return null;}
   }
-  function fields(date,value,now=Date.now()){const hh=hour(value);return{unlockHour:date?hh:'',unlockAt:date&&hh!==''?resolve(date,hh,now):0,banReminder6At:0,banReminder1At:0};}
+  function fields(date,value,now=Date.now()){const hh=hour(value);if(!date&&hh!=='')throw new Error('Nhập ngày mở BAN trước khi chọn giờ.');const ts=date?resolve(date,hh||'00',now):0;return{unlockHour:date?hh:'',unlockAt:date&&hh!==''?ts:0,banReminder6At:0,banReminder1At:0};}
   function countdown(ts,now=Date.now()){if(!ts)return 'Chưa rõ giờ';const ms=ts-now;if(ms<=0)return 'Đã đến giờ mở BAN';const sec=Math.ceil(ms/1000),d=Math.floor(sec/86400),h=Math.floor(sec/3600)%24,m=Math.floor(sec/60)%60,s=sec%60,pad=n=>String(n).padStart(2,'0');return 'Còn '+(d?d+' ngày ':'')+pad(h)+':'+pad(m)+':'+pad(s);}
   function status(row,now=Date.now()){const ts=target(row,now);if(!ts)return null;const isBanned=now<ts,isJustUnbanned=!isBanned&&row.unbanCleared!==true;return{isBanned,isJustUnbanned,target:ts,desc:isBanned?'🚫 BAN · '+countdown(ts,now):isJustUnbanned?'🎉 VỪA MỞ BAN':'🟢 HOẠT ĐỘNG'};}
   function reminders(row,now=Date.now()){const ts=target(row,now);if(!ts||row.category==='chungsuc'||row.unbanReviewPending)return[];const diff=ts-now;if(diff<=0||diff>6*HOUR)return[];const stage=diff<=HOUR?1:6,field=stage===1?'banReminder1At':'banReminder6At';return Number(row[field])===ts?[]:[{stage,field,target:ts,id:'ban_reminder_'+String(row.id)+'_'+ts+'_'+stage}];}
