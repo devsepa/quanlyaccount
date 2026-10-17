@@ -14,5 +14,11 @@
  }
  function auditSame(a,b){if(!a||!b)return false;const fields=['id','timestamp','action','uid','count','field','before','after','from','to'];if(fields.some(k=>String(a[k]??'')!==String(b[k]??'')))return false;const targets=v=>Object.values(v||{}).map(t=>[String(t.id||''),String(t.username||''),String(t.category||'rank')]);return JSON.stringify(targets(a.targets))===JSON.stringify(targets(b.targets));}
  function syncRetryDelay(attempt){return Math.min(60000,2000*Math.pow(2,Math.min(Math.max(0,Number(attempt)||0),5)));}
- const api={key,diff,parse,importPlan,bulkPlan,auditSame,syncRetryDelay};if(typeof module!=='undefined'&&module.exports)module.exports=api;root.managementCore=api;
+ async function readCloudJson(fetcher,url,timeoutMs=15000){
+  const controller=new AbortController();let timer;
+  const timeout=new Promise((_,reject)=>{timer=setTimeout(()=>{const error=new Error('Kết nối quá chậm; sẽ thử tải lại.');error.code='READ_TIMEOUT';controller.abort();reject(error);},timeoutMs);});
+  try{return await Promise.race([(async()=>{const response=await fetcher(url,{cache:'no-store',signal:controller.signal});if(!response.ok){const error=new Error([401,403].includes(response.status)?'Phiên truy cập hoặc quyền Firebase chưa hợp lệ.':'Máy chủ chưa trả được dữ liệu (HTTP '+response.status+').');error.httpStatus=response.status;throw error;}return await response.json();})(),timeout]);}
+  finally{clearTimeout(timer);}
+ }
+ const api={readCloudJson,key,diff,parse,importPlan,bulkPlan,auditSame,syncRetryDelay};if(typeof module!=='undefined'&&module.exports)module.exports=api;root.managementCore=api;
 })(typeof window==='undefined'?globalThis:window);

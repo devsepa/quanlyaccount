@@ -78,6 +78,7 @@
     });
   }
   function removeFilterGroup(value,id,approvedWorkingIds=[]) {
+    value=assignFilterGroups(value);
     if(!value?.__groups?.[id])throw new Error('Nhóm đã bị xóa. Hãy tải lại.');
     const result={...value,__groups:{...value.__groups}};
     Object.values(value).filter(r=>r&&r.username&&r.groupId===id).forEach(row=>{
@@ -279,9 +280,8 @@
       finally { clearTimeout(timer); }
     }
     async function read(path) {
-      const response = await request(base + "/" + path + ".json");
-      if (!response.ok) throw new Error("Không tải được dữ liệu. Kiểm tra kết nối hoặc quyền Firebase.");
-      return response.json();
+      const core=typeof module!=='undefined'&&module.exports?require('./management-core.js'):global.managementCore;
+      return core.readCloudJson(fetcher,base + "/" + path + ".json");
     }
     async function readVersion(path) {
       const response=await request(base+'/'+path+'.json',{headers:{'X-Firebase-ETag':'true'}});
@@ -452,22 +452,36 @@
     }
     host.querySelectorAll('[data-do]').forEach(button=>button.onclick=()=>{const row=shown[Number(button.closest('[data-index]').dataset.index)];if(!row)return; if(button.dataset.do==='copy')copyRow(row);else if(button.dataset.do==='move')openTransfer(row);else if(button.dataset.do==='release')releaseRow(row);else deleteRow(row);});
   }
+  let refreshRetryTimer=null,refreshFailures=0,refreshBlocked=false;
+  function scheduleRefreshRetry(err){
+    clearTimeout(refreshRetryTimer);refreshBlocked=[400,401,403,404].includes(err?.httpStatus);
+    if(refreshBlocked||!isAdmin||!active||document.hidden||navigator.onLine===false)return;
+    refreshRetryTimer=setTimeout(()=>{refreshRetryTimer=null;void refresh();},Math.min(30000,2000*2**Math.min(refreshFailures++,4)));
+  }
   async function refresh() {
-    if(!isAdmin||refreshing)return;refreshing=true;render();
-    try {const received=await transport.read('filter_queue');if(isAdmin&&Object.values(received||{}).some(r=>r&&r.username&&(!r.groupId||(!received.__groups?.[r.groupId]?.fileName&&r.fileName)||!received.__groups?.[r.groupId]?.batchTone))){const grouped=await transport.transaction('filter_queue',assignFilterGroups);rows=isAdmin?grouped:{};}else rows=isAdmin?(received||{}):{};error='';}catch(err){error=err.message;}finally{refreshing=false;if(isAdmin&&active&&restorePending&&!error)resumeFiltering();render();}
+    if(!isAdmin||refreshing)return;clearTimeout(refreshRetryTimer);
+    if(navigator.onLine===false){error='Đang mất mạng — giữ danh sách đã tải, sẽ tự tải lại khi có mạng.';render();return;}
+    refreshing=true;render();
+    try {
+      const received=await transport.read('filter_queue');if(!isAdmin)return;
+      if(received!==null&&(typeof received!=='object'||Array.isArray(received)))throw new Error('Dữ liệu kho cần lọc chưa đúng định dạng.');
+      // Reading a list must not depend on permission to rewrite its grouping metadata.
+      rows=assignFilterGroups(received||{});error='';refreshFailures=0;refreshBlocked=false;
+    }catch(err){error=err.message;scheduleRefreshRetry(err);}
+    finally{refreshing=false;if(isAdmin&&active&&restorePending&&!error)resumeFiltering();render();}
   }
   let liveRenderPending=false;
   function scheduleLiveRender(){if(liveRenderPending)return;liveRenderPending=true;(global.requestAnimationFrame||((fn)=>setTimeout(fn,0)))(()=>{liveRenderPending=false;render();});}
-  function stop() {source?.close();source=null;connected=false;}
+  function stop() {source?.close();source=null;connected=false;clearTimeout(refreshRetryTimer);}
   function listen() {
     if(!isAdmin||!active||document.hidden||navigator.onLine===false||source||typeof EventSource==='undefined')return;
-    source=new EventSource(global.secureAdmin?.streamUrl(FIREBASE_DB_URL+'/filter_queue.json')||FIREBASE_DB_URL+'/filter_queue.json');
-    source.onopen=()=>{connected=true;};source.onerror=()=>{connected=false;};
-    const eventHandler=event=>{if(!isAdmin){stop();return;}try{const payload=JSON.parse(event.data);const path=String(payload.path||'/').split('/').filter(Boolean);if(!path.length){rows=event.type==='patch'?{...rows,...payload.data}:(payload.data||{});Object.keys(rows).forEach(k=>{if(rows[k]===null)delete rows[k];});}else{const id=path[0];if(['__proto__','constructor','prototype'].includes(id))return;if(path.length===1){if(payload.data===null)delete rows[id];else rows[id]=event.type==='patch'?{...rows[id],...payload.data}:payload.data;}else if(rows[id]&&!path.some(k=>['__proto__','constructor','prototype'].includes(k))){let ref=rows[id];for(let i=1;i<path.length-1;i++)ref=ref[path[i]]||(ref[path[i]]={});ref[path.at(-1)]=payload.data;}}scheduleLiveRender();}catch(_){}};
+    try{source=new EventSource(global.secureAdmin?.streamUrl(FIREBASE_DB_URL+'/filter_queue.json')||FIREBASE_DB_URL+'/filter_queue.json');}catch(err){connected=false;scheduleRefreshRetry(err);return;}
+    source.onopen=()=>{connected=true;};source.onerror=()=>{connected=false;if(!refreshRetryTimer&&!refreshBlocked)scheduleRefreshRetry();};
+    const eventHandler=event=>{if(!isAdmin){stop();return;}try{const payload=JSON.parse(event.data);const path=String(payload.path||'/').split('/').filter(Boolean);if(!path.length){rows=event.type==='patch'?{...rows,...payload.data}:(payload.data||{});Object.keys(rows).forEach(k=>{if(rows[k]===null)delete rows[k];});}else{const id=path[0];if(['__proto__','constructor','prototype'].includes(id))return;if(path.length===1){if(payload.data===null)delete rows[id];else rows[id]=event.type==='patch'?{...rows[id],...payload.data}:payload.data;}else if(rows[id]&&!path.some(k=>['__proto__','constructor','prototype'].includes(k))){let ref=rows[id];for(let i=1;i<path.length-1;i++)ref=ref[path[i]]||(ref[path[i]]={});ref[path.at(-1)]=payload.data;}}rows=assignFilterGroups(rows);error='';refreshFailures=0;refreshBlocked=false;clearTimeout(refreshRetryTimer);scheduleLiveRender();}catch(_){}};
     source.addEventListener('put',eventHandler);source.addEventListener('patch',eventHandler);
   }
   async function run(action) {
-    if(busy)return;try{eligible();busy=true;error='';render();await action();}catch(err){error=err.message;}finally{busy=false;render();}
+    if(busy)return;try{eligible();busy=true;error='';render();await action();}catch(err){error=err.message;}finally{busy=false;if(isAdmin)rows=assignFilterGroups(rows);render();}
   }
   function scanDuplicates() {return run(async()=>{
     await waitForMainSave();
@@ -502,7 +516,7 @@
     showNotice({title:'Xóa Nhóm '+String(group.number).padStart(2,'0')+'?',type:'danger',message:`Xóa nhóm và <b>${group.remaining} acc còn lại</b> trong kho cần lọc? ${group.working?`<br><b>Cảnh báo: ${group.working} acc đang được lọc.</b>`:''}<br>Acc đã chuyển sang Rank hoặc Chung Sức được giữ nguyên. Có thể khôi phục trong Thùng rác 7 ngày.`,onConfirm:()=>run(async()=>{
       let removed=[];
       const next=await global.adminAccountTools.deleteFilter(transport,current=>{
-        removed=Object.values(current||{}).filter(r=>r&&r.username&&r.groupId===id);
+        current=assignFilterGroups(current);removed=Object.values(current||{}).filter(r=>r&&r.username&&r.groupId===id);
         return removeFilterGroup(current,id,working);
       },'Xóa Nhóm '+String(group.number).padStart(2,'0'));
       rows=isAdmin?next:{};
@@ -552,7 +566,7 @@
     if(isGuestEmergencyLocked())throw new Error('Hệ thống đang khóa sao chép.');
     try{
       const claimed=await copyClaimedFilterAccount(async()=>{
-        const value=await transport.transaction('filter_queue/'+row.id,current=>{if(current?.status==='working'&&current.owner===owner())return current;return filterClaim(current,owner(),getUserName(),Date.now());});rows[row.id]=value;return value;
+        const value=await transport.transaction('filter_queue/'+row.id,current=>{if(current?.status==='working'&&current.owner===owner())return current;return filterClaim(current,owner(),getUserName(),Date.now());});rows[row.id]={...value,groupId:value.groupId||row.groupId};return value;
       });
       finishCopy(claimed);
     }catch(error){if(error.claimed)offerManualCopy(error.claimed);throw error;}
@@ -572,7 +586,7 @@
         if(current.owner!==row.owner)throw new Error('Người nhận lọc đã thay đổi. Hãy tải lại.');
         if(current.status==='transferring'&&Date.now()-Number(current.transferStartedAt||0)<120000)throw new Error('Acc đang chuyển, chưa thể bỏ nhận. Hãy đợi hoàn tất hoặc thử lại sau 2 phút.');
         return {...current,status:'pending',owner:null,claimedBy:null,claimedAt:null,transferStartedAt:null};
-      });rows[row.id]=updated;showToast('Đã bỏ nhận lọc, dòng trở về Chưa lọc.');
+      });rows[row.id]={...updated,groupId:updated.groupId||row.groupId};showToast('Đã bỏ nhận lọc, dòng trở về Chưa lọc.');
     })});
   }
   function openTransfer(row) {
@@ -631,7 +645,8 @@
   document.getElementById('fq-cancel-transfer').onclick=()=>{if(!busy){document.getElementById('rank-popover').classList.remove('show');document.getElementById('filter-transfer-modal').classList.remove('show');}};
   document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!busy){document.getElementById('rank-popover').classList.remove('show');document.getElementById('filter-transfer-modal').classList.remove('show');}});
   document.addEventListener('visibilitychange',()=>{if(document.hidden)stop();else if(active){listen();void refresh();}});
-  window.addEventListener('offline',()=>{stop();render();});window.addEventListener('online',()=>{if(active){listen();void refresh();}});window.addEventListener('pagehide',stop);window.addEventListener('pageshow',()=>{if(active)listen();});
-  setInterval(()=>{if(active&&!document.hidden&&navigator.onLine!==false&&!connected)void refresh();},30000);
+  window.addEventListener('offline',()=>{stop();render();});window.addEventListener('online',()=>{if(active){listen();void refresh();}});window.addEventListener('pagehide',stop);window.addEventListener('pageshow',()=>{if(active){listen();void refresh();}});
+  setInterval(()=>{if(active&&!document.hidden&&navigator.onLine!==false&&!connected&&!refreshBlocked)void refresh();},30000);
+  document.addEventListener('account-auth-changed',()=>{stop();rows={};error='';refreshBlocked=false;if(isAdmin){listen();void refresh();}render();});
   global.filterQueue.setActive(currentStorage==='filter');render();if(isAdmin&&currentStorage!=='filter')void refresh();
 })(typeof window==='undefined'?globalThis:window);
