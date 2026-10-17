@@ -171,3 +171,15 @@ Remaining verification limits:
 - app-config.js still has secureMode:false, serverScheduler:false and no Web API key. The Firebase Auth/server scheduler/automatic cloud backup production setup is not active in this checkout and is not certified by local tests.
 - No deployment, real Firebase data writes or Telegram sends were performed. Physical iPhone/Safari, live IAM/Scheduler/Secrets and end-to-end authenticated service behavior remain to be tested after configuration.
 - Browser fault-injection runners use isolated local fixtures; the durable repository test suite is tests/management.test.cjs. Historical larger test counts above refer to earlier checkouts.
+
+## Editable unban transfer form — 17/10/2026
+
+- Chọn kho in the unban-review warehouse opens an editable transfer dialog with destination, prefilled Rank/trust and optional new BAN date/hour. Expired old BAN dates are not prefilled. Chung Suc hides optional Rank fields and preserves prior metadata/history.
+- One CAS commit saves edited metadata, moves the account and stores the web/server notice together. Invalid fields, conflicting edits or rejected writes keep the dialog/input and review account. Untouched fields retain concurrent cloud changes. New BAN schedules must be in the future.
+- Cancel has no account/notice side effects. Success notifications and Telegram use confirmed edited Rank/trust. Copy remains excluded from usage counts in review.
+- npm test: 36/36 passed. Mock Chrome dialog fits at 1600x1100, 390x844, 360x800, 320x600 and keyboard-size 390x360 with no JS errors/overflow. Cancel/rejected write produced zero notices/sends; success preserved usage and produced one web notice plus one mocked Telegram send. No real service writes/sends performed.
+
+## Rank BAN hour editor — 17/10/2026
+
+- Rank rows/cards show the Admin hour selector even without an existing BAN date. Selecting an hour or changing a date opens a draft editor; date/hour commit together only on confirmation. Cancel keeps the stored schedule unchanged. Guest editing permissions remain unchanged.
+- npm test: 37/37 passed. Mock Chrome at 1600/390/360px confirmed visible selectors, no overflow/runtime errors, cancelled drafts unchanged and confirmed date/hour persisted without changing usage count.

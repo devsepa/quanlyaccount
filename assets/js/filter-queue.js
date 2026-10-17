@@ -158,19 +158,30 @@
     const notice={...makeArrivalNotice([destination],destination.category,destination.createdBy,destination.createdTimestamp||now),kind:'transfer'};
     return { ["app_data/warehouseNotices/"+notice.id]:notice, ["app_data/accounts/" + destination.id]: destination, "app_data/updatedAt": now, ["filter_queue/" + row.id]: null };
   }
-  function buildUnbanReviewMove(item,destination,actor,now,ban) {
+  function buildUnbanReviewMove(item,destination,actor,now,ban,metadata) {
     if(!['rank','chungsuc'].includes(destination))throw new Error('Kho đích không hợp lệ.');
     if(!item||(!item.unbanReviewPending&&!ban.isJustUnbanned))throw new Error('Acc không còn trong kho vừa mở BAN.');
     if(ban.isBanned)throw new Error('Acc vẫn còn BAN; cần kiểm tra lại lịch trước khi chuyển.');
-    return {...item,category:destination,unbanReviewPending:false,unbanCleared:true,unlockDate:'',...scheduleEngine.fields('',''),unbanReviewedAt:now,unbanReviewedBy:actor};
+    let changes={unlockDate:'',...scheduleEngine.fields('','')};
+    if(metadata&&destination==='rank'){
+      const input={...metadata};
+      for(const field of ['rank','uyTin'])if(metadata.before){
+        const before=String(metadata.before[field]??''),submitted=String(metadata[field]??''),current=String(item[field]??'');
+        if(submitted===before)input[field]=current;
+        else if(current!==before&&current!==submitted)throw new Error('Thông tin acc vừa được sửa ở phiên khác. Hãy mở lại bảng chuyển kho.');
+      }
+      changes=validateFilterDestination(destination,input);
+      if(changes.unlockDate&&scheduleEngine.resolve(changes.unlockDate,changes.unlockHour||'23',now)<=now)throw new Error('Lịch BAN mới phải ở tương lai; để trống nếu acc đã mở BAN.');
+    }
+    return {...item,...changes,category:destination,unbanReviewPending:false,unbanCleared:!changes.unlockDate,unbanReviewedAt:now,unbanReviewedBy:actor};
   }
-  async function commitUnbanReviewMove(transport,id,destination,actor,now,status,serverQueue=false) {
+  async function commitUnbanReviewMove(transport,id,destination,actor,now,status,serverQueue=false,metadata) {
     const noticeId='unban_transfer_'+id+'_'+now;
     try {
       const saved=await transport.transaction('app_data',raw=>{
         if(!raw||Array.isArray(raw))throw new Error('Dữ liệu kho chưa sẵn sàng.');
         const rows=Object.values(raw.accounts||{}),item=rows.find(a=>String(a.id)===String(id));
-        const moved=buildUnbanReviewMove(item,destination,actor,now,item?status(item.unlockDate,item):{});
+        const moved=buildUnbanReviewMove(item,destination,actor,now,item?status(item.unlockDate,item):{},metadata);
         const notice={...makeArrivalNotice([moved],destination,actor,now),id:noticeId,kind:'transfer',from:'unban',rank:moved.rank||'',uyTin:moved.uyTin||''};
         const next={...raw,accounts:rows.map(a=>String(a.id)===String(id)?moved:a),updatedAt:now,warehouseNotices:{...(raw.warehouseNotices||{}),[noticeId]:notice}};
         next.activities=[notice,...Object.values(raw.activities||{}).filter(n=>n?.id&&n.id!==noticeId)].slice(0,30);
@@ -574,9 +585,9 @@
     });
     button.disabled=false;if(error)document.getElementById('fq-transfer-error').textContent=error;
   }
-  async function finishUnbanReview(id,destination) {
+  async function finishUnbanReview(id,destination,metadata) {
     eligible();await waitForMainSave({silent:true});eligible();
-    const result=await commitUnbanReviewMove(transport,id,destination,getUserName(),Date.now(),checkBanStatus,!!global.ACCOUNT_CONFIG?.serverScheduler);
+    const result=await commitUnbanReviewMove(transport,id,destination,getUserName(),Date.now(),checkBanStatus,!!global.ACCOUNT_CONFIG?.serverScheduler,metadata);
     accounts=accounts.map(a=>String(a.id)===String(id)?result.account:a);
     const baseline=mainBaseline.filter(a=>String(a.id)!==String(id));baseline.push(JSON.parse(JSON.stringify(result.account)));observeAccounts(baseline);
     try{saveData();}catch(_){showToast('Acc đã chuyển trên Firebase nhưng chưa lưu được bản trên thiết bị.');}

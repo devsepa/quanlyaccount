@@ -18,13 +18,13 @@
       rel="stylesheet"
     />
     <!-- Ordered stylesheets: preserve base → workspace → controls cascade. -->
-    <link rel="stylesheet" href="styles/core.css?v=20261017-audit-1" />
-    <link rel="stylesheet" href="styles/workspace.css?v=20261017-audit-1" />
-    <link rel="stylesheet" href="styles/controls.css?v=20261017-audit-1" />
-    <link rel="stylesheet" href="styles/filter-queue.css?v=20261017-audit-1" />
-    <link rel="stylesheet" href="styles/dashboard.css?v=20261017-audit-1" />
-    <link rel="stylesheet" href="styles/analytics.css?v=20261017-audit-1" />
-    <link rel="stylesheet" href="styles/layout-refinement.css?v=20261017-audit-1" />
+    <link rel="stylesheet" href="styles/core.css?v=20261017-rank-hour-1" />
+    <link rel="stylesheet" href="styles/workspace.css?v=20261017-rank-hour-1" />
+    <link rel="stylesheet" href="styles/controls.css?v=20261017-rank-hour-1" />
+    <link rel="stylesheet" href="styles/filter-queue.css?v=20261017-rank-hour-1" />
+    <link rel="stylesheet" href="styles/dashboard.css?v=20261017-rank-hour-1" />
+    <link rel="stylesheet" href="styles/analytics.css?v=20261017-rank-hour-1" />
+    <link rel="stylesheet" href="styles/layout-refinement.css?v=20261017-rank-hour-1" />
     <style>
       #page-loader {display:none;}
       html.page-loading #page-loader,#page-loader.is-leaving {display:flex;position:fixed;inset:0;z-index:100000;align-items:center;justify-content:center;flex-direction:column;gap:20px;background:radial-gradient(ellipse at 50% 42%,#172444 0%,#0b1220 65%);color:#dce7fc;font:13px/1.5 system-ui,sans-serif;}
@@ -2391,11 +2391,11 @@
     <!-- CONTAINER THẺ THÔNG BÁO GÓC DƯỚI BÊN TRÁI KHI THÊM ACC MỚI -->
     <div id="activity-toast-container" class="activity-toast-container"></div>
 
-    <script src="assets/js/app-config.js?v=20261017-audit-1"></script>
-    <script src="assets/js/secure-admin.js?v=20261017-audit-1"></script>
-    <script src="assets/js/management-core.js?v=20261017-audit-1"></script>
-    <script src="assets/js/ban-schedule.js?v=20261017-audit-1"></script>
-    <script src="assets/js/analytics-report.js?v=20261017-audit-1"></script>
+    <script src="assets/js/app-config.js?v=20261017-rank-hour-1"></script>
+    <script src="assets/js/secure-admin.js?v=20261017-rank-hour-1"></script>
+    <script src="assets/js/management-core.js?v=20261017-rank-hour-1"></script>
+    <script src="assets/js/ban-schedule.js?v=20261017-rank-hour-1"></script>
+    <script src="assets/js/analytics-report.js?v=20261017-rank-hour-1"></script>
     <script>
       // BẮT MỌI LỖI RUNTIME NẾU CÓ ĐỂ KHÔNG BAO GIỜ BỊ ĐƠ WEB
       window.addEventListener("error", function (e) {
@@ -4339,22 +4339,41 @@
       const unbanMovesInFlight=new Set();
       window.returnUnbanAccount=function(id){
         if(!isAdmin||unbanMovesInFlight.has(id))return;const item=accounts.find(a=>a.id===id);if(!item||!needsUnbanReview(item))return;
-        showNotice({title:'Chọn kho và xác nhận chuyển',type:'confirm',message:`Tài khoản <b>${escapeHtml(item.username)}</b><p>Rank: ${escapeHtml(item.rank||'Chưa nhập')} · Uy tín: ${escapeHtml(item.uyTin||'Chưa nhập')}</p><label for="unban-return-destination">Kho đích</label><select id="unban-return-destination" style="width:100%;margin:8px 0 12px;padding:10px;border-radius:7px;background:#162233;color:#e2e8f0;border:1px solid #586780"><option value="rank">🎮 Kho Rank</option><option value="chungsuc">🤝 Kho Chung Sức</option></select><p>Acc chỉ rời kho vừa mở BAN sau khi lưu chuyển kho thành công. Giữ nguyên ID và lịch sử dùng.</p>`,onConfirm:async()=>{
-          const destination=document.getElementById('unban-return-destination')?.value;
+        let modal=document.getElementById('unban-transfer-modal');
+        if(!modal){
+          modal=document.createElement('div');modal.id='unban-transfer-modal';modal.className='modal-overlay';modal.setAttribute('role','dialog');modal.setAttribute('aria-modal','true');modal.setAttribute('aria-labelledby','unban-transfer-title');
+          modal.innerHTML=`<form class="modal-card fq-transfer-card"><h3 id="unban-transfer-title">Chuyển acc vừa mở BAN</h3><p id="unban-transfer-account" class="fq-transfer-account"></p>
+          <label for="unban-return-destination">Kho đích</label><select id="unban-return-destination"><option value="rank">🎮 Kho Nick Chơi Rank</option><option value="chungsuc">🤝 Kho Chung Sức</option></select>
+          <div id="unban-rank-fields"><label for="unban-transfer-rank">Rank (chọn nhanh hoặc gõ)</label><input id="unban-transfer-rank" class="rank-input-field" maxlength="15" placeholder="BK, KC, TA, CT, DCT…" autocomplete="off" onclick="openRankPicker(this,event)" oninput="this.value=this.value.toUpperCase()">
+          <div class="fq-meta-grid"><div><label for="unban-transfer-trust">Uy tín</label><input id="unban-transfer-trust" inputmode="numeric" maxlength="3" placeholder="0–100 (tùy chọn)"></div><div><label for="unban-transfer-date">Ngày mở BAN</label><input id="unban-transfer-date" inputmode="numeric" maxlength="5" placeholder="dd/MM (tùy chọn)" oninput="formatDateOnlyNumbers(this)"></div><div><label for="unban-transfer-hour">Giờ mở BAN (VN)</label><select id="unban-transfer-hour"></select></div></div></div>
+          <p class="fq-note">Xác nhận sẽ lưu thông tin và chuyển acc vào kho đích. Để trống ngày/giờ nếu acc đã mở BAN. ID và lịch sử sử dụng được giữ nguyên.</p><p id="unban-transfer-error" class="fq-message" role="status"></p><div class="fq-transfer-actions"><button type="button" class="btn btn-tool" id="unban-transfer-cancel">Hủy</button><button type="submit" class="btn btn-primary" id="unban-transfer-confirm">Xác nhận chuyển</button></div></form>`;
+          document.body.append(modal);
+        }
+        const field=id=>document.getElementById(id),before={rank:String(item.rank||''),uyTin:String(item.uyTin??'')};
+        field('unban-transfer-account').textContent=item.username;
+        field('unban-return-destination').value='rank';field('unban-rank-fields').hidden=false;
+        field('unban-transfer-rank').value=before.rank;field('unban-transfer-trust').value=before.uyTin;
+        field('unban-transfer-date').value='';field('unban-transfer-hour').innerHTML=banSchedule.options();field('unban-transfer-error').textContent='';
+        const close=()=>{if(unbanMovesInFlight.has(id))return;modal.classList.remove('show');document.getElementById('rank-popover')?.classList.remove('show');};
+        field('unban-transfer-cancel').onclick=close;modal.onclick=event=>{if(event.target===modal)close();};
+        modal.onkeydown=event=>{if(event.key==='Escape'){event.preventDefault();close();}};
+        field('unban-return-destination').onchange=()=>{field('unban-rank-fields').hidden=field('unban-return-destination').value!=='rank';document.getElementById('rank-popover')?.classList.remove('show');};
+        modal.querySelector('form').onsubmit=async event=>{
+          event.preventDefault();const destination=field('unban-return-destination').value;
           if(!isAdmin||unbanMovesInFlight.has(id)||!['rank','chungsuc'].includes(destination))return;
-          unbanMovesInFlight.add(id);
-          const controls=[document.getElementById('acc-row-'+id),document.getElementById('m-card-'+id)].filter(Boolean).flatMap(row=>[...row.querySelectorAll('input,button,select')]);controls.forEach(el=>el.disabled=true);
+          const metadata={rank:field('unban-transfer-rank').value.trim().toUpperCase(),uyTin:field('unban-transfer-trust').value.trim(),unlockDate:field('unban-transfer-date').value.trim(),unlockHour:field('unban-transfer-hour').value,before};
+          field('unban-transfer-error').textContent='';unbanMovesInFlight.add(id);
+          const controls=[...modal.querySelectorAll('input,button,select'),...[document.getElementById('acc-row-'+id),document.getElementById('m-card-'+id)].filter(Boolean).flatMap(row=>[...row.querySelectorAll('input,button,select')])];controls.forEach(el=>el.disabled=true);
           try{
-            const result=await window.filterQueue.finishUnbanReview(id,destination);
+            const result=await window.filterQueue.finishUnbanReview(id,destination,metadata);
             recordAdminAudit('move',result.account,{from:'unban',to:destination,cloudConfirmed:true});
             try{pushAccountNotification(result.notice,false);}catch(_){showLeftCornerToast(result.notice);}
-            window.warehouseTransferTele?.enqueue(result.notice);
-            renderList();
+            window.warehouseTransferTele?.enqueue(result.notice);modal.classList.remove('show');document.getElementById('rank-popover')?.classList.remove('show');renderList();
             showToast('✅ Đã chuyển '+escapeHtml(result.account.username)+' vào '+(destination==='rank'?'kho Rank':'kho Chung Sức')+'.');
-          }catch(err){
-            renderList();showNotice({title:'Chưa xác nhận chuyển kho',message:escapeHtml(err.message||'Không lưu được thay đổi. Acc vẫn chờ trong kho vừa mở BAN.'),type:'danger'});
-          }finally{unbanMovesInFlight.delete(id);controls.forEach(el=>el.disabled=false);}
-        }});
+          }catch(err){field('unban-transfer-error').textContent=err.message||'Không lưu được thay đổi. Acc vẫn chờ trong kho vừa mở BAN.';}
+          finally{unbanMovesInFlight.delete(id);controls.forEach(el=>el.disabled=false);}
+        };
+        modal.classList.add('show');field('unban-return-destination').focus();
       };
       window.returnUnbanAccountToRank=window.returnUnbanAccount;
       let unbanDayKey=new Date().toDateString();
@@ -5925,13 +5944,14 @@
         saveData();recordAdminAudit('edit',item,{field:'banSchedule',before,after:window.banSchedule.label(item)});renderList();triggerAutoSync();return true;
       };
       function banHourMarkup(item,editable){
-        if(!item.unlockDate)return '';const engine=window.banSchedule,target=engine.target(item);
-        return `<div class="ban-hour-inline">${editable?`<select aria-label="Giờ mở BAN ${escapeHtml(item.username)}" onchange="saveBanSchedule('${item.id}','${item.unlockDate}',this.value)">${engine.options(item.unlockHour)}</select>`:`<span>${escapeHtml(engine.label(item))}</span>`}${target?`<small data-ban-deadline="${target}">${engine.countdown(target)}</small>`:'<small>Chưa rõ giờ · theo ngày</small>'}</div>`;
+        if(!item.unlockDate&&!editable)return '';const engine=window.banSchedule,target=engine.target(item);
+        return `<div class="ban-hour-inline">${editable?`<label>Giờ mở BAN (VN)</label><select aria-label="Giờ mở BAN ${escapeHtml(item.username)}" onchange="editBannedAccountDate('${item.id}',undefined,this.value);this.value='${escapeHtml(item.unlockHour||'')}';">${engine.options(item.unlockHour)}</select>`:`<span>${escapeHtml(engine.label(item))}</span>`}${target?`<small data-ban-deadline="${target}">${engine.countdown(target)}</small>`:(item.unlockDate?'<small>Chưa rõ giờ · theo ngày</small>':'<small>Chọn giờ để đặt lịch BAN</small>')}</div>`;
       }
-      window.editBannedAccountDate=function(id){
-        if(!isAdmin)return;const item=accounts.find(a=>a.id===id);if(!item||accountWarehouse(item)!=='banned')return;
-        showNotice({title:'Sửa lịch mở BAN',type:'confirm',message:`Tài khoản <b>${escapeHtml(item.username)}</b><br><label for="ban-watch-edit-date">Ngày mở BAN (dd/MM)</label><input id="ban-watch-edit-date" type="text" inputmode="numeric" maxlength="5" value="${escapeHtml(item.unlockDate||'')}" oninput="formatDateOnlyNumbers(this)" placeholder="Ví dụ: 25/10"><label for="ban-watch-edit-hour">Giờ mở BAN (giờ Việt Nam)</label><select id="ban-watch-edit-hour">${window.banSchedule.options(item.unlockHour)}</select><p>Nhắc trước 6 giờ và 1 giờ. Đến hạn chuyển vào kho chờ kiểm tra.</p>`,onConfirm:()=>{
+      window.editBannedAccountDate=function(id,dateDraft,hourDraft){
+        if(!isAdmin)return;const item=accounts.find(a=>a.id===id);if(!item||(item.category||'rank')!=='rank'||needsUnbanReview(item))return;
+        showNotice({title:'Sửa lịch mở BAN',type:'confirm',message:`Tài khoản <b>${escapeHtml(item.username)}</b><br><label for="ban-watch-edit-date">Ngày mở BAN (dd/MM)</label><input id="ban-watch-edit-date" type="text" inputmode="numeric" maxlength="5" value="${escapeHtml(dateDraft===undefined?item.unlockDate||'':dateDraft)}" oninput="formatDateOnlyNumbers(this)" placeholder="Ví dụ: 25/10"><label for="ban-watch-edit-hour">Giờ mở BAN (giờ Việt Nam)</label><select id="ban-watch-edit-hour">${window.banSchedule.options(hourDraft===undefined?item.unlockHour:hourDraft)}</select><p>Nhắc trước 6 giờ và 1 giờ. Đến hạn chuyển vào kho chờ kiểm tra.</p>`,onConfirm:()=>{
           if(!isAdmin)return;const date=document.getElementById('ban-watch-edit-date')?.value.trim(),hour=document.getElementById('ban-watch-edit-hour')?.value;
+          if(!date&&hour){showNotice({title:'Thiếu ngày mở BAN',message:'Nhập ngày mở BAN trước khi lưu giờ.'});return;}
           if(saveBanSchedule(id,date,hour))window.revealAccountLocation(id);
         }});
       };
@@ -6464,7 +6484,7 @@
             ? `onchange="updateField('${item.id}', 'uyTin', this.value)"`
             : "";
           const onchangeUnlock = isAdmin && !isUnbanStorage
-            ? `onchange="updateField('${item.id}', 'unlockDate', this.value)"`
+            ? `onchange="editBannedAccountDate('${item.id}',this.value);this.value='${escapeHtml(item.unlockDate||'')}';"`
             : "";
           const onRankClick = isAdmin
             ? `onclick="openRankPicker(this, event)"`
@@ -6689,7 +6709,7 @@
             ? `onchange="updateField('${item.id}', 'uyTin', this.value)"`
             : "";
           const onchangeUnlock = isAdmin && !isUnbanStorage
-            ? `onchange="updateField('${item.id}', 'unlockDate', this.value)"`
+            ? `onchange="editBannedAccountDate('${item.id}',this.value);this.value='${escapeHtml(item.unlockDate||'')}';"`
             : "";
           const onRankClick = isAdmin
             ? `onclick="openRankPicker(this, event)"`
@@ -7098,16 +7118,8 @@
         const mm = String(now.getMonth() + 1).padStart(2, "0");
         const timeStr = `${hh}:${min} - ${dd}/${mm}`;
 
-        // Nếu tài khoản đang ở trạng thái '🎉 VỪA MỞ BAN', khi bấm copy sẽ gỡ bỏ trạng thái này
-        const currentBan = checkBanStatus(item.unlockDate, item);
-        let wasJustUnbanned = false;
-        if (currentBan.isJustUnbanned || item.unbanReviewPending === true) {
-          item.unbanReviewPending = true;
-          item.unbanCleared = true;
-          item.unlockDate = "";
-          Object.assign(item,window.banSchedule.fields('',''));
-          wasJustUnbanned = true;
-        }
+        // Copy in the review warehouse is only for checking credentials.
+        const wasJustUnbanned = currentStorage === 'unban' || needsUnbanReview(item);
 
         // First copy after unban confirms a check and preserves existing usage history.
         if (!wasJustUnbanned) {
@@ -7116,9 +7128,9 @@
           item.lastUsedBy = getUserName();
           item.useCount = (item.useCount || 0) + 1;
           item.inRecent = true;
+          saveData();
+          triggerAutoSync();
         }
-        saveData();
-        triggerAutoSync();
         if (wasJustUnbanned) {
           playSound("unban");
         } else {
@@ -7127,7 +7139,7 @@
 
         if (wasJustUnbanned) {
           showToast(
-            `✅ Đã xác nhận kiểm tra lại acc [${escapeHtml(item.username)}]. Lần sao chép này không tính lượt dùng. Bấm Chọn kho sau khi kiểm tra.`,
+            `✅ Đã sao chép để kiểm tra acc [${escapeHtml(item.username)}]. Lần sao chép này không tính lượt dùng. Bấm Chọn kho sau khi kiểm tra.`,
             "success",
           );
         }
@@ -7144,7 +7156,7 @@
         }
 
         showCenterToast({
-          title: wasJustUnbanned ? "ĐÃ XÁC NHẬN KIỂM TRA" : "ĐÃ SAO CHÉP",
+          title: wasJustUnbanned ? "ĐÃ SAO CHÉP ĐỂ KIỂM TRA" : "ĐÃ SAO CHÉP",
           subtitle: wasJustUnbanned ? "Không tính lượt dùng" : item.username,
           duration: 1600,
         });
@@ -8420,14 +8432,14 @@
       if (isAdmin) void flushAdminAudit();
       setTimeout(autoCheckUnbannedAccounts, 2000);
     </script>
-    <script src="assets/js/filter-queue.js?v=20261017-audit-1"></script>
-    <script src="assets/js/account-privacy.js?v=20261017-audit-1"></script>
-    <script src="assets/js/admin-account-tools.js?v=20261017-audit-1"></script>
-    <script src="assets/js/telegram-daily.js?v=20261017-audit-1"></script>
-    <script src="assets/js/telegram-transfers.js?v=20261017-audit-1"></script>
-    <script src="assets/js/dashboard-ui.js?v=20261017-audit-1"></script>
-    <script src="assets/js/ban-schedule-ui.js?v=20261017-audit-1"></script>
-    <script src="assets/js/management-ui.js?v=20261017-audit-1"></script>
-    <script src="assets/js/cloud-backups-ui.js?v=20261017-audit-1"></script>
+    <script src="assets/js/filter-queue.js?v=20261017-rank-hour-1"></script>
+    <script src="assets/js/account-privacy.js?v=20261017-rank-hour-1"></script>
+    <script src="assets/js/admin-account-tools.js?v=20261017-rank-hour-1"></script>
+    <script src="assets/js/telegram-daily.js?v=20261017-rank-hour-1"></script>
+    <script src="assets/js/telegram-transfers.js?v=20261017-rank-hour-1"></script>
+    <script src="assets/js/dashboard-ui.js?v=20261017-rank-hour-1"></script>
+    <script src="assets/js/ban-schedule-ui.js?v=20261017-rank-hour-1"></script>
+    <script src="assets/js/management-ui.js?v=20261017-rank-hour-1"></script>
+    <script src="assets/js/cloud-backups-ui.js?v=20261017-rank-hour-1"></script>
   </body>
 </html>

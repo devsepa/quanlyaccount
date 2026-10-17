@@ -152,7 +152,8 @@
   text-align:center;
   color:var(--text-sub);
 }
-#filter-transfer-modal>.fq-transfer-card {
+#filter-transfer-modal>.fq-transfer-card,
+#unban-transfer-modal>.fq-transfer-card {
   width:100%;
   max-width:min(460px,calc(100vw - 24px))!important;
   text-align:left;
